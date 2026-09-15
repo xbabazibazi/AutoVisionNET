@@ -21,11 +21,6 @@
     <EmbeddedResource Include="InputInterceptorNS.Resources.interception_x86.dll" LogicalName="InputInterceptorNS.Resources.interception_x86.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Win32.Registry">
-      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.27\Microsoft.Win32.Registry.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Principal.Windows">
-      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.27\System.Security.Principal.Windows.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
   </ItemGroup>
 </Project>

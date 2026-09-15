@@ -9,7 +9,4 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
-  <PropertyGroup />
-  <ItemGroup />
-  <ItemGroup />
 </Project>

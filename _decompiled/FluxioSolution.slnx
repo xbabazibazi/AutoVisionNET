@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="FluxDB/FluxDB.csproj" />
+  <Project Path="FluxioUpdater/FluxioUpdater.csproj" />
+  <Project Path="InputInterceptor/InputInterceptor.csproj" />
+  <Project Path="InputManager/InputManager.csproj" />
+  <Project Path="Scanix4/Scanix4.csproj" />
+  <Project Path="Server/Server.csproj" />
+  <Project Path="SettingsManager/SettingsManager.csproj" />
+  <Project Path="SimpleLogger/SimpleLogger.csproj" />
+  <Project Path="SnapNetClient/SnapNetClient.csproj" />
+  <Project Path="SnapNetUI/SnapNetUI.csproj" />
+  <Project Path="UI2/UI2.csproj" />
+</Solution>

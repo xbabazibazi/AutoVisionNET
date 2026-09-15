@@ -4,41 +4,27 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>True</UseWindowsForms>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace />
   </PropertyGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Reference Include="SettingsManager">
-      <HintPath>fluxioElrosk/fluxioElrosk/SettingsManager.dll</HintPath>
-    </Reference>
-    <Reference Include="InputManager">
-      <HintPath>fluxioElrosk/fluxioElrosk/InputManager.dll</HintPath>
-    </Reference>
-    <Reference Include="SimpleLogger">
-      <HintPath>fluxioElrosk/fluxioElrosk/SimpleLogger.dll</HintPath>
-    </Reference>
-    <Reference Include="InputInterceptor">
-      <HintPath>fluxioElrosk/fluxioElrosk/InputInterceptor.dll</HintPath>
-    </Reference>
-    <Reference Include="FluxDB">
-      <HintPath>fluxioElrosk/fluxioElrosk/FluxDB.dll</HintPath>
-    </Reference>
-    <Reference Include="Scanix4">
-      <HintPath>fluxioElrosk/fluxioElrosk/Scanix4.dll</HintPath>
-    </Reference>
-    <Reference Include="SnapNetClient">
-      <HintPath>fluxioElrosk/fluxioElrosk/SnapNetClient.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite">
-      <HintPath>fluxioElrosk/fluxioElrosk/System.Data.SQLite.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FluxDB\FluxDB.csproj" />
+    <ProjectReference Include="..\InputInterceptor\InputInterceptor.csproj" />
+    <ProjectReference Include="..\InputManager\InputManager.csproj" />
+    <ProjectReference Include="..\Scanix4\Scanix4.csproj" />
+    <ProjectReference Include="..\SettingsManager\SettingsManager.csproj" />
+    <ProjectReference Include="..\SimpleLogger\SimpleLogger.csproj" />
+    <ProjectReference Include="..\SnapNetClient\SnapNetClient.csproj" />
   </ItemGroup>
 </Project>

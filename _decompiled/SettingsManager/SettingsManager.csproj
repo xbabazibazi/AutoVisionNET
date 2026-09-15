@@ -9,14 +9,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
-  <PropertyGroup />
-  <ItemGroup />
   <ItemGroup>
-    <Reference Include="FluxDB">
-      <HintPath>fluxioElrosk/fluxioElrosk/FluxDB.dll</HintPath>
-    </Reference>
-    <Reference Include="SimpleLogger">
-      <HintPath>fluxioElrosk/fluxioElrosk/SimpleLogger.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\FluxDB\FluxDB.csproj" />
+    <ProjectReference Include="..\SimpleLogger\SimpleLogger.csproj" />
   </ItemGroup>
 </Project>
