@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
 using FluxDB;
+using InputInterceptorNS;
 using SettingsManager;
 using UI2.Database;
 
@@ -18,6 +22,10 @@ internal static class Program
 	private static void Main()
 	{
 		Console.WriteLine("UI2 surum: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+		if (!IsRunningAsAdministrator() && !IsInputDriverAlreadyInstalled() && RelaunchAsAdministrator())
+		{
+			return;
+		}
 		bool createdNew;
 		using (new Mutex(initiallyOwned: true, "FluxioPlatform", out createdNew))
 		{
@@ -31,6 +39,52 @@ internal static class Program
 			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
 			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));
 			RunApplication();
+		}
+	}
+
+	private static bool IsRunningAsAdministrator()
+	{
+		using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+		WindowsPrincipal principal = new WindowsPrincipal(identity);
+		return principal.IsInRole(WindowsBuiltInRole.Administrator);
+	}
+
+	private static bool IsInputDriverAlreadyInstalled()
+	{
+		try
+		{
+			return InputInterceptor.CheckDriverInstalled();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool RelaunchAsAdministrator()
+	{
+		try
+		{
+			string exePath = Process.GetCurrentProcess().MainModule?.FileName;
+			if (string.IsNullOrEmpty(exePath))
+			{
+				return false;
+			}
+			ProcessStartInfo startInfo = new ProcessStartInfo(exePath)
+			{
+				UseShellExecute = true,
+				Verb = "runas"
+			};
+			Process.Start(startInfo);
+			return true;
+		}
+		catch (Win32Exception)
+		{
+			return false;
+		}
+		catch (Exception)
+		{
+			return false;
 		}
 	}
 
