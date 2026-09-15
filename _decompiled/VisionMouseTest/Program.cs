@@ -29,6 +29,11 @@ internal static class Program
             SnapNetFlowTest.RunAsync().GetAwaiter().GetResult();
             return;
         }
+        if (args.Length > 0 && args[0] == "scale")
+        {
+            ScaleTest.Run();
+            return;
+        }
 
         Logger.Instance.SetLogMethod(msg => Console.WriteLine(msg));
         Logger.Instance.SetLogLevel(LogLevel.Debug);
