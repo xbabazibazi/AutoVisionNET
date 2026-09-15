@@ -80,14 +80,46 @@ public class ServerForm : Form
 
 	private Button btnSilentMode;
 
+	private Label lblUptime;
+
+	private Label lblLastError;
+
 	public ServerForm()
 	{
 		InitializeComponent();
 		InitializeServerEvents();
 		InitializeCommands();
 		SetupModernUI();
+		InitializeExtendedStatus();
 		StartLogTimer();
 		UpdateSilentModeButton();
+	}
+
+	private void InitializeExtendedStatus()
+	{
+		statusPanel.Height = 60;
+
+		lblUptime = new Label
+		{
+			Font = new Font("Segoe UI Semibold", 9f, FontStyle.Bold),
+			ForeColor = Color.FromArgb(200, 200, 220),
+			Location = new Point(5, 30),
+			Size = new Size(300, 25),
+			TextAlign = ContentAlignment.MiddleLeft,
+			Text = "Çalışma süresi: 00:00:00"
+		};
+		lblLastError = new Label
+		{
+			Font = new Font("Segoe UI", 8.5f),
+			ForeColor = Color.FromArgb(220, 120, 120),
+			Location = new Point(310, 30),
+			Size = new Size(665, 25),
+			TextAlign = ContentAlignment.MiddleRight,
+			AutoEllipsis = true,
+			Text = ""
+		};
+		statusPanel.Controls.Add(lblUptime);
+		statusPanel.Controls.Add(lblLastError);
 	}
 
 	private void StartLogTimer()
@@ -95,7 +127,17 @@ public class ServerForm : Form
 		_logTimer = new System.Threading.Timer(delegate
 		{
 			UpdateLogs();
+			UpdateUptimeLabel();
 		}, null, 100, 100);
+	}
+
+	private void UpdateUptimeLabel()
+	{
+		TimeSpan elapsed = _uptime.Elapsed;
+		SafeInvoke(delegate
+		{
+			lblUptime.Text = "Çalışma süresi: " + elapsed.ToString("hh\\:mm\\:ss");
+		});
 	}
 
 	private void SetupModernUI()
@@ -142,6 +184,10 @@ public class ServerForm : Form
 			if (!msg.Contains("PING") && !msg.Contains("PONG") && !msg.Contains("UNPROCESSED_MSG") && !msg.Contains("COMMAND_RECEIVED"))
 			{
 				_logQueue.Enqueue(msg);
+				if (msg.Contains("ERROR", StringComparison.OrdinalIgnoreCase) || msg.Contains("hata", StringComparison.OrdinalIgnoreCase))
+				{
+					ShowErrorNotification(msg);
+				}
 			}
 		};
 		_server.RegisterCommand("101", delegate(string nickname)
@@ -386,8 +432,14 @@ public class ServerForm : Form
 	{
 		_logQueue.Enqueue("HATA:" + message);
 		UpdateUI();
+		ShowErrorNotification(message);
+	}
+
+	private void ShowErrorNotification(string message)
+	{
 		SafeInvoke(delegate
 		{
+			lblLastError.Text = $"Son hata ({DateTime.Now:HH:mm:ss}): {message}";
 			_currentToast?.Close();
 			_currentToast = new ErrorToastForm(message);
 			_currentToast.Show();
