@@ -10,4 +10,5 @@
   <Project Path="SnapNetClient/SnapNetClient.csproj" />
   <Project Path="SnapNetUI/SnapNetUI.csproj" />
   <Project Path="UI2/UI2.csproj" />
+  <Project Path="VisionMouseTest/VisionMouseTest.csproj" />
 </Solution>
