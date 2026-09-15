@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>InputManager</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="InputInterceptor">
+      <HintPath>fluxioElrosk/fluxioElrosk/InputInterceptor.dll</HintPath>
+    </Reference>
+    <Reference Include="SettingsManager">
+      <HintPath>fluxioElrosk/fluxioElrosk/SettingsManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

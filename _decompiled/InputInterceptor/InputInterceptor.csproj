@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>InputInterceptor</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="InputInterceptorNS.Resources.install-interception.exe" />
+    <None Remove="InputInterceptorNS.Resources.interception_x64.dll" />
+    <None Remove="InputInterceptorNS.Resources.interception_x86.dll" />
+    <EmbeddedResource Include="InputInterceptorNS.Resources.install-interception.exe" LogicalName="InputInterceptorNS.Resources.install-interception.exe" />
+    <EmbeddedResource Include="InputInterceptorNS.Resources.interception_x64.dll" LogicalName="InputInterceptorNS.Resources.interception_x64.dll" />
+    <EmbeddedResource Include="InputInterceptorNS.Resources.interception_x86.dll" LogicalName="InputInterceptorNS.Resources.interception_x86.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Win32.Registry">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.27\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.27\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
