@@ -54,6 +54,8 @@ public class Form1 : Form
 
 	private readonly UI2.ScreenCapture.TemplateManagerForm _templateManagerForm;
 
+	private ErrorToastForm _currentToast;
+
 	private readonly KeyCommandManager _keyManager;
 
 	private readonly FormManager _formManager;
@@ -118,6 +120,17 @@ public class Form1 : Form
 		_cancellationTokenSourceTpParty = new CancellationTokenSource();
 		UpdateDB("UpdateDB.sql");
 		base.TopMost = true;
+		_logger.EntryLogged += OnLogEntryLogged;
+	}
+
+	private void OnLogEntryLogged(LogLevel level, string message)
+	{
+		this.InvokeIfRequired(delegate
+		{
+			_currentToast?.Close();
+			_currentToast = new ErrorToastForm(level, message);
+			_currentToast.Show();
+		});
 	}
 
 	private void UpdateDB(string sqlFileName)

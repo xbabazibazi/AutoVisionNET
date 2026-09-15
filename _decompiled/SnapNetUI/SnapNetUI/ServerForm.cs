@@ -380,10 +380,18 @@ public class ServerForm : Form
 		});
 	}
 
+	private ErrorToastForm _currentToast;
+
 	private void HandleError(string message)
 	{
 		_logQueue.Enqueue("HATA:" + message);
 		UpdateUI();
+		SafeInvoke(delegate
+		{
+			_currentToast?.Close();
+			_currentToast = new ErrorToastForm(message);
+			_currentToast.Show();
+		});
 	}
 
 	protected override async void OnFormClosing(FormClosingEventArgs e)

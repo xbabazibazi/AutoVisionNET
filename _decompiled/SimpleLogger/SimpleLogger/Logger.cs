@@ -12,6 +12,8 @@ public class Logger : IDisposable
 
 	public static Logger Instance => _instance ?? (_instance = new Logger());
 
+	public event Action<LogLevel, string>? EntryLogged;
+
 	public void SetLogMethod(Action<string> logMethod)
 	{
 		_logMethod = logMethod;
@@ -57,6 +59,10 @@ public class Logger : IDisposable
 		if (_currentLogLevel <= level)
 		{
 			_logMethod?.Invoke($"[{DateTime.Now:HH:mm:ss.fff}] [{logLevel}] {message}");
+		}
+		if (level >= LogLevel.Warning)
+		{
+			EntryLogged?.Invoke(level, message);
 		}
 	}
 
