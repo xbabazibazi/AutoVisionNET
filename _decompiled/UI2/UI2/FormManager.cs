@@ -19,6 +19,14 @@ public class FormManager
 
 	public void RegisterForm(string key, Form form)
 	{
+		form.FormClosing += delegate(object sender, FormClosingEventArgs e)
+		{
+			if (e.CloseReason == CloseReason.UserClosing)
+			{
+				e.Cancel = true;
+				((Form)sender).Hide();
+			}
+		};
 		_forms[key] = form;
 	}
 
