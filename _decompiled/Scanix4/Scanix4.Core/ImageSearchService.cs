@@ -25,6 +25,7 @@ public class ImageSearchService : IDisposable
 	{
 		_config = config ?? throw new ArgumentNullException("config");
 		_logger = logger ?? Logger.Instance;
+		DisplayScalingCheck.WarnIfNonStandardScaling(_logger);
 		if (!IsValidSearchArea(_config.SearchArea))
 		{
 			_logger.LogWarning($"Geçersiz arama alanı: {_config.SearchArea}. Servis pasif moda alındı.");
