@@ -54,6 +54,11 @@ internal static class Program
             FormManagerTest.Run();
             return;
         }
+        if (args.Length > 0 && args[0] == "jobbreakdown")
+        {
+            JobBreakdownTest.Run().GetAwaiter().GetResult();
+            return;
+        }
 
         Logger.Instance.SetLogMethod(msg => Console.WriteLine(msg));
         Logger.Instance.SetLogLevel(LogLevel.Debug);

@@ -82,6 +82,8 @@ public class ServerForm : Form
 
 	private Label lblUptime;
 
+	private Label lblJobBreakdown;
+
 	private Label lblLastError;
 
 	public ServerForm()
@@ -97,28 +99,39 @@ public class ServerForm : Form
 
 	private void InitializeExtendedStatus()
 	{
-		statusPanel.Height = 60;
+		statusPanel.Height = 85;
 
 		lblUptime = new Label
 		{
 			Font = new Font("Segoe UI Semibold", 9f, FontStyle.Bold),
 			ForeColor = Color.FromArgb(200, 200, 220),
 			Location = new Point(5, 30),
-			Size = new Size(300, 25),
+			Size = new Size(220, 25),
 			TextAlign = ContentAlignment.MiddleLeft,
 			Text = "Çalışma süresi: 00:00:00"
+		};
+		lblJobBreakdown = new Label
+		{
+			Font = new Font("Segoe UI", 9f),
+			ForeColor = Color.FromArgb(180, 200, 220),
+			Location = new Point(230, 30),
+			Size = new Size(745, 25),
+			TextAlign = ContentAlignment.MiddleRight,
+			AutoEllipsis = true,
+			Text = "(bağlı cihaz yok)"
 		};
 		lblLastError = new Label
 		{
 			Font = new Font("Segoe UI", 8.5f),
 			ForeColor = Color.FromArgb(220, 120, 120),
-			Location = new Point(310, 30),
-			Size = new Size(665, 25),
-			TextAlign = ContentAlignment.MiddleRight,
+			Location = new Point(5, 55),
+			Size = new Size(970, 25),
+			TextAlign = ContentAlignment.MiddleLeft,
 			AutoEllipsis = true,
 			Text = ""
 		};
 		statusPanel.Controls.Add(lblUptime);
+		statusPanel.Controls.Add(lblJobBreakdown);
 		statusPanel.Controls.Add(lblLastError);
 	}
 
@@ -313,8 +326,13 @@ public class ServerForm : Form
 
 	private void UpdateClientList()
 	{
-		string[] clients = (from c in _server.GetClientList()
+		var clientList = _server.GetClientList().ToList();
+		string[] clients = (from c in clientList
 			select $"{c.nickname} | {c.job} | {c.endpoint}").ToArray();
+		string breakdown = string.Join("   ", clientList
+			.GroupBy((c) => c.job)
+			.OrderBy((g) => g.Key)
+			.Select((g) => $"{g.Key}: {g.Count()}"));
 		SafeInvoke(delegate
 		{
 			lstClients.BeginUpdate();
@@ -326,6 +344,7 @@ public class ServerForm : Form
 				items.AddRange(items2);
 			}
 			lstClients.EndUpdate();
+			lblJobBreakdown.Text = string.IsNullOrEmpty(breakdown) ? "(bağlı cihaz yok)" : breakdown;
 		});
 	}
 
