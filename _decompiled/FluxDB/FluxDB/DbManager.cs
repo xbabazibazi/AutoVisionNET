@@ -128,31 +128,61 @@ public class DbManager : SqliteDataConnector
 		{
 			new SQLiteParameter("@name", name)
 		};
-		return ExecuteScalar<string>(query, parameters);
+		try
+		{
+			return ExecuteScalar<string>(query, parameters);
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			return null;
+		}
+	}
+
+	private void EnsureRectanglesSettingsTableExists()
+	{
+		ExecuteNonQuery("CREATE TABLE IF NOT EXISTS RectanglesSettings (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, coordinateX INTEGER, coordinateY INTEGER, width INTEGER, height INTEGER)");
 	}
 
 	public void SetRectangleSettings(RectangleSettings settings)
 	{
-		string query = "\r\n                UPDATE RectanglesSettings \r\n                SET \r\n                    coordinateX = @coordinateX,\r\n                    coordinateY = @coordinateY,\r\n                    width = @width,\r\n                    height = @height\r\n                WHERE name = @name";
-		SQLiteParameter[] parameters = new SQLiteParameter[5]
+		string updateQuery = "UPDATE RectanglesSettings SET coordinateX = @coordinateX, coordinateY = @coordinateY, width = @width, height = @height WHERE name = @name";
+		string insertQuery = "INSERT INTO RectanglesSettings (name, coordinateX, coordinateY, width, height) VALUES (@name, @coordinateX, @coordinateY, @width, @height)";
+		SQLiteParameter[] MakeParams()
 		{
-			new SQLiteParameter("@coordinateX", settings.CoordinateX),
-			new SQLiteParameter("@coordinateY", settings.CoordinateY),
-			new SQLiteParameter("@width", settings.Width),
-			new SQLiteParameter("@height", settings.Height),
-			new SQLiteParameter("@name", settings.Name)
-		};
-		ExecuteNonQuery(query, parameters);
+			return new SQLiteParameter[5]
+			{
+				new SQLiteParameter("@coordinateX", settings.CoordinateX),
+				new SQLiteParameter("@coordinateY", settings.CoordinateY),
+				new SQLiteParameter("@width", settings.Width),
+				new SQLiteParameter("@height", settings.Height),
+				new SQLiteParameter("@name", settings.Name)
+			};
+		}
+		try
+		{
+			if (ExecuteNonQuery(updateQuery, MakeParams()) == 0)
+			{
+				ExecuteNonQuery(insertQuery, MakeParams());
+			}
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			EnsureRectanglesSettingsTableExists();
+			if (ExecuteNonQuery(updateQuery, MakeParams()) == 0)
+			{
+				ExecuteNonQuery(insertQuery, MakeParams());
+			}
+		}
 	}
 
 	public RectangleSettings GetRectangleSettings(string name)
 	{
 		string query = "SELECT * FROM RectanglesSettings WHERE name = @name";
-		SQLiteParameter[] parameters = new SQLiteParameter[1]
+		SQLiteParameter[] MakeParams()
 		{
-			new SQLiteParameter("@name", name)
-		};
-		return ExecuteSingleRow(query, (IDataReader reader) => new RectangleSettings
+			return new SQLiteParameter[1] { new SQLiteParameter("@name", name) };
+		}
+		Func<IDataReader, RectangleSettings> map = (IDataReader reader) => new RectangleSettings
 		{
 			ID = Convert.ToInt32(reader["id"]),
 			Name = reader["name"].ToString(),
@@ -160,6 +190,15 @@ public class DbManager : SqliteDataConnector
 			CoordinateY = Convert.ToInt32(reader["coordinateY"]),
 			Width = Convert.ToInt32(reader["width"]),
 			Height = Convert.ToInt32(reader["height"])
-		}, parameters);
+		};
+		try
+		{
+			return ExecuteSingleRow(query, map, MakeParams());
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			EnsureRectanglesSettingsTableExists();
+			return new RectangleSettings { Name = name };
+		}
 	}
 }

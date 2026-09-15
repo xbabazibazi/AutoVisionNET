@@ -67,13 +67,33 @@ internal static class Program
 		// System.Data.SQLite'in native kutuphanesi ilk kullanimda tek seferlik bir
 		// yukleme yapiyor; bu ilk cagri bazen "Value cannot be null (Parameter 'path1')"
 		// gibi zararsiz ama korkutucu bir hatayla basarisiz olabiliyor (bilinen bir
-		// .NET Core uyumluluk sorunu). Gercek ayar okuma/yazmadan once, hafizada
-		// (in-memory) zararsiz bir baglanti acip kapatarak bu ilk-cagri hatasini
-		// burada, guvenli bir yerde tetikleyip yutuyoruz.
+		// .NET Core / self-contained tek-dosya yayinlarda gorulen uyumluluk sorunu).
+		// :memory: baglanti bu yolu tetiklemeye yetmiyor; gercek dosya tabanli
+		// baglantilarin izledigi native kod yolunu taklit etmek icin gecici bir
+		// disk dosyasi kullanip birkac kez deniyoruz.
+		string tempDbPath = Path.Combine(Path.GetTempPath(), "fluxio_sqlite_warmup_" + Guid.NewGuid() + ".db");
+		for (int attempt = 0; attempt < 3; attempt++)
+		{
+			try
+			{
+				using SQLiteConnection sQLiteConnection = new SQLiteConnection("Data Source=" + tempDbPath + ";Version=3;");
+				sQLiteConnection.Open();
+				using (SQLiteCommand sQLiteCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS WarmUp (X INTEGER); INSERT INTO WarmUp VALUES (1); SELECT * FROM WarmUp;", sQLiteConnection))
+				{
+					sQLiteCommand.ExecuteNonQuery();
+				}
+				break;
+			}
+			catch
+			{
+			}
+		}
 		try
 		{
-			using SQLiteConnection sQLiteConnection = new SQLiteConnection("Data Source=:memory:;Version=3;");
-			sQLiteConnection.Open();
+			if (File.Exists(tempDbPath))
+			{
+				File.Delete(tempDbPath);
+			}
 		}
 		catch
 		{
