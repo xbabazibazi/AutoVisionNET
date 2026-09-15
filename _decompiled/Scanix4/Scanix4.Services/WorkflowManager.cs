@@ -23,6 +23,10 @@ public class WorkflowManager
 
 	private CancellationTokenSource _cts;
 
+	private readonly object _ctsLock = new object();
+
+	private bool _stopRequested;
+
 	private readonly string _startTaskId;
 
 	private readonly string _workflowId;
@@ -58,9 +62,18 @@ public class WorkflowManager
 
 	public async Task RunAsync(string startTaskId)
 	{
-		_cts?.Dispose();
-		_cts = new CancellationTokenSource();
-		CancellationToken token = _cts.Token;
+		CancellationToken token;
+		lock (_ctsLock)
+		{
+			_cts?.Dispose();
+			_cts = new CancellationTokenSource();
+			token = _cts.Token;
+			if (_stopRequested)
+			{
+				_cts.Cancel();
+			}
+			_stopRequested = false;
+		}
 		Dictionary<string, SearchTask> tasks = _taskCenter._allTasks;
 		string current = startTaskId;
 		try
@@ -201,7 +214,11 @@ public class WorkflowManager
 
 	public void Stop()
 	{
-		_cts?.Cancel();
+		lock (_ctsLock)
+		{
+			_stopRequested = true;
+			_cts?.Cancel();
+		}
 	}
 
 	public void Dispose()

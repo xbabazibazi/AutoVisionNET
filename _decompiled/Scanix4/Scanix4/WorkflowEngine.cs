@@ -166,7 +166,10 @@ public class WorkflowEngine
 		}
 		try
 		{
-			await task;
+			if (task != null)
+			{
+				await task;
+			}
 		}
 		finally
 		{
@@ -182,7 +185,7 @@ public class WorkflowEngine
 		List<Task> tasks;
 		lock (_lock)
 		{
-			tasks = _running.Values.ToList();
+			tasks = _running.Values.Where((Task t) => t != null).ToList();
 			foreach (WorkflowManager manager in _managers.Values)
 			{
 				manager.Stop();

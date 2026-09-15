@@ -44,6 +44,11 @@ internal static class Program
             DriverGuardTest.Run();
             return;
         }
+        if (args.Length > 0 && args[0] == "stoprace")
+        {
+            StopRaceTest.Run().GetAwaiter().GetResult();
+            return;
+        }
 
         Logger.Instance.SetLogMethod(msg => Console.WriteLine(msg));
         Logger.Instance.SetLogLevel(LogLevel.Debug);
