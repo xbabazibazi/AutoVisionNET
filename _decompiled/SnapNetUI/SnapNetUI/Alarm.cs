@@ -26,12 +26,19 @@ public class Alarm : IDisposable
 
 	private void InitializeSoundPlayer()
 	{
-		if (!File.Exists(_alarmFilePath))
+		try
 		{
-			throw new FileNotFoundException("Alarm file not found.", _alarmFilePath);
+			if (!File.Exists(_alarmFilePath))
+			{
+				return;
+			}
+			_player = new SoundPlayer(_alarmFilePath);
+			_player.Load();
 		}
-		_player = new SoundPlayer(_alarmFilePath);
-		_player.Load();
+		catch (Exception)
+		{
+			_player = null;
+		}
 	}
 
 	public void StartAlarm()
@@ -40,7 +47,13 @@ public class Alarm : IDisposable
 		{
 			if (!_isAlarmActive && !_isSilentMode)
 			{
-				_player?.PlayLooping();
+				try
+				{
+					_player?.PlayLooping();
+				}
+				catch (Exception)
+				{
+				}
 				_isAlarmActive = true;
 			}
 		}
@@ -52,7 +65,13 @@ public class Alarm : IDisposable
 		{
 			if (_isAlarmActive)
 			{
-				_player?.Stop();
+				try
+				{
+					_player?.Stop();
+				}
+				catch (Exception)
+				{
+				}
 				_isAlarmActive = false;
 			}
 		}

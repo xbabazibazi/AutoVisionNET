@@ -32,16 +32,16 @@ public class Alarm : IDisposable
 		{
 			if (!File.Exists(_alarmFilePath))
 			{
-				_logger.LogError("Alarm file not found: " + _alarmFilePath);
-				throw new FileNotFoundException("Alarm file not found.", _alarmFilePath);
+				_logger.LogError("Alarm file not found: " + _alarmFilePath + ". Alarm devre dışı.");
+				return;
 			}
 			_player = new SoundPlayer(_alarmFilePath);
 			_player.Load();
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError("Alarm initialization failed: " + ex.Message);
-			throw;
+			_logger.LogError("Alarm initialization failed: " + ex.Message + ". Alarm devre dışı.");
+			_player = null;
 		}
 	}
 
