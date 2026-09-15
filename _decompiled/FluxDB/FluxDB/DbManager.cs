@@ -13,6 +13,16 @@ public class DbManager : SqliteDataConnector
 	{
 	}
 
+	private void EnsureTableExists(string tableName)
+	{
+		ExecuteNonQuery("CREATE TABLE IF NOT EXISTS \"" + tableName + "\" (SettingKey TEXT PRIMARY KEY, SettingValue TEXT)");
+	}
+
+	private static bool IsMissingTableError(Exception ex)
+	{
+		return ex is SQLiteException && ex.Message.IndexOf("no such table", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
 	public void SetSetting(string tableName, string key, string value)
 	{
 		if (string.IsNullOrWhiteSpace(tableName))
@@ -23,7 +33,7 @@ public class DbManager : SqliteDataConnector
 		{
 			throw new ArgumentException("Anahtar boş olamaz.", "key");
 		}
-		string query = "UPDATE " + tableName + " SET SettingValue = @value WHERE SettingKey = @key";
+		string query = "INSERT INTO " + tableName + " (SettingKey, SettingValue) VALUES (@key, @value) ON CONFLICT(SettingKey) DO UPDATE SET SettingValue = excluded.SettingValue";
 		SQLiteParameter[] parameters = new SQLiteParameter[2]
 		{
 			new SQLiteParameter("@key", key),
@@ -34,9 +44,15 @@ public class DbManager : SqliteDataConnector
 			ExecuteNonQuery(query, parameters);
 			Console.WriteLine($"Ayar kaydedildi: {tableName}.{key} = {value}");
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (IsMissingTableError(ex))
 		{
-			Console.WriteLine("Ayar kaydı hatası: " + ex.Message);
+			EnsureTableExists(tableName);
+			ExecuteNonQuery(query, parameters);
+			Console.WriteLine($"Ayar kaydedildi (tablo oluşturuldu): {tableName}.{key} = {value}");
+		}
+		catch (Exception ex2)
+		{
+			Console.WriteLine("Ayar kaydı hatası: " + ex2.Message);
 			throw;
 		}
 	}
@@ -58,7 +74,16 @@ public class DbManager : SqliteDataConnector
 		};
 		try
 		{
-			string text = ExecuteScalar<string>(query, parameters);
+			string text;
+			try
+			{
+				text = ExecuteScalar<string>(query, parameters);
+			}
+			catch (Exception ex3) when (IsMissingTableError(ex3))
+			{
+				EnsureTableExists(tableName);
+				text = null;
+			}
 			if (text == null)
 			{
 				Console.WriteLine($"Ayar bulunamadı: {tableName}.{key}, varsayılan değer döndürüldü.");
