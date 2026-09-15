@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluxDB;
 using FluxDB.Models;
 
@@ -5,6 +6,12 @@ namespace SettingsManager.ScreenCapture;
 
 public class RectanglesSettings
 {
+	private static readonly string[] AreaNames = new string[11]
+	{
+		"AcceptParty", "Genie", "ChatWindow", "BuffLine", "Weapons", "Inventory",
+		"MagicBag", "Town", "Party", "Info", "LeftBotMenu"
+	};
+
 	private readonly DbManager _dbManager;
 
 	public RectangleSettings AcceptParty
@@ -156,5 +163,55 @@ public class RectanglesSettings
 			settings.Name = expectedName;
 		}
 		_dbManager.SetRectangleSettings(settings);
+	}
+
+	public string ActiveProfileName
+	{
+		get
+		{
+			return _dbManager.GetSetting<string>("ResolutionProfileMeta", "ActiveProfile");
+		}
+		set
+		{
+			_dbManager.SetSetting("ResolutionProfileMeta", "ActiveProfile", value);
+		}
+	}
+
+	public List<string> ListProfiles()
+	{
+		return _dbManager.ListResolutionProfiles();
+	}
+
+	public void SaveAsProfile(string profileName)
+	{
+		foreach (string areaName in AreaNames)
+		{
+			_dbManager.SaveAreaToProfile(profileName, Get(areaName));
+		}
+		ActiveProfileName = profileName;
+	}
+
+	public bool LoadProfile(string profileName)
+	{
+		bool anyApplied = false;
+		foreach (string areaName in AreaNames)
+		{
+			RectangleSettings saved = _dbManager.GetAreaFromProfile(profileName, areaName);
+			if (saved != null)
+			{
+				Set(saved, areaName);
+				anyApplied = true;
+			}
+		}
+		if (anyApplied)
+		{
+			ActiveProfileName = profileName;
+		}
+		return anyApplied;
+	}
+
+	public void DeleteProfile(string profileName)
+	{
+		_dbManager.DeleteResolutionProfile(profileName);
 	}
 }

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
+using System.Linq;
 using FluxDB.Models;
 
 namespace FluxDB;
@@ -199,6 +201,99 @@ public class DbManager : SqliteDataConnector
 		{
 			EnsureRectanglesSettingsTableExists();
 			return new RectangleSettings { Name = name };
+		}
+	}
+
+	private void EnsureResolutionProfilesTableExists()
+	{
+		ExecuteNonQuery("CREATE TABLE IF NOT EXISTS ResolutionProfiles (profileName TEXT, areaName TEXT, coordinateX INTEGER, coordinateY INTEGER, width INTEGER, height INTEGER, PRIMARY KEY (profileName, areaName))");
+	}
+
+	public void SaveAreaToProfile(string profileName, RectangleSettings settings)
+	{
+		string updateQuery = "UPDATE ResolutionProfiles SET coordinateX = @x, coordinateY = @y, width = @w, height = @h WHERE profileName = @profile AND areaName = @area";
+		string insertQuery = "INSERT INTO ResolutionProfiles (profileName, areaName, coordinateX, coordinateY, width, height) VALUES (@profile, @area, @x, @y, @w, @h)";
+		SQLiteParameter[] MakeParams()
+		{
+			return new SQLiteParameter[6]
+			{
+				new SQLiteParameter("@profile", profileName),
+				new SQLiteParameter("@area", settings.Name),
+				new SQLiteParameter("@x", settings.CoordinateX),
+				new SQLiteParameter("@y", settings.CoordinateY),
+				new SQLiteParameter("@w", settings.Width),
+				new SQLiteParameter("@h", settings.Height)
+			};
+		}
+		try
+		{
+			if (ExecuteNonQuery(updateQuery, MakeParams()) == 0)
+			{
+				ExecuteNonQuery(insertQuery, MakeParams());
+			}
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			EnsureResolutionProfilesTableExists();
+			if (ExecuteNonQuery(updateQuery, MakeParams()) == 0)
+			{
+				ExecuteNonQuery(insertQuery, MakeParams());
+			}
+		}
+	}
+
+	public RectangleSettings GetAreaFromProfile(string profileName, string areaName)
+	{
+		string query = "SELECT * FROM ResolutionProfiles WHERE profileName = @profile AND areaName = @area";
+		SQLiteParameter[] MakeParams()
+		{
+			return new SQLiteParameter[2]
+			{
+				new SQLiteParameter("@profile", profileName),
+				new SQLiteParameter("@area", areaName)
+			};
+		}
+		Func<IDataReader, RectangleSettings> map = (IDataReader reader) => new RectangleSettings
+		{
+			Name = areaName,
+			CoordinateX = Convert.ToInt32(reader["coordinateX"]),
+			CoordinateY = Convert.ToInt32(reader["coordinateY"]),
+			Width = Convert.ToInt32(reader["width"]),
+			Height = Convert.ToInt32(reader["height"])
+		};
+		try
+		{
+			RectangleSettings result = ExecuteSingleRow(query, map, MakeParams());
+			return (result.Name == areaName && (result.Width != 0 || result.Height != 0 || result.CoordinateX != 0 || result.CoordinateY != 0)) ? result : null;
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			EnsureResolutionProfilesTableExists();
+			return null;
+		}
+	}
+
+	public List<string> ListResolutionProfiles()
+	{
+		try
+		{
+			return ExecuteQuery("SELECT DISTINCT profileName FROM ResolutionProfiles ORDER BY profileName", (IDataReader reader) => reader["profileName"].ToString()).ToList();
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
+			EnsureResolutionProfilesTableExists();
+			return new List<string>();
+		}
+	}
+
+	public void DeleteResolutionProfile(string profileName)
+	{
+		try
+		{
+			ExecuteNonQuery("DELETE FROM ResolutionProfiles WHERE profileName = @profile", new SQLiteParameter("@profile", profileName));
+		}
+		catch (Exception ex) when (IsMissingTableError(ex))
+		{
 		}
 	}
 }

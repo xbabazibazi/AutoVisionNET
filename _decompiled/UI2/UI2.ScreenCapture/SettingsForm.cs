@@ -68,6 +68,8 @@ public class SettingsForm : Form, ISettingsForm
 
 	private Button buttonLeftBotMenu;
 
+	private ComboBox cmbResolutionProfile;
+
 	public SettingsForm()
 	{
 		InitializeComponent();
@@ -75,6 +77,117 @@ public class SettingsForm : Form, ISettingsForm
 		InitializeSettings();
 		WireUpAllEvents();
 		LoadAllSettings();
+		InitializeResolutionProfileBar();
+	}
+
+	private void InitializeResolutionProfileBar()
+	{
+		Panel pnlProfile = new Panel
+		{
+			Dock = DockStyle.Bottom,
+			Height = 40,
+			BorderStyle = BorderStyle.FixedSingle
+		};
+		Label lbl = new Label
+		{
+			Text = "Çözünürlük Profili:",
+			AutoSize = true,
+			Location = new Point(8, 12)
+		};
+		cmbResolutionProfile = new ComboBox
+		{
+			Location = new Point(140, 8),
+			Width = 160,
+			DropDownStyle = ComboBoxStyle.DropDownList
+		};
+		Button btnLoad = new Button
+		{
+			Text = "Yükle",
+			Location = new Point(310, 6),
+			Width = 70
+		};
+		btnLoad.Click += BtnLoadProfile_Click;
+		Button btnSave = new Button
+		{
+			Text = "Farklı Kaydet...",
+			Location = new Point(385, 6),
+			Width = 110
+		};
+		btnSave.Click += BtnSaveProfile_Click;
+		Button btnDelete = new Button
+		{
+			Text = "Sil",
+			Location = new Point(500, 6),
+			Width = 60
+		};
+		btnDelete.Click += BtnDeleteProfile_Click;
+		pnlProfile.Controls.Add(lbl);
+		pnlProfile.Controls.Add(cmbResolutionProfile);
+		pnlProfile.Controls.Add(btnLoad);
+		pnlProfile.Controls.Add(btnSave);
+		pnlProfile.Controls.Add(btnDelete);
+		Controls.Add(pnlProfile);
+		base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + 40);
+		RefreshProfileList();
+	}
+
+	private void RefreshProfileList()
+	{
+		string active = _settings.ActiveProfileName;
+		cmbResolutionProfile.Items.Clear();
+		foreach (string profile in _settings.ListProfiles())
+		{
+			cmbResolutionProfile.Items.Add(profile);
+		}
+		if (!string.IsNullOrEmpty(active) && cmbResolutionProfile.Items.Contains(active))
+		{
+			cmbResolutionProfile.SelectedItem = active;
+		}
+	}
+
+	private void BtnLoadProfile_Click(object sender, EventArgs e)
+	{
+		if (cmbResolutionProfile.SelectedItem is not string profileName)
+		{
+			MessageBox.Show("Önce bir profil seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			return;
+		}
+		if (_settings.LoadProfile(profileName))
+		{
+			LoadAllSettings();
+			MessageBox.Show("'" + profileName + "' profili uygulandı.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		else
+		{
+			MessageBox.Show("Bu profilde kayıtlı ayar bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
+	}
+
+	private void BtnSaveProfile_Click(object sender, EventArgs e)
+	{
+		using SimpleTextPromptForm prompt = new SimpleTextPromptForm("Profil Kaydet", "Profil adı (örn. 1920x1080):", cmbResolutionProfile.Text);
+		if (prompt.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(prompt.ResultText))
+		{
+			return;
+		}
+		string profileName = prompt.ResultText.Trim();
+		_settings.SaveAsProfile(profileName);
+		RefreshProfileList();
+		cmbResolutionProfile.SelectedItem = profileName;
+		MessageBox.Show("Mevcut ayarlar '" + profileName + "' profili olarak kaydedildi.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
+	}
+
+	private void BtnDeleteProfile_Click(object sender, EventArgs e)
+	{
+		if (cmbResolutionProfile.SelectedItem is not string profileName)
+		{
+			return;
+		}
+		if (MessageBox.Show("'" + profileName + "' profili silinsin mi?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+		{
+			_settings.DeleteProfile(profileName);
+			RefreshProfileList();
+		}
 	}
 
 	private void InitializeAreaDefinitions()
