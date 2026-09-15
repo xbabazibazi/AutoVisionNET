@@ -28,7 +28,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "RequestParty",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RequestParty.jpg",
+				TemplatePath = TemplateResolver.Resolve("RequestParty", "Images/RequestParty.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 1000,
@@ -43,7 +43,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "katadora",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/katadora.jpg",
+				TemplatePath = TemplateResolver.Resolve("katadora", "Images/katadora.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 2000,
@@ -58,7 +58,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "CheckParty",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RequestParty.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckParty", "Images/RequestParty.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 1000,
@@ -73,7 +73,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "WhellOfFunButton",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/WhellOfFunButton.jpg",
+				TemplatePath = TemplateResolver.Resolve("WhellOfFunButton", "Images/WhellOfFunButton.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._requestActions.MoveAndLeftClickWithDelay,
 				OnMatchNotFound = null,
@@ -86,7 +86,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "WhellOfFunPushButton",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/WhellOfFunPushButton.jpg",
+				TemplatePath = TemplateResolver.Resolve("WhellOfFunPushButton", "Images/WhellOfFunPushButton.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._requestActions.MoveAndLeftClickWithDelay,
 				OnMatchNotFound = null,
@@ -99,7 +99,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "WhellOfFunYesButton",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/WhellOfFunYesButton.jpg",
+				TemplatePath = TemplateResolver.Resolve("WhellOfFunYesButton", "Images/WhellOfFunYesButton.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._requestActions.WhellOfFunYesButton,
 				OnMatchNotFound = _actionCenter._requestActions.WhellOfFunYesButton,

@@ -28,7 +28,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "HandlePartyMemberDeath",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Dead.jpg",
+				TemplatePath = TemplateResolver.Resolve("HandlePartyMemberDeath", "Images/Dead.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.87,
 				IntervalMs = 5000,
@@ -43,7 +43,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "PartyHeader",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/PartyHeader.jpg",
+				TemplatePath = TemplateResolver.Resolve("PartyHeader", "Images/PartyHeader.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 500,
@@ -58,7 +58,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "BreakParty",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/BreakParty.jpg",
+				TemplatePath = TemplateResolver.Resolve("BreakParty", "Images/BreakParty.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 500,
@@ -73,7 +73,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "CureDB",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/DB.jpg",
+				TemplatePath = TemplateResolver.Resolve("CureDB", "Images/DB.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.991,
 				UseColor = true,
@@ -88,7 +88,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "Town",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Town.jpg",
+				TemplatePath = TemplateResolver.Resolve("Town", "Images/Town.jpg"),
 				SearchArea = Settings.Instance.ScreenCapture.RectanglesSettings.Town.GetRectangle(),
 				OnMatchFound = _actionCenter._partyActions.OnTown,
 				OnMatchNotFound = null
@@ -100,7 +100,7 @@ public class PartyTasks : ITaskCategory
 			TaskId = "PartyMemberCount",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/PartyCount.jpg",
+				TemplatePath = TemplateResolver.Resolve("PartyMemberCount", "Images/PartyCount.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.9,
 				IntervalMs = 5000,

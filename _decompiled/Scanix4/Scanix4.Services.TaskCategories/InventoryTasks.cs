@@ -28,7 +28,7 @@ public class InventoryTasks : ITaskCategory
 			TaskId = "FindBrokenTomahawkOnInventory",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/BrokenTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("FindBrokenTomahawkOnInventory", "Images/BrokenTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._inventortyActions.MoveAndLeftButtonDown,
 				OnMatchNotFound = null,
@@ -42,7 +42,7 @@ public class InventoryTasks : ITaskCategory
 			TaskId = "CheckRepairedTomahawkOnInventory",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRepairedTomahawkOnInventory", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._inventortyActions.MoveAndRightClick,
 				OnMatchNotFound = null,
@@ -56,7 +56,7 @@ public class InventoryTasks : ITaskCategory
 			TaskId = "EquipTomahawk",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("EquipTomahawk", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._inventortyActions.MoveAndRightClick,
 				OnMatchNotFound = null,
@@ -70,7 +70,7 @@ public class InventoryTasks : ITaskCategory
 			TaskId = "InventorySlotAlert",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/EmptyInventorySlot.jpg",
+				TemplatePath = TemplateResolver.Resolve("InventorySlotAlert", "Images/EmptyInventorySlot.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.99,
 				IntervalMs = 5000,

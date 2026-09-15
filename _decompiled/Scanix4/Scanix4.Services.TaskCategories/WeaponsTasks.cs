@@ -28,7 +28,7 @@ public class WeaponsTasks : ITaskCategory
 			TaskId = "RepairArmors",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/BrokenFullPlateArmorPauldron.jpg",
+				TemplatePath = TemplateResolver.Resolve("RepairArmors", "Images/BrokenFullPlateArmorPauldron.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._weaponsActions.OnMatchFoundBrokenFullPlateArmorPauldron,
 				Threshold = 0.983,
@@ -41,7 +41,7 @@ public class WeaponsTasks : ITaskCategory
 			TaskId = "RepairWeapons",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/BrokenTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("RepairWeapons", "Images/BrokenTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._weaponsActions.OnMatchFoundRepairTomahawk,
 				Threshold = 0.99,
@@ -55,7 +55,7 @@ public class WeaponsTasks : ITaskCategory
 			TaskId = "SwapTomahawk",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/BrokenTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("SwapTomahawk", "Images/BrokenTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._weaponsActions.MoveAndRightClick,
 				Threshold = 0.99,
@@ -69,7 +69,7 @@ public class WeaponsTasks : ITaskCategory
 			TaskId = "CheckRightHandIsEmpty",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/EmptyRightHand.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRightHandIsEmpty", "Images/EmptyRightHand.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.9
 			},
@@ -80,7 +80,7 @@ public class WeaponsTasks : ITaskCategory
 			TaskId = "CheckLeftHandIsEmpty",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/EmptyLeftHand.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckLeftHandIsEmpty", "Images/EmptyLeftHand.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.9
 			},

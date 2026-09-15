@@ -35,7 +35,7 @@ public class GenieTasks : ITaskCategory
 			TaskId = "GenieStatus",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/GenieStart.jpg",
+				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.9997,
 				IntervalMs = 3000,
@@ -50,7 +50,7 @@ public class GenieTasks : ITaskCategory
 			TaskId = "StartGenie",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/GenieStart.jpg",
+				TemplatePath = TemplateResolver.Resolve("StartGenie", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea,
 				IntervalMs = 1000,
 				UseColor = false,

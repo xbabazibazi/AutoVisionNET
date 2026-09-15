@@ -52,6 +52,8 @@ public class Form1 : Form
 
 	private readonly ClientForm _clientForm;
 
+	private readonly UI2.ScreenCapture.TemplateManagerForm _templateManagerForm;
+
 	private readonly KeyCommandManager _keyManager;
 
 	private readonly FormManager _formManager;
@@ -82,6 +84,8 @@ public class Form1 : Form
 
 	private ToolStripMenuItem toolStripButtonLogs;
 
+	private ToolStripMenuItem toolStripButtonTemplates;
+
 	private ToolStripDropDownButton toolStripDropDownButtonTools;
 
 	private ToolStripMenuItem toolStripMenuItemCheckForUpdates;
@@ -97,6 +101,7 @@ public class Form1 : Form
 		LoadFormPosition();
 		_formManager = new FormManager(this);
 		_logsForm = new Logs();
+		_templateManagerForm = new UI2.ScreenCapture.TemplateManagerForm();
 		_clientForm = new ClientForm();
 		_inputUtils = new InputUtils(ShowMessage, OnKeyPress, OnMouseAction);
 		_attackService = new AttackService(_inputUtils, _logsForm.GetLogInstance());
@@ -107,6 +112,7 @@ public class Form1 : Form
 		_formManager.RegisterForm("ScreenCapture", _screenCaptureMainForm);
 		_formManager.RegisterForm("Settings", _settingsForm.GetForm());
 		_formManager.RegisterForm("Logs", _logsForm.GetForm());
+		_formManager.RegisterForm("Templates", _templateManagerForm);
 		_formManager.RegisterForm("Client", _clientForm);
 		_keyManager = new KeyCommandManager(_attackService, _inputUtils, _settings, _screenCaptureMainForm, this);
 		_cancellationTokenSourceTpParty = new CancellationTokenSource();
@@ -280,6 +286,11 @@ public class Form1 : Form
 		_formManager.ToggleForm("Logs");
 	}
 
+	private void toolStripButtonTemplates_Click(object sender, EventArgs e)
+	{
+		_formManager.ToggleForm("Templates");
+	}
+
 	private void ayarlarToolStripMenuItem_Click(object sender, EventArgs e)
 	{
 		_formManager.ToggleForm("Settings");
@@ -444,6 +455,7 @@ public class Form1 : Form
 		this.ayarlarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.toolStripButtonClient = new System.Windows.Forms.ToolStripMenuItem();
 		this.toolStripButtonLogs = new System.Windows.Forms.ToolStripMenuItem();
+		this.toolStripButtonTemplates = new System.Windows.Forms.ToolStripMenuItem();
 		this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 		this.toolStripDropDownButtonTools = new System.Windows.Forms.ToolStripDropDownButton();
 		this.toolStripMenuItemCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
@@ -479,7 +491,7 @@ public class Form1 : Form
 		this.toolStripSeparator1.Name = "toolStripSeparator1";
 		this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
 		this.toolStripDropDownButtonForms.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-		this.toolStripDropDownButtonForms.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[4] { this.toolStripButtonMacro, this.toolStripSplitButton1, this.toolStripButtonClient, this.toolStripButtonLogs });
+		this.toolStripDropDownButtonForms.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[5] { this.toolStripButtonMacro, this.toolStripSplitButton1, this.toolStripButtonClient, this.toolStripButtonLogs, this.toolStripButtonTemplates });
 		this.toolStripDropDownButtonForms.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
 		this.toolStripDropDownButtonForms.Name = "toolStripDropDownButtonForms";
 		this.toolStripDropDownButtonForms.Size = new System.Drawing.Size(60, 32);
@@ -508,6 +520,10 @@ public class Form1 : Form
 		this.toolStripButtonLogs.Size = new System.Drawing.Size(180, 22);
 		this.toolStripButtonLogs.Text = "Loglar";
 		this.toolStripButtonLogs.Click += new System.EventHandler(toolStripButtonLogs_Click);
+		this.toolStripButtonTemplates.Name = "toolStripButtonTemplates";
+		this.toolStripButtonTemplates.Size = new System.Drawing.Size(180, 22);
+		this.toolStripButtonTemplates.Text = "Şablonlar";
+		this.toolStripButtonTemplates.Click += new System.EventHandler(toolStripButtonTemplates_Click);
 		this.toolStripSeparator2.Name = "toolStripSeparator2";
 		this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
 		this.toolStripDropDownButtonTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;

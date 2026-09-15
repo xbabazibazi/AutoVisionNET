@@ -28,7 +28,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "StartGenieAfterTp",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/IceResistance.jpg",
+				TemplatePath = TemplateResolver.Resolve("StartGenieAfterTp", "Images/IceResistance.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = null,
 				IntervalMs = 1000,
@@ -42,7 +42,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "DeleteResistance",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/IceResistance.jpg",
+				TemplatePath = TemplateResolver.Resolve("DeleteResistance", "Images/IceResistance.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._buffLineActions.MoveAndDoubleLeftClick,
 				IntervalMs = 1000,
@@ -56,7 +56,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "Undy",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Undy.jpg",
+				TemplatePath = TemplateResolver.Resolve("Undy", "Images/Undy.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._buffLineActions.OnUndy,
 				OnMatchNotFound = null,
@@ -69,7 +69,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "300Ac",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/300Ac.jpg",
+				TemplatePath = TemplateResolver.Resolve("300Ac", "Images/300Ac.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._buffLineActions.On300Ac,
 				OnMatchNotFound = null,
@@ -82,7 +82,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "Sw",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Sw.jpg",
+				TemplatePath = TemplateResolver.Resolve("Sw", "Images/Sw.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._buffLineActions.OnSw,
 				OnMatchNotFound = null,
@@ -95,7 +95,7 @@ public class BuffLineTasks : ITaskCategory
 			TaskId = "Wolf",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Wolf.jpg",
+				TemplatePath = TemplateResolver.Resolve("Wolf", "Images/Wolf.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._buffLineActions.OnWolf,
 				OnMatchNotFound = null,

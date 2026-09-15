@@ -28,7 +28,7 @@ public class LeftBotMenuTasks : ITaskCategory
 			TaskId = "Event",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/Event.jpg",
+				TemplatePath = TemplateResolver.Resolve("Event", "Images/Event.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
 				IntervalMs = 1000,

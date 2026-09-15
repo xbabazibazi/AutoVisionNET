@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using Scanix4.Interfaces;
 using Scanix4.Models;
+using SettingsManager;
 
 namespace Scanix4.Services.TaskCategories;
 
@@ -37,7 +38,7 @@ public class SnapNetTasks : ITaskCategory
 			TaskId = "SnapNetReReRe",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/GenieStart.jpg",
+				TemplatePath = TemplateResolver.Resolve("SnapNetReReRe", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea
 			},
 			Mode = SearchMode.SnapNet
@@ -47,7 +48,7 @@ public class SnapNetTasks : ITaskCategory
 			TaskId = "SnapNetStartGenie",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/GenieStart.jpg",
+				TemplatePath = TemplateResolver.Resolve("SnapNetStartGenie", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea
 			},
 			Mode = SearchMode.SnapNet
@@ -57,7 +58,7 @@ public class SnapNetTasks : ITaskCategory
 			TaskId = "SnapNetWhellOfFun",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/GenieStart.jpg",
+				TemplatePath = TemplateResolver.Resolve("SnapNetWhellOfFun", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea
 			},
 			Mode = SearchMode.SnapNet

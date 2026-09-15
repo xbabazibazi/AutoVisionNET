@@ -28,7 +28,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "OpenMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/OpenMagicBag.jpg",
+				TemplatePath = TemplateResolver.Resolve("OpenMagicBag", "Images/OpenMagicBag.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
 				OnMatchNotFound = null,
@@ -41,7 +41,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "OpenMagicBag2",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/OpenMagicBag.jpg",
+				TemplatePath = TemplateResolver.Resolve("OpenMagicBag2", "Images/OpenMagicBag.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
 				OnMatchNotFound = null,
@@ -54,7 +54,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "CheckRepairedTomahawkOnFirstMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRepairedTomahawkOnFirstMagicBag", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = null,
 				OnMatchNotFound = null,
@@ -68,7 +68,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "CheckRepairedTomahawkOnFirstMagicBag2",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRepairedTomahawkOnFirstMagicBag2", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = delegate(Point point)
 				{
@@ -85,7 +85,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "CheckRepairedTomahawkOnSecondMagicBag2",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRepairedTomahawkOnSecondMagicBag2", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = delegate(Point point)
 				{
@@ -102,7 +102,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "CheckRepairedTomahawkOnSecondMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("CheckRepairedTomahawkOnSecondMagicBag", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = null,
 				OnMatchNotFound = null,
@@ -116,7 +116,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "FindRepairedTomahawkOnMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/RepairedTomahawk.jpg",
+				TemplatePath = TemplateResolver.Resolve("FindRepairedTomahawkOnMagicBag", "Images/RepairedTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftButtonUp,
 				OnMatchNotFound = _actionCenter._magicBagActions.LeftButtonUp,
@@ -130,7 +130,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "CloseMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/CloseMagicBag.jpg",
+				TemplatePath = TemplateResolver.Resolve("CloseMagicBag", "Images/CloseMagicBag.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
 				OnMatchNotFound = null,
@@ -143,7 +143,7 @@ public class MagicBagTasks : ITaskCategory
 			TaskId = "OpenSecondMagicBag",
 			Config = new SearchConfig
 			{
-				TemplatePath = "Images/SecondMagicBag.jpg",
+				TemplatePath = TemplateResolver.Resolve("OpenSecondMagicBag", "Images/SecondMagicBag.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
 				OnMatchNotFound = null
