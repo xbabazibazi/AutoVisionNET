@@ -18,7 +18,19 @@ public static class InputInterceptor
 
 	public static IntPtr CreateContext()
 	{
-		return DllWrapper.CreateContext();
+		if (DllWrapper == null)
+		{
+			return IntPtr.Zero;
+		}
+		try
+		{
+			return DllWrapper.CreateContext();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			return IntPtr.Zero;
+		}
 	}
 
 	public static void DestroyContext(IntPtr context)
@@ -98,7 +110,7 @@ public static class InputInterceptor
 
 	static InputInterceptor()
 	{
-		Initialized = DllWrapper != null;
+		Initialized = false;
 		DllWrapper = null;
 	}
 
@@ -111,6 +123,7 @@ public static class InputInterceptor
 		try
 		{
 			DllWrapper = new DllWrapper(Helpers.GetResource("interception_x" + ((IntPtr.Size == 8) ? "64" : "86") + ".dll"));
+			Initialized = true;
 			return true;
 		}
 		catch (Exception value)
@@ -141,7 +154,20 @@ public static class InputInterceptor
 
 	public static bool CheckDriverInstalled()
 	{
-		RegistryKey? registryKey = Registry.LocalMachine.OpenSubKey("SYSTEM").OpenSubKey("CurrentControlSet").OpenSubKey("Services");
+		RegistryKey? registryKey;
+		try
+		{
+			registryKey = Registry.LocalMachine.OpenSubKey("SYSTEM")?.OpenSubKey("CurrentControlSet")?.OpenSubKey("Services");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			return false;
+		}
+		if (registryKey == null)
+		{
+			return false;
+		}
 		RegistryKey registryKey2 = registryKey.OpenSubKey("keyboard");
 		RegistryKey registryKey3 = registryKey.OpenSubKey("mouse");
 		if (registryKey2 == null || registryKey3 == null)

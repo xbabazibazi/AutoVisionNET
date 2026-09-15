@@ -391,7 +391,27 @@ public class Form1 : Form
 	private void LoadFormPosition()
 	{
 		base.StartPosition = FormStartPosition.Manual;
-		base.Location = new Point(_settings.GeneralSettings.FormSettings.FormLocationX, _settings.GeneralSettings.FormSettings.FormLocationY);
+		Point savedLocation = new Point(_settings.GeneralSettings.FormSettings.FormLocationX, _settings.GeneralSettings.FormSettings.FormLocationY);
+		base.Location = IsLocationVisibleOnAnyScreen(savedLocation) ? savedLocation : GetSafeDefaultLocation();
+	}
+
+	private static bool IsLocationVisibleOnAnyScreen(Point location)
+	{
+		Rectangle testArea = new Rectangle(location, new Size(80, 80));
+		foreach (Screen screen in Screen.AllScreens)
+		{
+			if (screen.WorkingArea.IntersectsWith(testArea))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static Point GetSafeDefaultLocation()
+	{
+		Rectangle workingArea = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 800, 600);
+		return new Point(workingArea.Left + 20, workingArea.Top + 20);
 	}
 
 	private void ToggleFormVisibility(Form formToOpen, params Form[] otherForms)
