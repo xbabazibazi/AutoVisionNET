@@ -90,6 +90,13 @@ public class Client : IDisposable
 			_isRunning = true;
 			IsConnected = true;
 			await SendMessageAsync($"{nickname}|{(int)job}");
+			string handshakeResponse = await ReadMessageAsync(linkedCts.Token);
+			if (handshakeResponse != "OK")
+			{
+				IsConnected = false;
+				_isRunning = false;
+				throw new InvalidOperationException("Sunucu bağlantıyı reddetti: " + (handshakeResponse ?? "sunucu bağlantıyı kapattı"));
+			}
 			_pingTimer = new Timer(async delegate
 			{
 				await SendPingAsync();

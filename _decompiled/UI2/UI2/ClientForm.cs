@@ -262,8 +262,8 @@ public class ClientForm : Form
 		{
 			ClientSettings settings = Settings.Instance.ClientSettings.ClientSettings;
 			AppClient.Initialize(settings.ServerIP ?? "192.168.1.100", (settings.ServerPort > 0) ? settings.ServerPort : 5000, settings.CharacterNickname ?? "TempNickName", (Client.JobType)(cmbJob.SelectedIndex + 1));
-			await AppClient.ConnectAsync();
 			RegisterGlobalCommands();
+			await AppClient.ConnectAsync();
 		}
 		catch (Exception ex)
 		{

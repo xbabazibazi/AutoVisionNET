@@ -7,5 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scanix4\Scanix4.csproj" />
+    <ProjectReference Include="..\SnapNetClient\SnapNetClient.csproj" />
+    <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 </Project>

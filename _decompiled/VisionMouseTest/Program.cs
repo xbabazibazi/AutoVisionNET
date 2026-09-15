@@ -22,8 +22,14 @@ internal static class Program
     private static Form _form;
 
     [STAThread]
-    private static void Main()
+    private static void Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "snapnet")
+        {
+            SnapNetFlowTest.RunAsync().GetAwaiter().GetResult();
+            return;
+        }
+
         Logger.Instance.SetLogMethod(msg => Console.WriteLine(msg));
         Logger.Instance.SetLogLevel(LogLevel.Debug);
 
