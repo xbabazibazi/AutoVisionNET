@@ -33,21 +33,14 @@ public class DbManager : SqliteDataConnector
 		{
 			throw new ArgumentException("Anahtar boş olamaz.", "key");
 		}
-		string query = "INSERT INTO " + tableName + " (SettingKey, SettingValue) VALUES (@key, @value) ON CONFLICT(SettingKey) DO UPDATE SET SettingValue = excluded.SettingValue";
-		SQLiteParameter[] parameters = new SQLiteParameter[2]
-		{
-			new SQLiteParameter("@key", key),
-			new SQLiteParameter("@value", value ?? string.Empty)
-		};
 		try
 		{
-			ExecuteNonQuery(query, parameters);
-			Console.WriteLine($"Ayar kaydedildi: {tableName}.{key} = {value}");
+			UpsertSetting(tableName, key, value);
 		}
 		catch (Exception ex) when (IsMissingTableError(ex))
 		{
 			EnsureTableExists(tableName);
-			ExecuteNonQuery(query, parameters);
+			UpsertSetting(tableName, key, value);
 			Console.WriteLine($"Ayar kaydedildi (tablo oluşturuldu): {tableName}.{key} = {value}");
 		}
 		catch (Exception ex2)
@@ -55,6 +48,19 @@ public class DbManager : SqliteDataConnector
 			Console.WriteLine("Ayar kaydı hatası: " + ex2.Message);
 			throw;
 		}
+	}
+
+	private void UpsertSetting(string tableName, string key, string value)
+	{
+		string safeValue = value ?? string.Empty;
+		string updateQuery = "UPDATE " + tableName + " SET SettingValue = @value WHERE SettingKey = @key";
+		int affected = ExecuteNonQuery(updateQuery, new SQLiteParameter("@key", key), new SQLiteParameter("@value", safeValue));
+		if (affected == 0)
+		{
+			string insertQuery = "INSERT INTO " + tableName + " (SettingKey, SettingValue) VALUES (@key, @value)";
+			ExecuteNonQuery(insertQuery, new SQLiteParameter("@key", key), new SQLiteParameter("@value", safeValue));
+		}
+		Console.WriteLine($"Ayar kaydedildi: {tableName}.{key} = {value}");
 	}
 
 	public T GetSetting<T>(string tableName, string key)

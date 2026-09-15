@@ -30,7 +30,7 @@ public abstract class DataConnector(string connectionString)
 		return new SQLiteConnection(_connectionString);
 	}
 
-	public void ExecuteNonQuery(string query, params SQLiteParameter[] parameters)
+	public int ExecuteNonQuery(string query, params SQLiteParameter[] parameters)
 	{
 		using SQLiteConnection sQLiteConnection = GetConnection();
 		using SQLiteCommand sQLiteCommand = new SQLiteCommand(query, sQLiteConnection);
@@ -39,7 +39,7 @@ public abstract class DataConnector(string connectionString)
 			sQLiteCommand.Parameters.AddRange(parameters);
 		}
 		sQLiteConnection.Open();
-		sQLiteCommand.ExecuteNonQuery();
+		return sQLiteCommand.ExecuteNonQuery();
 	}
 
 	public void ExecuteNonQuery(string query)

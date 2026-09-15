@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,6 +17,7 @@ internal static class Program
 	[STAThread]
 	private static void Main()
 	{
+		Console.WriteLine("UI2 surum: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 		bool createdNew;
 		using (new Mutex(initiallyOwned: true, "FluxioPlatform", out createdNew))
 		{
@@ -25,6 +27,9 @@ internal static class Program
 				return;
 			}
 			ApplicationConfiguration.Initialize();
+			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
+			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));
 			RunApplication();
 		}
 	}
@@ -34,6 +39,7 @@ internal static class Program
 		Dictionary<string, DbManager> dictionary = null;
 		try
 		{
+			WarmUpSqliteNativeLibrary();
 			dictionary = CreateDbManagers();
 			DatabaseUpdater databaseUpdater = new DatabaseUpdater(dictionary);
 			databaseUpdater.ExecuteUpdates();
@@ -53,6 +59,24 @@ internal static class Program
 					(value as IDisposable)?.Dispose();
 				}
 			}
+		}
+	}
+
+	private static void WarmUpSqliteNativeLibrary()
+	{
+		// System.Data.SQLite'in native kutuphanesi ilk kullanimda tek seferlik bir
+		// yukleme yapiyor; bu ilk cagri bazen "Value cannot be null (Parameter 'path1')"
+		// gibi zararsiz ama korkutucu bir hatayla basarisiz olabiliyor (bilinen bir
+		// .NET Core uyumluluk sorunu). Gercek ayar okuma/yazmadan once, hafizada
+		// (in-memory) zararsiz bir baglanti acip kapatarak bu ilk-cagri hatasini
+		// burada, guvenli bir yerde tetikleyip yutuyoruz.
+		try
+		{
+			using SQLiteConnection sQLiteConnection = new SQLiteConnection("Data Source=:memory:;Version=3;");
+			sQLiteConnection.Open();
+		}
+		catch
+		{
 		}
 	}
 

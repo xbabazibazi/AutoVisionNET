@@ -534,7 +534,7 @@ public class Form1 : Form
 		base.MinimizeBox = false;
 		base.Name = "Form1";
 		base.ShowIcon = false;
-		this.Text = "SnapNet";
+		this.Text = "SnapNet v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		base.TopMost = true;
 		base.FormClosing += new System.Windows.Forms.FormClosingEventHandler(Form1_FormClosing);
 		base.Shown += new System.EventHandler(Form1_Shown);

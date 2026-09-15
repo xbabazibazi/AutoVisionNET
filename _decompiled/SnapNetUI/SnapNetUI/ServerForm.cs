@@ -762,7 +762,7 @@ public class ServerForm : Form
 		this.MinimumSize = new System.Drawing.Size(1000, 700);
 		base.Name = "ServerForm";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-		this.Text = "SnapNet Server Pro";
+		this.Text = "SnapNet Server Pro v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		this.mainContainer.ResumeLayout(false);
 		this.statusPanel.ResumeLayout(false);
 		this.mainSplitContainer.Panel1.ResumeLayout(false);
