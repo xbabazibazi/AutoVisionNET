@@ -58,19 +58,11 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 				Cv2.MinMaxLoc(_resultBuffer, out var _, out var maxVal, out var _, out var maxLoc);
 				if (maxVal < _threshold)
 				{
-					if (_threshold == 0.9001)
-					{
-						_logger.LogInformation($"Eşleşme bulunamadı. Güven: {maxVal}");
-						_logger.LogInformation($"Template Size: {_searchArea.X}x{_searchArea.Y}");
-					}
+					_logger.LogDebug($"Eşleşme bulunamadı. Güven: {maxVal:F4} (eşik: {_threshold}), Şablon boyutu: {_template.Width}x{_template.Height}, Arama alanı: {_searchArea.Width}x{_searchArea.Height}");
 					return MatchResult.NoMatch;
 				}
 				System.Drawing.Point point = new System.Drawing.Point(_searchArea.X + maxLoc.X + _template.Width / 2, _searchArea.Y + maxLoc.Y + _template.Height / 2);
-				if (_threshold == 0.9001)
-				{
-					_logger.LogInformation($"Eşleşme bulundu: {point} - Güven: {maxVal}");
-					_logger.LogInformation($"Template Size: {_searchArea.X}x{_searchArea.Y}");
-				}
+				_logger.LogDebug($"Eşleşme bulundu: {point} - Güven: {maxVal:F4}, Şablon boyutu: {_template.Width}x{_template.Height}");
 				return new MatchResult(isMatch: true, point, maxVal);
 			}
 			catch (Exception)

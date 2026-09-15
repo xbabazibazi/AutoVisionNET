@@ -36,8 +36,13 @@ public class ImageSearchService : IDisposable
 			_capturer = new ScreenCapturer(_config.SearchArea, _config.UseColor, _logger);
 			_screenBuffer = new Mat();
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
+			_logger.LogWarning($"Gorsel arama servisi baslatilamadi (sablon: {_config.TemplatePath}): {ex.Message}. Servis pasif moda alindi.");
+			_matcher?.Dispose();
+			_capturer?.Dispose();
+			_matcher = null;
+			_capturer = null;
 		}
 	}
 
@@ -52,6 +57,10 @@ public class ImageSearchService : IDisposable
 			if (!IsValidSearchArea(_config.SearchArea))
 			{
 				_logger.LogWarning("Geçersiz arama alanı tespit edildi. Arama iptal edildi.");
+				return GetSafeResult();
+			}
+			if (_matcher == null || _capturer == null)
+			{
 				return GetSafeResult();
 			}
 			using (Mat mat = _capturer.Capture())
@@ -108,9 +117,9 @@ public class ImageSearchService : IDisposable
 	{
 		if (!_disposed)
 		{
-			_screenBuffer.Dispose();
-			_matcher.Dispose();
-			_capturer.Dispose();
+			_screenBuffer?.Dispose();
+			_matcher?.Dispose();
+			_capturer?.Dispose();
 			_disposed = true;
 		}
 	}
