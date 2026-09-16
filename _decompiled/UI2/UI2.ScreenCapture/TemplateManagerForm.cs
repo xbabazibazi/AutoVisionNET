@@ -76,16 +76,77 @@ public class TemplateManagerForm : Form
 		Size = new Size(820, 480);
 		StartPosition = FormStartPosition.Manual;
 		ShowInTaskbar = false;
+		FormBorderStyle = FormBorderStyle.None;
+		BackColor = Color.FromArgb(28, 28, 33);
+		ForeColor = Color.FromArgb(235, 235, 240);
+		Font = new Font("Tahoma", 8f);
+
+		Panel headerPanel = new Panel
+		{
+			Dock = DockStyle.Top,
+			Height = 30,
+			BackColor = Color.FromArgb(38, 38, 45)
+		};
+		Label lblTitle = new Label
+		{
+			Text = "Şablon Yöneticisi",
+			ForeColor = Color.FromArgb(235, 235, 240),
+			Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+			AutoSize = true,
+			Location = new Point(10, 7)
+		};
+		Button btnClose = new Button
+		{
+			Text = "✕",
+			FlatStyle = FlatStyle.Flat,
+			ForeColor = Color.FromArgb(235, 235, 240),
+			BackColor = Color.Transparent,
+			Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+			Size = new Size(20, 20),
+			Anchor = AnchorStyles.Top | AnchorStyles.Right,
+			Location = new Point(headerPanel.Width - 30, 5)
+		};
+		btnClose.FlatAppearance.BorderSize = 0;
+		btnClose.Click += delegate { Hide(); };
+		btnClose.MouseEnter += delegate { btnClose.BackColor = Color.FromArgb(90, 50, 50); };
+		btnClose.MouseLeave += delegate { btnClose.BackColor = Color.Transparent; };
+		headerPanel.Controls.Add(lblTitle);
+		headerPanel.Controls.Add(btnClose);
+
+		Panel bodyPanel = new Panel
+		{
+			Dock = DockStyle.Fill,
+			BackColor = Color.FromArgb(28, 28, 33)
+		};
 
 		Button btnUpload = new Button
 		{
 			Text = "Toplu Görsel Yükle...",
 			Dock = DockStyle.Top,
-			Height = 34
+			Height = 34,
+			FlatStyle = FlatStyle.Flat,
+			BackColor = Color.FromArgb(55, 78, 92),
+			ForeColor = Color.White,
+			UseVisualStyleBackColor = false
 		};
+		btnUpload.FlatAppearance.BorderSize = 0;
 		btnUpload.Click += BtnUpload_Click;
 
 		_grid.Dock = DockStyle.Fill;
+		_grid.BackgroundColor = Color.FromArgb(28, 28, 33);
+		_grid.BorderStyle = BorderStyle.None;
+		_grid.GridColor = Color.FromArgb(50, 50, 58);
+		_grid.EnableHeadersVisualStyles = false;
+		_grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(38, 38, 45);
+		_grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(235, 235, 240);
+		_grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+		_grid.DefaultCellStyle.BackColor = Color.FromArgb(38, 38, 45);
+		_grid.DefaultCellStyle.ForeColor = Color.FromArgb(235, 235, 240);
+		_grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(55, 78, 92);
+		_grid.DefaultCellStyle.SelectionForeColor = Color.White;
+		_grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(33, 33, 40);
+		_grid.AlternatingRowsDefaultCellStyle.ForeColor = Color.FromArgb(235, 235, 240);
+		_grid.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(38, 38, 45);
 		_grid.AutoGenerateColumns = false;
 		_grid.AllowUserToAddRows = false;
 		_grid.AllowUserToDeleteRows = false;
@@ -130,8 +191,10 @@ public class TemplateManagerForm : Form
 			Width = 120
 		});
 
-		Controls.Add(_grid);
-		Controls.Add(btnUpload);
+		bodyPanel.Controls.Add(_grid);
+		bodyPanel.Controls.Add(btnUpload);
+		Controls.Add(bodyPanel);
+		Controls.Add(headerPanel);
 
 		LoadRows();
 
