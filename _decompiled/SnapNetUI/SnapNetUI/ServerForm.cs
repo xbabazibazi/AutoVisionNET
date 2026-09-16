@@ -95,6 +95,13 @@ public class ServerForm : Form
 		InitializeExtendedStatus();
 		StartLogTimer();
 		UpdateSilentModeButton();
+		try
+		{
+			Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+		}
+		catch
+		{
+		}
 	}
 
 	private void InitializeExtendedStatus()

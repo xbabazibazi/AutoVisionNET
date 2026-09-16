@@ -629,7 +629,13 @@ public class Form1 : Form
 		this.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		try
+		{
+			base.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+		}
+		catch
+		{
+		}
 		base.MaximizeBox = false;
 		base.MinimizeBox = false;
 		base.Name = "Form1";
