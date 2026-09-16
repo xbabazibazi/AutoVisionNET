@@ -111,7 +111,7 @@ public class ServerForm : Form
 		lblUptime = new Label
 		{
 			Font = new Font("Segoe UI Semibold", 9f, FontStyle.Bold),
-			ForeColor = Color.FromArgb(200, 200, 220),
+			ForeColor = Color.FromArgb(235, 235, 240),
 			Location = new Point(5, 30),
 			Size = new Size(220, 25),
 			TextAlign = ContentAlignment.MiddleLeft,
@@ -120,7 +120,7 @@ public class ServerForm : Form
 		lblJobBreakdown = new Label
 		{
 			Font = new Font("Segoe UI", 9f),
-			ForeColor = Color.FromArgb(180, 200, 220),
+			ForeColor = Color.FromArgb(235, 235, 240),
 			Location = new Point(230, 30),
 			Size = new Size(745, 25),
 			TextAlign = ContentAlignment.MiddleRight,
@@ -164,7 +164,7 @@ public class ServerForm : Form
 	{
 		base.FormBorderStyle = FormBorderStyle.None;
 		base.Padding = new Padding(1);
-		BackColor = Color.FromArgb(45, 45, 55);
+		BackColor = Color.FromArgb(28, 28, 33);
 		btnStart.FlatStyle = FlatStyle.Flat;
 		btnStop.FlatStyle = FlatStyle.Flat;
 		btnSendCommand.FlatStyle = FlatStyle.Flat;
@@ -174,7 +174,7 @@ public class ServerForm : Form
 		btnSilentMode.FlatStyle = FlatStyle.Flat;
 		mainContainer.Paint += delegate(object? s, PaintEventArgs e)
 		{
-			ControlPaint.DrawBorder(e.Graphics, mainContainer.ClientRectangle, Color.FromArgb(80, 80, 100), ButtonBorderStyle.Solid);
+			ControlPaint.DrawBorder(e.Graphics, mainContainer.ClientRectangle, Color.FromArgb(70, 80, 100), ButtonBorderStyle.Solid);
 		};
 	}
 
@@ -418,7 +418,7 @@ public class ServerForm : Form
 		else
 		{
 			btnSilentMode.Text = "SESSİZ MOD: KAPALI";
-			btnSilentMode.BackColor = Color.FromArgb(120, 120, 120);
+			btnSilentMode.BackColor = Color.FromArgb(60, 65, 80);
 		}
 	}
 
@@ -543,7 +543,7 @@ public class ServerForm : Form
 		this.controlPanel.SuspendLayout();
 		this.titlePanel.SuspendLayout();
 		base.SuspendLayout();
-		this.mainContainer.BackColor = System.Drawing.Color.FromArgb(30, 30, 40);
+		this.mainContainer.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
 		this.mainContainer.Controls.Add(this.statusPanel);
 		this.mainContainer.Controls.Add(this.mainSplitContainer);
 		this.mainContainer.Controls.Add(this.commandPanel);
@@ -555,7 +555,7 @@ public class ServerForm : Form
 		this.mainContainer.Padding = new System.Windows.Forms.Padding(10);
 		this.mainContainer.Size = new System.Drawing.Size(1000, 700);
 		this.mainContainer.TabIndex = 0;
-		this.statusPanel.BackColor = System.Drawing.Color.FromArgb(40, 40, 50);
+		this.statusPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.statusPanel.Controls.Add(this.lblClientCount);
 		this.statusPanel.Controls.Add(this.lblServerStatus);
 		this.statusPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -566,7 +566,7 @@ public class ServerForm : Form
 		this.statusPanel.TabIndex = 9;
 		this.lblClientCount.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.lblClientCount.Font = new System.Drawing.Font("Segoe UI Semibold", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.lblClientCount.ForeColor = System.Drawing.Color.FromArgb(200, 200, 220);
+		this.lblClientCount.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblClientCount.Location = new System.Drawing.Point(780, 5);
 		this.lblClientCount.Name = "lblClientCount";
 		this.lblClientCount.Size = new System.Drawing.Size(195, 30);
@@ -574,7 +574,7 @@ public class ServerForm : Form
 		this.lblClientCount.Text = "0 Bağlı Cihaz";
 		this.lblClientCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 		this.lblServerStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.lblServerStatus.ForeColor = System.Drawing.Color.FromArgb(200, 200, 220);
+		this.lblServerStatus.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblServerStatus.Location = new System.Drawing.Point(5, 5);
 		this.lblServerStatus.Name = "lblServerStatus";
 		this.lblServerStatus.Size = new System.Drawing.Size(195, 30);
@@ -582,14 +582,14 @@ public class ServerForm : Form
 		this.lblServerStatus.Text = "● DURDURULDU";
 		this.lblServerStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 		this.mainSplitContainer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-		this.mainSplitContainer.BackColor = System.Drawing.Color.FromArgb(40, 40, 50);
+		this.mainSplitContainer.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Location = new System.Drawing.Point(10, 280);
 		this.mainSplitContainer.Name = "mainSplitContainer";
-		this.mainSplitContainer.Panel1.BackColor = System.Drawing.Color.FromArgb(40, 40, 50);
+		this.mainSplitContainer.Panel1.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lstClients);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lblClients);
 		this.mainSplitContainer.Panel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-		this.mainSplitContainer.Panel2.BackColor = System.Drawing.Color.FromArgb(40, 40, 50);
+		this.mainSplitContainer.Panel2.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Panel2.Controls.Add(this.lstLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.lblLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.btnCopyLogs);
@@ -598,18 +598,18 @@ public class ServerForm : Form
 		this.mainSplitContainer.SplitterDistance = 350;
 		this.mainSplitContainer.SplitterWidth = 10;
 		this.mainSplitContainer.TabIndex = 8;
-		this.lstClients.BackColor = System.Drawing.Color.FromArgb(50, 50, 60);
+		this.lstClients.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.lstClients.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.lstClients.Dock = System.Windows.Forms.DockStyle.Fill;
 		this.lstClients.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(220, 220, 240);
+		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstClients.FormattingEnabled = true;
 		this.lstClients.ItemHeight = 15;
 		this.lstClients.Location = new System.Drawing.Point(0, 25);
 		this.lstClients.Name = "lstClients";
 		this.lstClients.Size = new System.Drawing.Size(345, 335);
 		this.lstClients.TabIndex = 3;
-		this.lblClients.BackColor = System.Drawing.Color.FromArgb(60, 60, 80);
+		this.lblClients.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.lblClients.Dock = System.Windows.Forms.DockStyle.Top;
 		this.lblClients.Font = new System.Drawing.Font("Segoe UI", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.lblClients.ForeColor = System.Drawing.Color.White;
@@ -620,18 +620,18 @@ public class ServerForm : Form
 		this.lblClients.TabIndex = 0;
 		this.lblClients.Text = "BAĞLI CİHAZLAR";
 		this.lblClients.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-		this.lstLogs.BackColor = System.Drawing.Color.FromArgb(50, 50, 60);
+		this.lstLogs.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.lstLogs.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.lstLogs.Dock = System.Windows.Forms.DockStyle.Fill;
 		this.lstLogs.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-		this.lstLogs.ForeColor = System.Drawing.Color.FromArgb(220, 220, 240);
+		this.lstLogs.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstLogs.FormattingEnabled = true;
 		this.lstLogs.ItemHeight = 15;
 		this.lstLogs.Location = new System.Drawing.Point(5, 25);
 		this.lstLogs.Name = "lstLogs";
 		this.lstLogs.Size = new System.Drawing.Size(615, 335);
 		this.lstLogs.TabIndex = 5;
-		this.lblLogs.BackColor = System.Drawing.Color.FromArgb(60, 60, 80);
+		this.lblLogs.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.lblLogs.Dock = System.Windows.Forms.DockStyle.Top;
 		this.lblLogs.Font = new System.Drawing.Font("Segoe UI", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.lblLogs.ForeColor = System.Drawing.Color.White;
@@ -643,7 +643,7 @@ public class ServerForm : Form
 		this.lblLogs.Text = "SİSTEM LOGLARI";
 		this.lblLogs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 		this.btnCopyLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnCopyLogs.BackColor = System.Drawing.Color.FromArgb(80, 120, 200);
+		this.btnCopyLogs.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnCopyLogs.FlatAppearance.BorderSize = 0;
 		this.btnCopyLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnCopyLogs.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
@@ -664,7 +664,7 @@ public class ServerForm : Form
 		this.commandPanel.Size = new System.Drawing.Size(980, 90);
 		this.commandPanel.TabIndex = 7;
 		this.btnSendCommand.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnSendCommand.BackColor = System.Drawing.Color.FromArgb(80, 120, 200);
+		this.btnSendCommand.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnSendCommand.FlatAppearance.BorderSize = 0;
 		this.btnSendCommand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnSendCommand.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
@@ -677,10 +677,10 @@ public class ServerForm : Form
 		this.btnSendCommand.UseVisualStyleBackColor = false;
 		this.btnSendCommand.Click += new System.EventHandler(BtnSendCommand_Click);
 		this.lstCommands.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-		this.lstCommands.BackColor = System.Drawing.Color.FromArgb(50, 50, 60);
+		this.lstCommands.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.lstCommands.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.lstCommands.Font = new System.Drawing.Font("Segoe UI", 9.75f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-		this.lstCommands.ForeColor = System.Drawing.Color.FromArgb(220, 220, 240);
+		this.lstCommands.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstCommands.FormattingEnabled = true;
 		this.lstCommands.ItemHeight = 17;
 		this.lstCommands.Location = new System.Drawing.Point(0, 0);
@@ -702,7 +702,7 @@ public class ServerForm : Form
 		this.controlPanel.Size = new System.Drawing.Size(980, 100);
 		this.controlPanel.TabIndex = 6;
 		this.btnSilentMode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnSilentMode.BackColor = System.Drawing.Color.FromArgb(120, 120, 120);
+		this.btnSilentMode.BackColor = System.Drawing.Color.FromArgb(60, 65, 80);
 		this.btnSilentMode.FlatAppearance.BorderSize = 0;
 		this.btnSilentMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnSilentMode.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
@@ -728,7 +728,7 @@ public class ServerForm : Form
 		this.btnStopAlarm.UseVisualStyleBackColor = false;
 		this.btnStopAlarm.Click += new System.EventHandler(BtnStopAlarm_Click);
 		this.btnClearLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(80, 120, 200);
+		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnClearLogs.FlatAppearance.BorderSize = 0;
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnClearLogs.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
@@ -740,7 +740,7 @@ public class ServerForm : Form
 		this.btnClearLogs.Text = "LOGLARI TEMİZLE";
 		this.btnClearLogs.UseVisualStyleBackColor = false;
 		this.btnClearLogs.Click += new System.EventHandler(BtnClearLogs_Click);
-		this.txtPort.BackColor = System.Drawing.Color.FromArgb(50, 50, 60);
+		this.txtPort.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.txtPort.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.txtPort.Font = new System.Drawing.Font("Segoe UI", 11.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.txtPort.ForeColor = System.Drawing.Color.White;
@@ -752,7 +752,7 @@ public class ServerForm : Form
 		this.txtPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 		this.lblPort.AutoSize = true;
 		this.lblPort.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.lblPort.ForeColor = System.Drawing.Color.FromArgb(180, 180, 220);
+		this.lblPort.ForeColor = System.Drawing.Color.FromArgb(200, 200, 205);
 		this.lblPort.Location = new System.Drawing.Point(20, 30);
 		this.lblPort.Name = "lblPort";
 		this.lblPort.Size = new System.Drawing.Size(34, 15);
@@ -786,7 +786,7 @@ public class ServerForm : Form
 		this.btnStart.UseVisualStyleBackColor = false;
 		this.btnStart.Click += new System.EventHandler(BtnStart_Click);
 		this.titlePanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-		this.titlePanel.BackColor = System.Drawing.Color.FromArgb(50, 50, 60);
+		this.titlePanel.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.titlePanel.Controls.Add(this.btnClose);
 		this.titlePanel.Controls.Add(this.btnMinimize);
 		this.titlePanel.Controls.Add(this.lblSubtitle);
@@ -811,7 +811,7 @@ public class ServerForm : Form
 		this.btnClose.Click += new System.EventHandler(BtnClose_Click);
 		this.btnMinimize.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnMinimize.FlatAppearance.BorderSize = 0;
-		this.btnMinimize.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 100);
+		this.btnMinimize.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(70, 80, 100);
 		this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnMinimize.Font = new System.Drawing.Font("Segoe UI", 12f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnMinimize.ForeColor = System.Drawing.Color.White;
@@ -824,7 +824,7 @@ public class ServerForm : Form
 		this.btnMinimize.Click += new System.EventHandler(BtnMinimize_Click);
 		this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
 		this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
-		this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(180, 180, 220);
+		this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(200, 200, 205);
 		this.lblSubtitle.Location = new System.Drawing.Point(20, 25);
 		this.lblSubtitle.Name = "lblSubtitle";
 		this.lblSubtitle.Size = new System.Drawing.Size(200, 20);
@@ -840,7 +840,7 @@ public class ServerForm : Form
 		this.lblTitle.Text = "SNAP NET SERVER";
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 15f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-		this.BackColor = System.Drawing.Color.FromArgb(45, 45, 55);
+		this.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
 		base.ClientSize = new System.Drawing.Size(1000, 700);
 		base.Controls.Add(this.mainContainer);
 		this.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
