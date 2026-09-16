@@ -99,6 +99,7 @@ public class ClientForm : Form
 	{
 		InitializeComponent();
 		base.StartPosition = FormStartPosition.Manual;
+		btnClearLogs.BringToFront();
 		InitializeAdvancedComponents();
 		SetupClientEvents();
 		LoadSettings();

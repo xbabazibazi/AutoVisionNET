@@ -85,7 +85,7 @@ public class SettingsForm : Form, ISettingsForm
 		Panel pnlProfile = new Panel
 		{
 			Dock = DockStyle.Bottom,
-			Height = 40,
+			Height = 46,
 			BorderStyle = BorderStyle.FixedSingle,
 			BackColor = Color.FromArgb(28, 32, 43)
 		};
@@ -144,7 +144,10 @@ public class SettingsForm : Form, ISettingsForm
 		pnlProfile.Controls.Add(btnSave);
 		pnlProfile.Controls.Add(btnDelete);
 		Controls.Add(pnlProfile);
-		base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + 40);
+		pnlProfile.BringToFront();
+		base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + 46);
+		pnlContainer.PerformLayout();
+		PerformLayout();
 		RefreshProfileList();
 	}
 
