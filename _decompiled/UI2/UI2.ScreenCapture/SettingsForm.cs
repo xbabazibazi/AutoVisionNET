@@ -109,34 +109,43 @@ public class SettingsForm : Form, ISettingsForm
 		{
 			Text = "Yükle",
 			Location = new Point(310, 6),
-			Width = 70,
+			Size = new Size(75, 30),
 			ForeColor = Color.White,
 			BackColor = Color.FromArgb(60, 65, 80),
 			FlatStyle = FlatStyle.Flat,
-			UseVisualStyleBackColor = false
+			UseVisualStyleBackColor = false,
+			AutoEllipsis = true,
+			TextAlign = ContentAlignment.MiddleCenter
 		};
+		btnLoad.FlatAppearance.BorderSize = 0;
 		btnLoad.Click += BtnLoadProfile_Click;
 		Button btnSave = new Button
 		{
 			Text = "Farklı Kaydet...",
-			Location = new Point(385, 6),
-			Width = 110,
+			Location = new Point(393, 6),
+			Size = new Size(130, 30),
 			ForeColor = Color.White,
 			BackColor = Color.FromArgb(60, 65, 80),
 			FlatStyle = FlatStyle.Flat,
-			UseVisualStyleBackColor = false
+			UseVisualStyleBackColor = false,
+			AutoEllipsis = true,
+			TextAlign = ContentAlignment.MiddleCenter
 		};
+		btnSave.FlatAppearance.BorderSize = 0;
 		btnSave.Click += BtnSaveProfile_Click;
 		Button btnDelete = new Button
 		{
 			Text = "Sil",
-			Location = new Point(500, 6),
-			Width = 60,
+			Location = new Point(531, 6),
+			Size = new Size(60, 30),
 			ForeColor = Color.White,
 			BackColor = Color.FromArgb(90, 50, 50),
 			FlatStyle = FlatStyle.Flat,
-			UseVisualStyleBackColor = false
+			UseVisualStyleBackColor = false,
+			AutoEllipsis = true,
+			TextAlign = ContentAlignment.MiddleCenter
 		};
+		btnDelete.FlatAppearance.BorderSize = 0;
 		btnDelete.Click += BtnDeleteProfile_Click;
 		pnlProfile.Controls.Add(lbl);
 		pnlProfile.Controls.Add(cmbResolutionProfile);
