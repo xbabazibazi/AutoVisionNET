@@ -86,39 +86,56 @@ public class SettingsForm : Form, ISettingsForm
 		{
 			Dock = DockStyle.Bottom,
 			Height = 40,
-			BorderStyle = BorderStyle.FixedSingle
+			BorderStyle = BorderStyle.FixedSingle,
+			BackColor = Color.FromArgb(28, 32, 43)
 		};
 		Label lbl = new Label
 		{
 			Text = "Çözünürlük Profili:",
 			AutoSize = true,
+			ForeColor = Color.White,
+			BackColor = Color.Transparent,
 			Location = new Point(8, 12)
 		};
 		cmbResolutionProfile = new ComboBox
 		{
 			Location = new Point(140, 8),
 			Width = 160,
-			DropDownStyle = ComboBoxStyle.DropDownList
+			DropDownStyle = ComboBoxStyle.DropDownList,
+			ForeColor = Color.Black,
+			BackColor = Color.White
 		};
 		Button btnLoad = new Button
 		{
 			Text = "Yükle",
 			Location = new Point(310, 6),
-			Width = 70
+			Width = 70,
+			ForeColor = Color.White,
+			BackColor = Color.FromArgb(60, 65, 80),
+			FlatStyle = FlatStyle.Flat,
+			UseVisualStyleBackColor = false
 		};
 		btnLoad.Click += BtnLoadProfile_Click;
 		Button btnSave = new Button
 		{
 			Text = "Farklı Kaydet...",
 			Location = new Point(385, 6),
-			Width = 110
+			Width = 110,
+			ForeColor = Color.White,
+			BackColor = Color.FromArgb(60, 65, 80),
+			FlatStyle = FlatStyle.Flat,
+			UseVisualStyleBackColor = false
 		};
 		btnSave.Click += BtnSaveProfile_Click;
 		Button btnDelete = new Button
 		{
 			Text = "Sil",
 			Location = new Point(500, 6),
-			Width = 60
+			Width = 60,
+			ForeColor = Color.White,
+			BackColor = Color.FromArgb(90, 50, 50),
+			FlatStyle = FlatStyle.Flat,
+			UseVisualStyleBackColor = false
 		};
 		btnDelete.Click += BtnDeleteProfile_Click;
 		pnlProfile.Controls.Add(lbl);
