@@ -128,6 +128,24 @@ public class Form1 : Form
 		base.TopMost = true;
 		_logger.EntryLogged += OnLogEntryLogged;
 		ApplyRoundedCorners();
+		FixMenuTextColors();
+	}
+
+	private void FixMenuTextColors()
+	{
+		Color lightText = Color.FromArgb(220, 220, 225);
+		void Recurse(ToolStripItemCollection items)
+		{
+			foreach (ToolStripItem item in items)
+			{
+				item.ForeColor = lightText;
+				if (item is ToolStripDropDownItem dropDownItem)
+				{
+					Recurse(dropDownItem.DropDownItems);
+				}
+			}
+		}
+		Recurse(toolStrip1.Items);
 	}
 
 	private void ApplyRoundedCorners()
