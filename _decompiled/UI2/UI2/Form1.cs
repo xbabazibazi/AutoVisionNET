@@ -522,6 +522,7 @@ public class Form1 : Form
 		this.toolStrip1.SuspendLayout();
 		base.SuspendLayout();
 		this.toolStrip1.AutoSize = false;
+		this.toolStrip1.ShowItemToolTips = false;
 		this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(40, 40, 45);
 		this.toolStrip1.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.toolStrip1.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
@@ -529,7 +530,8 @@ public class Form1 : Form
 		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[6] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools });
 		this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 		this.toolStrip1.Name = "toolStrip1";
-		this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+		this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+		this.toolStrip1.Renderer = new System.Windows.Forms.ToolStripProfessionalRenderer(new AppToolStripColorTable());
 		this.toolStrip1.Size = new System.Drawing.Size(240, 35);
 		this.toolStrip1.TabIndex = 0;
 		this.toolStripButtonDrag.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
