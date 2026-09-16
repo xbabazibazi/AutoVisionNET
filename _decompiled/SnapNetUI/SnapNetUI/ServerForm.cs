@@ -92,12 +92,36 @@ public class ServerForm : Form
 		InitializeServerEvents();
 		InitializeCommands();
 		SetupModernUI();
+		AddTitleBarIcon();
 		InitializeExtendedStatus();
 		StartLogTimer();
 		UpdateSilentModeButton();
 		try
 		{
 			Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+		}
+		catch
+		{
+		}
+	}
+
+	private void AddTitleBarIcon()
+	{
+		try
+		{
+			using Icon appIcon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
+			PictureBox iconBox = new PictureBox
+			{
+				Image = appIcon.ToBitmap(),
+				SizeMode = PictureBoxSizeMode.Zoom,
+				Size = new Size(34, 34),
+				Location = new Point(16, 8),
+				BackColor = Color.Transparent
+			};
+			titlePanel.Controls.Add(iconBox);
+			iconBox.BringToFront();
+			lblTitle.Location = new Point(60, lblTitle.Location.Y);
+			lblSubtitle.Location = new Point(60, lblSubtitle.Location.Y);
 		}
 		catch
 		{
