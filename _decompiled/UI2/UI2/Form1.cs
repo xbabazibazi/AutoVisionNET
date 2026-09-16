@@ -127,6 +127,21 @@ public class Form1 : Form
 		UpdateDB("UpdateDB.sql");
 		base.TopMost = true;
 		_logger.EntryLogged += OnLogEntryLogged;
+		ApplyRoundedCorners();
+	}
+
+	private void ApplyRoundedCorners()
+	{
+		int radius = 10;
+		System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+		Rectangle rect = new Rectangle(0, 0, Width, Height);
+		int d = radius * 2;
+		path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+		path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+		path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+		path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+		path.CloseFigure();
+		Region = new Region(path);
 	}
 
 	private void OnLogEntryLogged(LogLevel level, string message)
@@ -206,7 +221,7 @@ public class Form1 : Form
 			_dragStartPoint = new Point(e.X, e.Y);
 			Cursor = Cursors.SizeAll;
 			_toolStripOriginalColor = toolStrip1.BackColor;
-			toolStrip1.BackColor = Color.LightGray;
+			toolStrip1.BackColor = Color.FromArgb(55, 90, 110);
 		}
 	}
 
