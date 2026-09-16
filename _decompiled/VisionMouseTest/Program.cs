@@ -59,6 +59,11 @@ internal static class Program
             JobBreakdownTest.Run().GetAwaiter().GetResult();
             return;
         }
+        if (args.Length > 0 && args[0] == "stopfalseerror")
+        {
+            StopFalseErrorTest.Run().GetAwaiter().GetResult();
+            return;
+        }
 
         Logger.Instance.SetLogMethod(msg => Console.WriteLine(msg));
         Logger.Instance.SetLogLevel(LogLevel.Debug);

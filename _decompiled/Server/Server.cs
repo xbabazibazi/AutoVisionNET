@@ -135,7 +135,10 @@ public sealed class Server : IDisposable
 		}
 		catch (Exception ex2)
 		{
-			LogMessage?.Invoke("ERROR_ACCEPT:" + ex2.Message);
+			if (_isRunning)
+			{
+				LogMessage?.Invoke("ERROR_ACCEPT:" + ex2.Message);
+			}
 		}
 	}
 
