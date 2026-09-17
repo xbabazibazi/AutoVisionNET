@@ -155,7 +155,7 @@ public class General : UserControl
 		this.checkBoxStartGenieAfterTp.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxStartGenieAfterTp.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxStartGenieAfterTp.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxStartGenieAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxStartGenieAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxStartGenieAfterTp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxStartGenieAfterTp.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxStartGenieAfterTp.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);

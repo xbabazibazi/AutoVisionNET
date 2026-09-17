@@ -203,7 +203,7 @@ public class UndyAc : UserControl
 		this.checkBoxUndyAcLoop.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxUndyAcLoop.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxUndyAcLoop.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxUndyAcLoop.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxUndyAcLoop.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxUndyAcLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxUndyAcLoop.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxUndyAcLoop.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);

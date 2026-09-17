@@ -354,7 +354,7 @@ public class Attack : UserControl
 		this.checkBox9.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBox9.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBox9.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBox9.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBox9.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBox9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBox9.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBox9.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -370,7 +370,7 @@ public class Attack : UserControl
 		this.checkBox8.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBox8.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBox8.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBox8.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBox8.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBox8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBox8.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBox8.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -386,7 +386,7 @@ public class Attack : UserControl
 		this.checkBoxZ.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxZ.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxZ.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxZ.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxZ.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxZ.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxZ.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxZ.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -402,7 +402,7 @@ public class Attack : UserControl
 		this.checkBoxR.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxR.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxR.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxR.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxR.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxR.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxR.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxR.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -418,7 +418,7 @@ public class Attack : UserControl
 		this.checkBoxSkill.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxSkill.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxSkill.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxSkill.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxSkill.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxSkill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxSkill.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxSkill.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -494,7 +494,7 @@ public class Attack : UserControl
 		this.checkBoxRandomDelay.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxRandomDelay.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxRandomDelay.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxRandomDelay.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxRandomDelay.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxRandomDelay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxRandomDelay.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxRandomDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -510,7 +510,7 @@ public class Attack : UserControl
 		this.checkBoxGenie.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxGenie.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxGenie.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxGenie.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxGenie.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxGenie.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxGenie.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxGenie.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);

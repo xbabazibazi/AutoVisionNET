@@ -203,7 +203,7 @@ public class TpParty : UserControl
 		this.checkBoxResistAfterTp.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxResistAfterTp.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxResistAfterTp.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxResistAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.checkBoxResistAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxResistAfterTp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.checkBoxResistAfterTp.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.checkBoxResistAfterTp.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
