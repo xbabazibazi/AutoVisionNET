@@ -81,14 +81,20 @@ public class SettingsForm : Form, ISettingsForm
 		InitializeResolutionProfileBar();
 	}
 
+	private static readonly HashSet<string> ScreenTargetGroup = new HashSet<string> { "Town", "Party", "Info", "LeftBotMenu" };
+
 	private void ThemeAreaButtons()
 	{
 		foreach (AreaDefinition area in _areaDefinitions)
 		{
+			bool isScreenTarget = ScreenTargetGroup.Contains(area.SettingName);
 			area.Button.BackColor = Color.FromArgb(60, 65, 80);
 			area.Button.ForeColor = Color.White;
 			area.Button.FlatStyle = FlatStyle.Flat;
-			area.Button.FlatAppearance.BorderSize = 0;
+			area.Button.FlatAppearance.BorderSize = 1;
+			area.Button.FlatAppearance.BorderColor = isScreenTarget
+				? Color.FromArgb(95, 80, 115)
+				: Color.FromArgb(70, 100, 115);
 			area.Button.UseVisualStyleBackColor = false;
 		}
 	}
@@ -380,7 +386,7 @@ public class SettingsForm : Form, ISettingsForm
 	{
 		label.InvokeIfRequired(delegate(Label l)
 		{
-			l.Text = $"({setting.CoordinateX},{setting.CoordinateY})-({setting.Width}x{setting.Height})";
+			ApplyCoordinateText(l, setting.CoordinateX, setting.CoordinateY, setting.Width, setting.Height);
 		});
 	}
 
@@ -389,7 +395,21 @@ public class SettingsForm : Form, ISettingsForm
 		RectangleSettings settingsForArea = GetSettingsForArea(area);
 		if (settingsForArea != null)
 		{
-			area.Label.Text = $"({settingsForArea.CoordinateX},{settingsForArea.CoordinateY})-({settingsForArea.Width}x{settingsForArea.Height})";
+			ApplyCoordinateText(area.Label, settingsForArea.CoordinateX, settingsForArea.CoordinateY, settingsForArea.Width, settingsForArea.Height);
+		}
+	}
+
+	private static void ApplyCoordinateText(Label label, int x, int y, int width, int height)
+	{
+		if (width == 0 && height == 0)
+		{
+			label.Text = "Ayarlanmadı";
+			label.ForeColor = Color.FromArgb(110, 115, 130);
+		}
+		else
+		{
+			label.Text = $"({x},{y})-({width}x{height})";
+			label.ForeColor = Color.White;
 		}
 	}
 

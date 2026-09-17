@@ -571,8 +571,24 @@ public class ServerForm : Form
 	private static void DrawCardBorder(object sender, PaintEventArgs e)
 	{
 		Control control = (Control)sender;
-		using Pen pen = new Pen(Color.FromArgb(50, 54, 64));
-		e.Graphics.DrawRectangle(pen, 0, 0, control.Width - 1, control.Height - 1);
+		using System.Drawing.Drawing2D.GraphicsPath path = RoundedCardPath(control.Width, control.Height, 6);
+		control.Region = new Region(path);
+		e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+		using Pen pen = new Pen(Color.FromArgb(60, 64, 76));
+		e.Graphics.DrawPath(pen, path);
+	}
+
+	private static System.Drawing.Drawing2D.GraphicsPath RoundedCardPath(int width, int height, int radius)
+	{
+		System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+		int d = radius * 2;
+		Rectangle rect = new Rectangle(0, 0, width - 1, height - 1);
+		path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+		path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+		path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+		path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+		path.CloseFigure();
+		return path;
 	}
 
 	private static readonly Color DisabledButtonBack = Color.FromArgb(60, 60, 65);
