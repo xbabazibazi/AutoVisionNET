@@ -53,10 +53,16 @@ public static class UpdateChecker
 		}
 
 		string versionText = tagName.TrimStart('v', 'V');
-		if (!Version.TryParse(versionText, out Version remoteVersion))
+		if (!Version.TryParse(versionText, out Version parsedVersion))
 		{
 			return null;
 		}
+
+		Version remoteVersion = new Version(
+			Math.Max(parsedVersion.Major, 0),
+			Math.Max(parsedVersion.Minor, 0),
+			Math.Max(parsedVersion.Build, 0),
+			Math.Max(parsedVersion.Revision, 0));
 
 		if (remoteVersion <= CurrentVersion)
 		{
