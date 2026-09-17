@@ -29,6 +29,10 @@ public sealed class Server : IDisposable
 
 		public DateTime LastActivity { get; set; }
 
+		public bool? LastVerificationOk { get; set; }
+
+		public DateTime? LastVerificationTime { get; set; }
+
 		public NetworkStream Stream { get; }
 
 		public ClientInfo(TcpClient client, JobType job)
@@ -73,6 +77,8 @@ public sealed class Server : IDisposable
 	public event Action<int> ClientCountChanged;
 
 	public event Action<string> LogMessage;
+
+	public event Action ClientStatusUpdated;
 
 	public Server()
 	{
@@ -215,6 +221,13 @@ public sealed class Server : IDisposable
 								}
 								if (string.Equals(msgNickname, nickname, StringComparison.OrdinalIgnoreCase) && msgJobEnum == clientInfo.Job)
 								{
+									if (commandStr == "VOK" || commandStr == "VFAIL")
+									{
+										clientInfo.LastVerificationOk = commandStr == "VOK";
+										clientInfo.LastVerificationTime = DateTime.UtcNow;
+										ClientStatusUpdated?.Invoke();
+										continue;
+									}
 									if (_commandHandlers.TryGetValue(commandStr, out Action<string> handler))
 									{
 										handler(nickname);
@@ -389,9 +402,9 @@ public sealed class Server : IDisposable
 		StopAsync().Wait();
 	}
 
-	public IEnumerable<(string nickname, string job, string endpoint)> GetClientList()
+	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime)> GetClientList()
 	{
-		return _clients.Select<KeyValuePair<string, ClientInfo>, (string, string, string)>((KeyValuePair<string, ClientInfo> c) => (Key: c.Key, c.Value.Job.ToString(), c.Value.Client.Client.RemoteEndPoint?.ToString() ?? "disconnected"));
+		return _clients.Select<KeyValuePair<string, ClientInfo>, (string, string, string, bool?, DateTime?)>((KeyValuePair<string, ClientInfo> c) => (Key: c.Key, c.Value.Job.ToString(), c.Value.Client.Client.RemoteEndPoint?.ToString() ?? "disconnected", c.Value.LastVerificationOk, c.Value.LastVerificationTime));
 	}
 
 	public async Task StopAsync()

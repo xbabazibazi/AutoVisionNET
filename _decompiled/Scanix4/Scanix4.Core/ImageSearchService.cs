@@ -74,13 +74,14 @@ public class ImageSearchService : IDisposable
 			}
 			object result = mode switch
 			{
-				MatchMode.SingleMatch => SearchSingleMatch(), 
-				MatchMode.CountMatches => SearchCountMatches(), 
-				_ => throw new InvalidOperationException($"Bilinmeyen MatchMode: {_config.Mode}"), 
+				MatchMode.SingleMatch => SearchSingleMatch(),
+				MatchMode.CountMatches => SearchCountMatches(),
+				_ => throw new InvalidOperationException($"Bilinmeyen MatchMode: {_config.Mode}"),
 			};
 			if (1 == 0)
 			{
 			}
+			VisualVerificationTracker.Report(mode == MatchMode.SingleMatch ? (result != null) : ((int)result > 0));
 			return result;
 		}
 		catch (Exception)

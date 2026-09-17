@@ -244,6 +244,10 @@ public class ServerForm : Form
 				UpdateClientList();
 			});
 		};
+		_server.ClientStatusUpdated += delegate
+		{
+			SafeInvoke(UpdateClientList);
+		};
 		_server.LogMessage += delegate(string msg)
 		{
 			if (!msg.Contains("PING") && !msg.Contains("PONG") && !msg.Contains("UNPROCESSED_MSG") && !msg.Contains("COMMAND_RECEIVED"))
@@ -379,8 +383,13 @@ public class ServerForm : Form
 	private void UpdateClientList()
 	{
 		var clientList = _server.GetClientList().ToList();
-		string[] clients = (from c in clientList
-			select $"{c.nickname} | {c.job} | {c.endpoint}").ToArray();
+		ClientListItem[] clients = (from c in clientList
+			select new ClientListItem
+			{
+				Text = $"{c.nickname} | {c.job} | {c.endpoint}",
+				VerificationOk = c.lastVerificationOk,
+				VerificationTime = c.lastVerificationTime
+			}).ToArray();
 		string breakdown = string.Join("   ", clientList
 			.GroupBy((c) => c.job)
 			.OrderBy((g) => g.Key)
@@ -399,6 +408,55 @@ public class ServerForm : Form
 			lblClientsEmpty.Visible = !clients.Any();
 			lblJobBreakdown.Text = string.IsNullOrEmpty(breakdown) ? "(bağlı cihaz yok)" : breakdown;
 		});
+	}
+
+	private class ClientListItem
+	{
+		public string Text { get; set; }
+
+		public bool? VerificationOk { get; set; }
+
+		public DateTime? VerificationTime { get; set; }
+	}
+
+	private void LstClients_DrawItem(object sender, DrawItemEventArgs e)
+	{
+		e.DrawBackground();
+		if (e.Index < 0 || e.Index >= lstClients.Items.Count)
+		{
+			return;
+		}
+		if (lstClients.Items[e.Index] is not ClientListItem item)
+		{
+			return;
+		}
+		using (SolidBrush textBrush = new SolidBrush(Color.FromArgb(235, 235, 240)))
+		{
+			e.Graphics.DrawString(item.Text, e.Font, textBrush, e.Bounds.Left + 4, e.Bounds.Top + 2);
+		}
+		string statusText;
+		Color statusColor;
+		if (!item.VerificationOk.HasValue)
+		{
+			statusText = "● Görsel doğrulama: veri yok";
+			statusColor = Color.FromArgb(110, 115, 130);
+		}
+		else if (item.VerificationOk.Value)
+		{
+			statusText = "● Görsel doğrulama OK (" + item.VerificationTime.Value.ToLocalTime().ToString("HH:mm:ss") + ")";
+			statusColor = Color.FromArgb(110, 200, 110);
+		}
+		else
+		{
+			statusText = "● Görsel doğrulama BAŞARISIZ (" + item.VerificationTime.Value.ToLocalTime().ToString("HH:mm:ss") + ")";
+			statusColor = Color.FromArgb(210, 100, 100);
+		}
+		using (SolidBrush statusBrush = new SolidBrush(statusColor))
+		using (Font statusFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
+		{
+			e.Graphics.DrawString(statusText, statusFont, statusBrush, e.Bounds.Left + 4, e.Bounds.Top + 19);
+		}
+		e.DrawFocusRectangle();
 	}
 
 	private async void BtnSendCommand_Click(object sender, EventArgs e)
@@ -699,14 +757,16 @@ public class ServerForm : Form
 		this.lstClients.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.lstClients.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.lstClients.Dock = System.Windows.Forms.DockStyle.Fill;
+		this.lstClients.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 		this.lstClients.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstClients.FormattingEnabled = true;
-		this.lstClients.ItemHeight = 15;
+		this.lstClients.ItemHeight = 36;
 		this.lstClients.Location = new System.Drawing.Point(0, 25);
 		this.lstClients.Name = "lstClients";
 		this.lstClients.Size = new System.Drawing.Size(345, 335);
 		this.lstClients.TabIndex = 3;
+		this.lstClients.DrawItem += new System.Windows.Forms.DrawItemEventHandler(LstClients_DrawItem);
 		this.lblClients.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.lblClients.Dock = System.Windows.Forms.DockStyle.Top;
 		this.lblClients.Font = new System.Drawing.Font("Segoe UI", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);

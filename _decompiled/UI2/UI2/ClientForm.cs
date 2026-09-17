@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Scanix4.Core;
 using SettingsManager;
 using SettingsManager.ClientSettings;
 using SnapNetClient;
@@ -22,6 +23,8 @@ public class ClientForm : Form
 	private ClientSettings _clientSettings;
 
 	private System.Threading.Timer _uiUpdateTimer;
+
+	private System.Threading.Timer _verificationReportTimer;
 
 	private readonly Color _textPrimaryColor = Color.FromArgb(235, 235, 240);
 
@@ -183,6 +186,7 @@ public class ClientForm : Form
 					Form1.Instance.ToolStripButtonClient.ToolTipText = "Sunucuya bağlı";
 				});
 			});
+			StartVerificationReporting();
 		};
 		AppClient.Disconnected += delegate
 		{
@@ -197,6 +201,7 @@ public class ClientForm : Form
 					Form1.Instance.ToolStripButtonClient.ToolTipText = "Bağlantı kesik";
 				});
 			});
+			StopVerificationReporting();
 		};
 		AppClient.ConnectionFailed += delegate(Exception ex)
 		{
@@ -212,6 +217,31 @@ public class ClientForm : Form
 				});
 			});
 		};
+	}
+
+	private void StartVerificationReporting()
+	{
+		_verificationReportTimer?.Dispose();
+		_verificationReportTimer = new System.Threading.Timer(async delegate
+		{
+			if (!AppClient.IsConnected || !VisualVerificationTracker.LastSuccess.HasValue)
+			{
+				return;
+			}
+			try
+			{
+				await AppClient.SendCommandAsync(VisualVerificationTracker.LastSuccess.Value ? "VOK" : "VFAIL");
+			}
+			catch
+			{
+			}
+		}, null, 8000, 8000);
+	}
+
+	private void StopVerificationReporting()
+	{
+		_verificationReportTimer?.Dispose();
+		_verificationReportTimer = null;
 	}
 
 	private void RegisterGlobalCommands()
@@ -400,6 +430,7 @@ public class ClientForm : Form
 	{
 		SaveSettings();
 		_uiUpdateTimer?.Dispose();
+		_verificationReportTimer?.Dispose();
 		AppClient.Disconnect();
 		base.OnFormClosing(e);
 	}
