@@ -131,7 +131,30 @@ public class Form1 : Form
 		_logger.EntryLogged += OnLogEntryLogged;
 		ApplyRoundedCorners();
 		FixMenuTextColors();
+		SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, value: true);
+		Paint += Form1_Paint;
 		_ = CheckForUpdatesOnStartupAsync();
+	}
+
+	private void Form1_Paint(object sender, PaintEventArgs e)
+	{
+		e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+		Rectangle rect = new Rectangle(1, 1, Width - 3, Height - 3);
+		using System.Drawing.Drawing2D.GraphicsPath borderPath = CreateRoundedPath(rect, 9);
+		using Pen accentPen = new Pen(Color.FromArgb(90, 190, 210), 1.5f);
+		e.Graphics.DrawPath(accentPen, borderPath);
+	}
+
+	private static System.Drawing.Drawing2D.GraphicsPath CreateRoundedPath(Rectangle rect, int radius)
+	{
+		System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+		int d = radius * 2;
+		path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+		path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+		path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+		path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+		path.CloseFigure();
+		return path;
 	}
 
 	private void FixMenuTextColors()
@@ -153,15 +176,8 @@ public class Form1 : Form
 
 	private void ApplyRoundedCorners()
 	{
-		int radius = 10;
-		System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
 		Rectangle rect = new Rectangle(0, 0, Width, Height);
-		int d = radius * 2;
-		path.AddArc(rect.X, rect.Y, d, d, 180, 90);
-		path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
-		path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
-		path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
-		path.CloseFigure();
+		System.Drawing.Drawing2D.GraphicsPath path = CreateRoundedPath(rect, 10);
 		Region = new Region(path);
 	}
 
@@ -659,8 +675,8 @@ public class Form1 : Form
 		this.toolStripMenuItemCheckForUpdates.Text = "Güncellemeleri Kontrol Et";
 		this.toolStripMenuItemCheckForUpdates.Click += new System.EventHandler(toolStripButtonCheckForUpdates_Click);
 		this.lblVersion.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-		this.lblVersion.Font = new System.Drawing.Font("Tahoma", 7f);
-		this.lblVersion.ForeColor = System.Drawing.Color.FromArgb(110, 115, 130);
+		this.lblVersion.Font = new System.Drawing.Font("Tahoma", 7.5f, System.Drawing.FontStyle.Bold);
+		this.lblVersion.ForeColor = System.Drawing.Color.FromArgb(120, 210, 230);
 		this.lblVersion.Location = new System.Drawing.Point(0, 35);
 		this.lblVersion.Name = "lblVersion";
 		this.lblVersion.Size = new System.Drawing.Size(240, 16);
