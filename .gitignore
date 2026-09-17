@@ -2,3 +2,6 @@ bin/
 obj/
 *.user
 .vs/
+_decompiled/dist/
+fluxioElrosk/
+net8.0-windows/
