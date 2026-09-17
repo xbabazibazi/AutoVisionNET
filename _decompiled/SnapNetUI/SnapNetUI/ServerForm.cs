@@ -106,6 +106,7 @@ public class ServerForm : Form
 		InitializeExtendedStatus();
 		StartLogTimer();
 		UpdateSilentModeButton();
+		UpdateUI();
 		LicenseCore.LicenseGate.StartPeriodicRecheck(delegate
 		{
 			SafeInvoke(async delegate
@@ -165,7 +166,7 @@ public class ServerForm : Form
 			Font = new Font("Segoe UI Semibold", 13f, FontStyle.Bold),
 			ForeColor = Color.FromArgb(235, 235, 240),
 			Location = new Point(12, 18),
-			Size = new Size(170, 24),
+			Size = new Size(166, 24),
 			TextAlign = ContentAlignment.MiddleLeft,
 			Text = "00:00:00"
 		};
@@ -567,13 +568,30 @@ public class ServerForm : Form
 		}
 	}
 
+	private static void DrawCardBorder(object sender, PaintEventArgs e)
+	{
+		Control control = (Control)sender;
+		using Pen pen = new Pen(Color.FromArgb(50, 54, 64));
+		e.Graphics.DrawRectangle(pen, 0, 0, control.Width - 1, control.Height - 1);
+	}
+
+	private static readonly Color DisabledButtonBack = Color.FromArgb(60, 60, 65);
+
+	private static readonly Color DisabledButtonFore = Color.FromArgb(140, 140, 145);
+
 	private void UpdateUI()
 	{
 		SafeInvoke(delegate
 		{
 			btnStart.Enabled = !_isRunning;
+			btnStart.BackColor = _isRunning ? DisabledButtonBack : Color.FromArgb(80, 180, 80);
+			btnStart.ForeColor = _isRunning ? DisabledButtonFore : Color.White;
 			btnStop.Enabled = _isRunning;
+			btnStop.BackColor = _isRunning ? Color.FromArgb(200, 80, 80) : DisabledButtonBack;
+			btnStop.ForeColor = _isRunning ? Color.White : DisabledButtonFore;
 			txtPort.Enabled = !_isRunning;
+			txtPort.BackColor = _isRunning ? Color.FromArgb(26, 26, 31) : Color.FromArgb(33, 33, 40);
+			txtPort.ForeColor = _isRunning ? DisabledButtonFore : Color.White;
 			lblServerStatus.Text = (_isRunning ? "● ÇALIŞIYOR" : "● DURDURULDU");
 			lblServerStatus.ForeColor = (_isRunning ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 100, 100));
 		});
@@ -722,6 +740,7 @@ public class ServerForm : Form
 			Location = new System.Drawing.Point(12, 4),
 			AutoSize = true
 		});
+		this.cardStatus.Paint += DrawCardBorder;
 		this.cardClients.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.cardClients.Location = new System.Drawing.Point(310, 0);
 		this.cardClients.Name = "cardClients";
@@ -736,6 +755,7 @@ public class ServerForm : Form
 			Location = new System.Drawing.Point(12, 4),
 			AutoSize = true
 		});
+		this.cardClients.Paint += DrawCardBorder;
 		this.cardUptime.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.cardUptime.Location = new System.Drawing.Point(470, 0);
 		this.cardUptime.Name = "cardUptime";
@@ -749,6 +769,7 @@ public class ServerForm : Form
 			Location = new System.Drawing.Point(12, 4),
 			AutoSize = true
 		});
+		this.cardUptime.Paint += DrawCardBorder;
 		this.mainSplitContainer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.mainSplitContainer.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Location = new System.Drawing.Point(10, 280);
@@ -826,6 +847,8 @@ public class ServerForm : Form
 		this.btnCopyLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnCopyLogs.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnCopyLogs.FlatAppearance.BorderSize = 0;
+		this.btnCopyLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
+		this.btnCopyLogs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
 		this.btnCopyLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnCopyLogs.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnCopyLogs.ForeColor = System.Drawing.Color.White;
@@ -847,6 +870,8 @@ public class ServerForm : Form
 		this.btnSendCommand.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnSendCommand.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnSendCommand.FlatAppearance.BorderSize = 0;
+		this.btnSendCommand.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
+		this.btnSendCommand.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
 		this.btnSendCommand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnSendCommand.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnSendCommand.ForeColor = System.Drawing.Color.White;
@@ -888,6 +913,8 @@ public class ServerForm : Form
 		this.btnSilentMode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnSilentMode.BackColor = System.Drawing.Color.FromArgb(60, 65, 80);
 		this.btnSilentMode.FlatAppearance.BorderSize = 0;
+		this.btnSilentMode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 85, 100);
+		this.btnSilentMode.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(45, 50, 65);
 		this.btnSilentMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnSilentMode.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnSilentMode.ForeColor = System.Drawing.Color.White;
@@ -901,6 +928,8 @@ public class ServerForm : Form
 		this.btnStopAlarm.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnStopAlarm.BackColor = System.Drawing.Color.FromArgb(200, 80, 80);
 		this.btnStopAlarm.FlatAppearance.BorderSize = 0;
+		this.btnStopAlarm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(220, 100, 100);
+		this.btnStopAlarm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(170, 60, 60);
 		this.btnStopAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnStopAlarm.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnStopAlarm.ForeColor = System.Drawing.Color.White;
@@ -914,6 +943,8 @@ public class ServerForm : Form
 		this.btnClearLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnClearLogs.FlatAppearance.BorderSize = 0;
+		this.btnClearLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
+		this.btnClearLogs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnClearLogs.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnClearLogs.ForeColor = System.Drawing.Color.White;
@@ -928,7 +959,7 @@ public class ServerForm : Form
 		this.txtPort.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.txtPort.Font = new System.Drawing.Font("Segoe UI", 11.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.txtPort.ForeColor = System.Drawing.Color.White;
-		this.txtPort.Location = new System.Drawing.Point(20, 50);
+		this.txtPort.Location = new System.Drawing.Point(20, 20);
 		this.txtPort.Name = "txtPort";
 		this.txtPort.Size = new System.Drawing.Size(100, 20);
 		this.txtPort.TabIndex = 3;
@@ -937,7 +968,7 @@ public class ServerForm : Form
 		this.lblPort.AutoSize = true;
 		this.lblPort.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.lblPort.ForeColor = System.Drawing.Color.FromArgb(200, 200, 205);
-		this.lblPort.Location = new System.Drawing.Point(20, 30);
+		this.lblPort.Location = new System.Drawing.Point(20, 4);
 		this.lblPort.Name = "lblPort";
 		this.lblPort.Size = new System.Drawing.Size(34, 15);
 		this.lblPort.TabIndex = 2;
@@ -946,6 +977,8 @@ public class ServerForm : Form
 		this.btnStop.BackColor = System.Drawing.Color.FromArgb(200, 80, 80);
 		this.btnStop.Enabled = false;
 		this.btnStop.FlatAppearance.BorderSize = 0;
+		this.btnStop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(220, 100, 100);
+		this.btnStop.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(170, 60, 60);
 		this.btnStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnStop.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnStop.ForeColor = System.Drawing.Color.White;
@@ -959,6 +992,8 @@ public class ServerForm : Form
 		this.btnStart.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnStart.BackColor = System.Drawing.Color.FromArgb(80, 180, 80);
 		this.btnStart.FlatAppearance.BorderSize = 0;
+		this.btnStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(100, 200, 100);
+		this.btnStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(60, 150, 60);
 		this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnStart.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnStart.ForeColor = System.Drawing.Color.White;

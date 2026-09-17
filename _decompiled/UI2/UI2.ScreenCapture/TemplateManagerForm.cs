@@ -122,8 +122,10 @@ public class TemplateManagerForm : Form
 		Button btnUpload = new Button
 		{
 			Text = "Toplu Görsel Yükle...",
-			Dock = DockStyle.Top,
-			Height = 34,
+			Size = new Size(160, 22),
+			Location = new Point(headerPanel.Width - 200, 4),
+			Anchor = AnchorStyles.Top | AnchorStyles.Right,
+			Font = new Font("Segoe UI", 8f, FontStyle.Bold),
 			FlatStyle = FlatStyle.Flat,
 			BackColor = Color.FromArgb(55, 78, 92),
 			ForeColor = Color.White,
@@ -131,6 +133,7 @@ public class TemplateManagerForm : Form
 		};
 		btnUpload.FlatAppearance.BorderSize = 0;
 		btnUpload.Click += BtnUpload_Click;
+		headerPanel.Controls.Add(btnUpload);
 
 		_grid.Dock = DockStyle.Fill;
 		_grid.BackgroundColor = Color.FromArgb(28, 28, 33);
@@ -185,14 +188,13 @@ public class TemplateManagerForm : Form
 		_grid.Columns.Add(new DataGridViewButtonColumn
 		{
 			Name = "Reset",
-			HeaderText = "",
+			HeaderText = "Sıfırla",
 			Text = "Varsayılana Dön",
 			UseColumnTextForButtonValue = true,
 			Width = 120
 		});
 
 		bodyPanel.Controls.Add(_grid);
-		bodyPanel.Controls.Add(btnUpload);
 		Controls.Add(bodyPanel);
 		Controls.Add(headerPanel);
 
@@ -259,7 +261,26 @@ public class TemplateManagerForm : Form
 		catch
 		{
 		}
-		return null;
+		return CreateMissingThumbnailPlaceholder();
+	}
+
+	private static Image CreateMissingThumbnailPlaceholder()
+	{
+		Bitmap bitmap = new Bitmap(40, 40);
+		using (Graphics graphics = Graphics.FromImage(bitmap))
+		{
+			graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			using (SolidBrush brush = new SolidBrush(Color.FromArgb(48, 48, 55)))
+			{
+				graphics.FillRectangle(brush, 0, 0, 40, 40);
+			}
+			using (Pen pen = new Pen(Color.FromArgb(90, 95, 110), 1.5f))
+			{
+				graphics.DrawLine(pen, 12, 12, 28, 28);
+				graphics.DrawLine(pen, 28, 12, 12, 28);
+			}
+		}
+		return bitmap;
 	}
 
 	private void Grid_CellValueChanged(object sender, DataGridViewCellEventArgs e)

@@ -8,3 +8,4 @@ net8.0-windows/
 _decompiled/LicenseGenerator/
 *.lic
 license.key
+.claude/

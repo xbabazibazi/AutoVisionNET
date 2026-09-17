@@ -739,7 +739,7 @@ public class ClientForm : Form
 		this.logPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 		this.logPanel.Location = new System.Drawing.Point(0, 150);
 		this.logPanel.Name = "logPanel";
-		this.logPanel.Padding = new System.Windows.Forms.Padding(15);
+		this.logPanel.Padding = new System.Windows.Forms.Padding(15, 15, 15, 45);
 		this.logPanel.Size = new System.Drawing.Size(500, 200);
 		this.logPanel.TabIndex = 2;
 		this.lstLogs.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
@@ -759,7 +759,7 @@ public class ClientForm : Form
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnClearLogs.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.btnClearLogs.ForeColor = System.Drawing.Color.White;
-		this.btnClearLogs.Location = new System.Drawing.Point(350, 190);
+		this.btnClearLogs.Location = new System.Drawing.Point(350, 163);
 		this.btnClearLogs.Name = "btnClearLogs";
 		this.btnClearLogs.Size = new System.Drawing.Size(135, 20);
 		this.btnClearLogs.TabIndex = 1;
@@ -820,8 +820,8 @@ public class ClientForm : Form
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.ClientSize = new System.Drawing.Size(500, 450);
 		base.Controls.Add(this.logPanel);
-		base.Controls.Add(this.headerPanel);
 		base.Controls.Add(this.connectionPanel);
+		base.Controls.Add(this.headerPanel);
 		base.Controls.Add(this.commandPanel);
 		base.Controls.Add(this.statusPanel);
 		this.Font = new System.Drawing.Font("Tahoma", 8f);

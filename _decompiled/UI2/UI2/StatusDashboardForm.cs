@@ -22,7 +22,7 @@ public class StatusDashboardForm : Form
 	{
 		_screenCaptureMainForm = screenCaptureMainForm;
 		Text = "Durum";
-		Size = new Size(420, 380);
+		Size = new Size(420, 460);
 		StartPosition = FormStartPosition.Manual;
 		ShowInTaskbar = false;
 		FormBorderStyle = FormBorderStyle.None;
@@ -65,14 +65,16 @@ public class StatusDashboardForm : Form
 		Panel bodyPanel = new Panel
 		{
 			Dock = DockStyle.Fill,
-			BackColor = Color.FromArgb(28, 28, 33)
+			BackColor = Color.FromArgb(28, 28, 33),
+			AutoScroll = true
 		};
 
 		_grid = new TableLayoutPanel
 		{
-			Dock = DockStyle.Fill,
+			Dock = DockStyle.Top,
 			ColumnCount = 2,
-			AutoSize = false,
+			AutoSize = true,
+			AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			BackColor = Color.FromArgb(28, 28, 33),
 			Padding = new Padding(10)
 		};

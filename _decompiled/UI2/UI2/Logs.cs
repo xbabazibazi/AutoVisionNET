@@ -44,8 +44,6 @@ public class Logs : Form, ILogsForm
 
 	private Panel mainPanel;
 
-	private Panel controlPanel;
-
 	[DllImport("user32.dll")]
 	private static extern bool ReleaseCapture();
 
@@ -244,10 +242,8 @@ public class Logs : Form, ILogsForm
 		this.btnClose = new System.Windows.Forms.Button();
 		this.headerPanel = new System.Windows.Forms.Panel();
 		this.mainPanel = new System.Windows.Forms.Panel();
-		this.controlPanel = new System.Windows.Forms.Panel();
 		this.headerPanel.SuspendLayout();
 		this.mainPanel.SuspendLayout();
-		this.controlPanel.SuspendLayout();
 		base.SuspendLayout();
 		this.lstLogs.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.lstLogs.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -267,14 +263,15 @@ public class Logs : Form, ILogsForm
 		this.lblStatus.Name = "lblStatus";
 		this.lblStatus.Size = new System.Drawing.Size(102, 14);
 		this.lblStatus.TabIndex = 1;
-		this.lblStatus.Text = "● Bağlantı Hazır";
+		this.lblStatus.Text = "● Hazır";
 		this.cmbLogLevel.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.cmbLogLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cmbLogLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cmbLogLevel.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.cmbLogLevel.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.cmbLogLevel.FormattingEnabled = true;
-		this.cmbLogLevel.Location = new System.Drawing.Point(15, 8);
+		this.cmbLogLevel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+		this.cmbLogLevel.Location = new System.Drawing.Point(440, 4);
 		this.cmbLogLevel.Name = "cmbLogLevel";
 		this.cmbLogLevel.Size = new System.Drawing.Size(120, 21);
 		this.cmbLogLevel.TabIndex = 2;
@@ -291,6 +288,7 @@ public class Logs : Form, ILogsForm
 		this.btnClose.UseVisualStyleBackColor = false;
 		this.headerPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.headerPanel.Controls.Add(this.lblStatus);
+		this.headerPanel.Controls.Add(this.cmbLogLevel);
 		this.headerPanel.Controls.Add(this.btnClose);
 		this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
 		this.headerPanel.Location = new System.Drawing.Point(0, 0);
@@ -305,18 +303,9 @@ public class Logs : Form, ILogsForm
 		this.mainPanel.Padding = new System.Windows.Forms.Padding(15);
 		this.mainPanel.Size = new System.Drawing.Size(600, 250);
 		this.mainPanel.TabIndex = 5;
-		this.controlPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.controlPanel.Controls.Add(this.cmbLogLevel);
-		this.controlPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-		this.controlPanel.Location = new System.Drawing.Point(0, 280);
-		this.controlPanel.Name = "controlPanel";
-		this.controlPanel.Padding = new System.Windows.Forms.Padding(15);
-		this.controlPanel.Size = new System.Drawing.Size(600, 45);
-		this.controlPanel.TabIndex = 6;
 		this.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
 		base.ClientSize = new System.Drawing.Size(600, 325);
 		base.Controls.Add(this.mainPanel);
-		base.Controls.Add(this.controlPanel);
 		base.Controls.Add(this.headerPanel);
 		this.Font = new System.Drawing.Font("Tahoma", 8f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -327,7 +316,6 @@ public class Logs : Form, ILogsForm
 		this.headerPanel.ResumeLayout(false);
 		this.headerPanel.PerformLayout();
 		this.mainPanel.ResumeLayout(false);
-		this.controlPanel.ResumeLayout(false);
 		base.ResumeLayout(false);
 	}
 }
