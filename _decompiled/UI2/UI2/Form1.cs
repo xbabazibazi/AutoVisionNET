@@ -134,6 +134,17 @@ public class Form1 : Form
 		SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, value: true);
 		Paint += Form1_Paint;
 		_ = CheckForUpdatesOnStartupAsync();
+		LicenseCore.LicenseGate.StartPeriodicRecheck(delegate
+		{
+			this.InvokeIfRequired(delegate
+			{
+				MessageBox.Show(this, "Lisansınızın süresi doldu. Devam etmek için yeni bir lisans anahtarı girin.", "Lisans Süresi Doldu", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				if (!LicenseCore.LicenseGate.EnsureLicensed("SnapNet"))
+				{
+					Environment.Exit(0);
+				}
+			});
+		});
 	}
 
 	private void Form1_Paint(object sender, PaintEventArgs e)

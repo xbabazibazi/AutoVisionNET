@@ -106,6 +106,24 @@ public class ServerForm : Form
 		InitializeExtendedStatus();
 		StartLogTimer();
 		UpdateSilentModeButton();
+		LicenseCore.LicenseGate.StartPeriodicRecheck(delegate
+		{
+			SafeInvoke(async delegate
+			{
+				if (_isRunning)
+				{
+					await _server.StopAsync();
+					_isRunning = false;
+					_uptime.Stop();
+					UpdateUI();
+				}
+				MessageBox.Show("Lisansınızın süresi doldu. Devam etmek için yeni bir lisans anahtarı girin.", "Lisans Süresi Doldu", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				if (!LicenseCore.LicenseGate.EnsureLicensed("SnapNet Server"))
+				{
+					Close();
+				}
+			});
+		});
 		try
 		{
 			Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
@@ -292,6 +310,11 @@ public class ServerForm : Form
 
 	private async void BtnStart_Click(object sender, EventArgs e)
 	{
+		if (!LicenseCore.LicenseGate.IsCurrentlyValid())
+		{
+			MessageBox.Show("Lisansınızın süresi doldu. Sunucu başlatılamıyor.", "Lisans Süresi Doldu", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			return;
+		}
 		if (!int.TryParse(txtPort.Text, out var port) || port < 1 || port > 65535)
 		{
 			MessageBox.Show("Geçersiz port numarası!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);

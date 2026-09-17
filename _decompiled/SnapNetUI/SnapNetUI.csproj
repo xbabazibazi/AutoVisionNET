@@ -16,6 +16,7 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LicenseCore\LicenseCore.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 </Project>

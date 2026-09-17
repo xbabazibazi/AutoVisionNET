@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using FluxDB;
 using InputInterceptorNS;
+using LicenseCore;
 using SettingsManager;
 using UI2.Database;
 
@@ -36,6 +37,10 @@ internal static class Program
 			}
 			ApplicationConfiguration.Initialize();
 			ToolStripManager.Renderer = new ToolStripProfessionalRenderer(new AppToolStripColorTable());
+			if (!LicenseGate.EnsureLicensed("SnapNet"))
+			{
+				return;
+			}
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
 			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));

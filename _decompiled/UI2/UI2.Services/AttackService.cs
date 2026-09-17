@@ -41,6 +41,10 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 
 	private void StartAttack()
 	{
+		if (!LicenseCore.LicenseGate.IsCurrentlyValid())
+		{
+			return;
+		}
 		UpdateAttackSettings();
 		if (!AttackHasSkill && !AttackHasR && !AttackHasZ && !AttackHasEight && !AttackHasNine)
 		{
