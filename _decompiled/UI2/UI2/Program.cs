@@ -35,6 +35,7 @@ internal static class Program
 				return;
 			}
 			ApplicationConfiguration.Initialize();
+			ToolStripManager.Renderer = new ToolStripProfessionalRenderer(new AppToolStripColorTable());
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
 			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));
