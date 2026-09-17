@@ -13,8 +13,6 @@ internal class Updater
 
 	private static readonly string[] ProcessVariants = new string[5] { "UI2", "UI2.vshost", "UI2.exe", "UI2Client", "UI2Game" };
 
-	private const string UpdateZipUrl = "https://github.com/katadora/my-app-updates/raw/main/update.zip";
-
 	private static async Task<int> Main(string[] args)
 	{
 		string tempZip = Path.Combine(Path.GetTempPath(), $"update_{Guid.NewGuid()}.zip");
@@ -22,14 +20,28 @@ internal class Updater
 		string targetDir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
 		string targetExe = Path.Combine(targetDir, "UI2.exe");
 		Console.WriteLine("[UPD] Başlıyor. Hedef klasör: " + targetDir);
+		if (args.Length == 0)
+		{
+			Console.WriteLine("[UPD][HATA] Güncelleme paketi belirtilmedi (zip yolu/URL bekleniyor).");
+			return 1;
+		}
+		string source = args[0];
 		try
 		{
 			Console.WriteLine("[UPD] 'UI2' kapatılıyor...");
 			await CloseAppProcessesAsync();
 			Console.WriteLine("[UPD] Uygulama kapalı. Güncelleme sürecine geçiliyor.");
-			Console.WriteLine("[UPD] Zip indiriliyor...");
-			await DownloadFileAsync("https://github.com/katadora/my-app-updates/raw/main/update.zip", tempZip);
-			Console.WriteLine("[UPD] Zip indirildi: " + tempZip);
+			if (Uri.TryCreate(source, UriKind.Absolute, out Uri sourceUri) && (sourceUri.Scheme == Uri.UriSchemeHttp || sourceUri.Scheme == Uri.UriSchemeHttps))
+			{
+				Console.WriteLine("[UPD] Zip indiriliyor: " + source);
+				await DownloadFileAsync(source, tempZip);
+				Console.WriteLine("[UPD] Zip indirildi: " + tempZip);
+			}
+			else
+			{
+				Console.WriteLine("[UPD] Yerel zip kullanılıyor: " + source);
+				tempZip = source;
+			}
 			Directory.CreateDirectory(extractDir);
 			Console.WriteLine("[UPD] Zip çıkarılıyor...");
 			ZipFile.ExtractToDirectory(tempZip, extractDir, overwriteFiles: true);

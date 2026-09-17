@@ -129,6 +129,7 @@ public class Form1 : Form
 		_logger.EntryLogged += OnLogEntryLogged;
 		ApplyRoundedCorners();
 		FixMenuTextColors();
+		_ = CheckForUpdatesOnStartupAsync();
 	}
 
 	private void FixMenuTextColors()
@@ -268,18 +269,21 @@ public class Form1 : Form
 		toolStripButtonCheckForUpdates_Click(null, EventArgs.Empty);
 	}
 
-	private async Task<bool> CheckForUpdatesAsync()
+	public async Task CheckForUpdatesOnStartupAsync()
 	{
-		using HttpClient client = new HttpClient();
 		try
 		{
-			return (await client.GetAsync("https://github.com/katadora/my-app-updates/raw/main/update.zip")).IsSuccessStatusCode;
+			UpdateInfo update = await UpdateChecker.CheckForUpdateAsync();
+			if (update != null)
+			{
+				this.InvokeIfRequired(delegate
+				{
+					OfferUpdate(update);
+				});
+			}
 		}
-		catch (Exception ex)
+		catch
 		{
-			Exception ex2 = ex;
-			ShowError("Güncelleme kontrolü sırasında hata: " + ex2.Message);
-			return false;
 		}
 	}
 
@@ -287,14 +291,14 @@ public class Form1 : Form
 	{
 		try
 		{
-			if (await CheckForUpdatesAsync())
+			UpdateInfo update = await UpdateChecker.CheckForUpdateAsync();
+			if (update != null)
 			{
-				StartUpdaterAsAdmin();
-				Environment.Exit(0);
+				OfferUpdate(update);
 			}
 			else
 			{
-				ShowMessage("Güncelleme bulunamadı.");
+				ShowMessage("Güncelleme bulunamadı. En güncel sürümü kullanıyorsunuz.");
 			}
 		}
 		catch (Exception ex)
@@ -304,7 +308,37 @@ public class Form1 : Form
 		}
 	}
 
-	private void StartUpdaterAsAdmin()
+	private void OfferUpdate(UpdateInfo update)
+	{
+		string message = $"Yeni sürüm bulundu: v{update.Version} (mevcut: v{UpdateChecker.CurrentVersion})\n\nŞimdi güncellensin mi?";
+		DialogResult result = MessageBox.Show(this, message, "Güncelleme Mevcut", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+		if (result != DialogResult.Yes)
+		{
+			return;
+		}
+		if (string.IsNullOrEmpty(update.DownloadUrl))
+		{
+			ShowError("Güncelleme dosyası (update.zip) bulunamadı. Lütfen manuel indirin: " + update.HtmlUrl);
+			return;
+		}
+		_ = DownloadAndInstallUpdateAsync(update.DownloadUrl);
+	}
+
+	private async Task DownloadAndInstallUpdateAsync(string downloadUrl)
+	{
+		try
+		{
+			string zipPath = await UpdateChecker.DownloadUpdateAsync(downloadUrl);
+			StartUpdaterAsAdmin(zipPath);
+			Environment.Exit(0);
+		}
+		catch (Exception ex)
+		{
+			ShowError("Güncelleme indirilemedi: " + ex.Message);
+		}
+	}
+
+	private void StartUpdaterAsAdmin(string zipPath)
 	{
 		try
 		{
@@ -312,6 +346,7 @@ public class Form1 : Form
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
 				FileName = fileName,
+				Arguments = "\"" + zipPath + "\"",
 				UseShellExecute = true,
 				Verb = "runas"
 			};
