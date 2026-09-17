@@ -25,17 +25,17 @@ public class ClientForm : Form
 
 	private readonly Color _textPrimaryColor = Color.FromArgb(235, 235, 240);
 
-	private readonly Color _buttonPrimaryColor = Color.FromArgb(0, 122, 204);
+	private readonly Color _buttonPrimaryColor = Color.FromArgb(55, 78, 92);
 
 	private readonly Color _buttonSecondaryColor = Color.FromArgb(200, 60, 60);
 
 	private readonly Color _buttonSuccessColor = Color.FromArgb(0, 153, 102);
 
-	private readonly Color _primaryHoverColor = Color.FromArgb(0, 145, 245);
+	private readonly Color _primaryHoverColor = Color.FromArgb(90, 190, 210);
 
 	private readonly Color _secondaryHoverColor = Color.FromArgb(220, 80, 80);
 
-	private readonly Color _connectingColor = Color.FromArgb(0, 122, 204);
+	private readonly Color _connectingColor = Color.FromArgb(55, 78, 92);
 
 	private readonly Color _connectedColor = Color.FromArgb(0, 153, 102);
 
@@ -673,7 +673,7 @@ public class ClientForm : Form
 		this.txtPort.Name = "txtPort";
 		this.txtPort.Size = new System.Drawing.Size(150, 20);
 		this.txtPort.TabIndex = 7;
-		this.btnConnect.BackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.btnConnect.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnConnect.FlatAppearance.BorderSize = 0;
 		this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnConnect.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Bold);
@@ -755,7 +755,7 @@ public class ClientForm : Form
 		this.txtCommand.Name = "txtCommand";
 		this.txtCommand.Size = new System.Drawing.Size(350, 22);
 		this.txtCommand.TabIndex = 0;
-		this.btnSend.BackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.btnSend.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
 		this.btnSend.FlatAppearance.BorderSize = 0;
 		this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
