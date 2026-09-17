@@ -16,6 +16,7 @@ public class SimpleTextPromptForm : Form
 		StartPosition = FormStartPosition.CenterParent;
 		MinimizeBox = false;
 		MaximizeBox = false;
+		TopMost = true;
 		ClientSize = new Size(320, 110);
 
 		Label lbl = new Label

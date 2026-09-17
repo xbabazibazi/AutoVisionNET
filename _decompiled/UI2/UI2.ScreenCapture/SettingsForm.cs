@@ -74,10 +74,23 @@ public class SettingsForm : Form, ISettingsForm
 	{
 		InitializeComponent();
 		InitializeAreaDefinitions();
+		ThemeAreaButtons();
 		InitializeSettings();
 		WireUpAllEvents();
 		LoadAllSettings();
 		InitializeResolutionProfileBar();
+	}
+
+	private void ThemeAreaButtons()
+	{
+		foreach (AreaDefinition area in _areaDefinitions)
+		{
+			area.Button.BackColor = Color.FromArgb(60, 65, 80);
+			area.Button.ForeColor = Color.White;
+			area.Button.FlatStyle = FlatStyle.Flat;
+			area.Button.FlatAppearance.BorderSize = 0;
+			area.Button.UseVisualStyleBackColor = false;
+		}
 	}
 
 	private void InitializeResolutionProfileBar()
@@ -178,24 +191,24 @@ public class SettingsForm : Form, ISettingsForm
 	{
 		if (cmbResolutionProfile.SelectedItem is not string profileName)
 		{
-			MessageBox.Show("Önce bir profil seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			MessageBox.Show(this, "Önce bir profil seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			return;
 		}
 		if (_settings.LoadProfile(profileName))
 		{
 			LoadAllSettings();
-			MessageBox.Show("'" + profileName + "' profili uygulandı.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, "'" + profileName + "' profili uygulandı.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 		else
 		{
-			MessageBox.Show("Bu profilde kayıtlı ayar bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			MessageBox.Show(this, "Bu profilde kayıtlı ayar bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 		}
 	}
 
 	private void BtnSaveProfile_Click(object sender, EventArgs e)
 	{
 		using SimpleTextPromptForm prompt = new SimpleTextPromptForm("Profil Kaydet", "Profil adı (örn. 1920x1080):", cmbResolutionProfile.Text);
-		if (prompt.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(prompt.ResultText))
+		if (prompt.ShowDialog(this) != DialogResult.OK || string.IsNullOrWhiteSpace(prompt.ResultText))
 		{
 			return;
 		}
@@ -203,7 +216,7 @@ public class SettingsForm : Form, ISettingsForm
 		_settings.SaveAsProfile(profileName);
 		RefreshProfileList();
 		cmbResolutionProfile.SelectedItem = profileName;
-		MessageBox.Show("Mevcut ayarlar '" + profileName + "' profili olarak kaydedildi.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		MessageBox.Show(this, "Mevcut ayarlar '" + profileName + "' profili olarak kaydedildi.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
 	}
 
 	private void BtnDeleteProfile_Click(object sender, EventArgs e)
@@ -212,7 +225,7 @@ public class SettingsForm : Form, ISettingsForm
 		{
 			return;
 		}
-		if (MessageBox.Show("'" + profileName + "' profili silinsin mi?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+		if (MessageBox.Show(this, "'" + profileName + "' profili silinsin mi?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 		{
 			_settings.DeleteProfile(profileName);
 			RefreshProfileList();
