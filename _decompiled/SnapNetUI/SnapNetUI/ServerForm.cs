@@ -86,6 +86,8 @@ public class ServerForm : Form
 
 	private Label lblLastError;
 
+	private Label lblVersion;
+
 	public ServerForm()
 	{
 		InitializeComponent();
@@ -130,7 +132,7 @@ public class ServerForm : Form
 
 	private void InitializeExtendedStatus()
 	{
-		statusPanel.Height = 85;
+		statusPanel.Height = 105;
 
 		lblUptime = new Label
 		{
@@ -161,9 +163,19 @@ public class ServerForm : Form
 			AutoEllipsis = true,
 			Text = ""
 		};
+		lblVersion = new Label
+		{
+			Font = new Font("Segoe UI", 7.5f),
+			ForeColor = Color.FromArgb(120, 125, 140),
+			Location = new Point(5, 82),
+			Size = new Size(970, 18),
+			TextAlign = ContentAlignment.MiddleRight,
+			Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+		};
 		statusPanel.Controls.Add(lblUptime);
 		statusPanel.Controls.Add(lblJobBreakdown);
 		statusPanel.Controls.Add(lblLastError);
+		statusPanel.Controls.Add(lblVersion);
 	}
 
 	private void StartLogTimer()

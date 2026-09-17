@@ -96,6 +96,8 @@ public class Form1 : Form
 
 	private ToolStripMenuItem toolStripMenuItemCheckForUpdates;
 
+	private Label lblVersion;
+
 	public static Form1 Instance { get; private set; }
 
 	public ToolStripItem ToolStripButtonClient => toolStripButtonClient;
@@ -572,6 +574,7 @@ public class Form1 : Form
 		this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 		this.toolStripDropDownButtonTools = new System.Windows.Forms.ToolStripDropDownButton();
 		this.toolStripMenuItemCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
+		this.lblVersion = new System.Windows.Forms.Label();
 		this.toolStrip1.SuspendLayout();
 		base.SuspendLayout();
 		this.toolStrip1.AutoSize = false;
@@ -655,11 +658,21 @@ public class Form1 : Form
 		this.toolStripMenuItemCheckForUpdates.Size = new System.Drawing.Size(192, 22);
 		this.toolStripMenuItemCheckForUpdates.Text = "Güncellemeleri Kontrol Et";
 		this.toolStripMenuItemCheckForUpdates.Click += new System.EventHandler(toolStripButtonCheckForUpdates_Click);
+		this.lblVersion.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
+		this.lblVersion.Font = new System.Drawing.Font("Tahoma", 7f);
+		this.lblVersion.ForeColor = System.Drawing.Color.FromArgb(110, 115, 130);
+		this.lblVersion.Location = new System.Drawing.Point(0, 35);
+		this.lblVersion.Name = "lblVersion";
+		this.lblVersion.Size = new System.Drawing.Size(240, 16);
+		this.lblVersion.TabIndex = 1;
+		this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+		this.lblVersion.Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-		base.ClientSize = new System.Drawing.Size(240, 35);
+		base.ClientSize = new System.Drawing.Size(240, 51);
 		base.ControlBox = false;
+		base.Controls.Add(this.lblVersion);
 		base.Controls.Add(this.toolStrip1);
 		this.Font = new System.Drawing.Font("Tahoma", 8f);
 		this.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
