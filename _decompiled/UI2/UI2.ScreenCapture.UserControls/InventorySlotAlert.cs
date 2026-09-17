@@ -33,7 +33,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 
 	private Label labelStatus;
 
-	private GroupBox groupBoxSettings;
+	private Panel groupBoxSettings;
 
 	private CheckBox checkActive;
 
@@ -183,7 +183,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.components = new System.ComponentModel.Container();
 		this.labelHeader = new System.Windows.Forms.Label();
 		this.labelStatus = new System.Windows.Forms.Label();
-		this.groupBoxSettings = new System.Windows.Forms.GroupBox();
+		this.groupBoxSettings = new System.Windows.Forms.Panel();
 		this.numThreshold = new System.Windows.Forms.NumericUpDown();
 		this.lblThreshold = new System.Windows.Forms.Label();
 		this.checkActive = new System.Windows.Forms.CheckBox();
@@ -216,7 +216,6 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.groupBoxSettings.Controls.Add(this.lblThreshold);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
@@ -224,8 +223,6 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.groupBoxSettings.Padding = new System.Windows.Forms.Padding(10);
 		this.groupBoxSettings.Size = new System.Drawing.Size(380, 150);
 		this.groupBoxSettings.TabIndex = 2;
-		this.groupBoxSettings.TabStop = false;
-		this.groupBoxSettings.Text = "Ayarlar";
 		this.numThreshold.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.numThreshold.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.numThreshold.Location = new System.Drawing.Point(180, 60);

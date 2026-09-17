@@ -33,7 +33,7 @@ public class SwapTomahawk : UserControl, IServiceControl
 
 	private Label labelStatus;
 
-	private GroupBox groupBoxSettings;
+	private Panel groupBoxSettings;
 
 	private CheckBox checkActive;
 
@@ -164,7 +164,7 @@ public class SwapTomahawk : UserControl, IServiceControl
 		this.components = new System.ComponentModel.Container();
 		this.labelHeader = new System.Windows.Forms.Label();
 		this.labelStatus = new System.Windows.Forms.Label();
-		this.groupBoxSettings = new System.Windows.Forms.GroupBox();
+		this.groupBoxSettings = new System.Windows.Forms.Panel();
 		this.checkActive = new System.Windows.Forms.CheckBox();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 		this.groupBoxSettings.SuspendLayout();
@@ -192,7 +192,6 @@ public class SwapTomahawk : UserControl, IServiceControl
 		this.groupBoxSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
@@ -200,8 +199,6 @@ public class SwapTomahawk : UserControl, IServiceControl
 		this.groupBoxSettings.Padding = new System.Windows.Forms.Padding(10);
 		this.groupBoxSettings.Size = new System.Drawing.Size(380, 150);
 		this.groupBoxSettings.TabIndex = 2;
-		this.groupBoxSettings.TabStop = false;
-		this.groupBoxSettings.Text = "Settings";
 		this.checkActive.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkActive.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);

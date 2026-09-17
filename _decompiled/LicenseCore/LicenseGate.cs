@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,6 +17,45 @@ public static class LicenseGate
 	public static bool IsCurrentlyValid()
 	{
 		return Current != null && !Current.IsExpired;
+	}
+
+	public static string GetStatusText()
+	{
+		if (Current == null || Current.IsExpired)
+		{
+			return "Lisans: geçersiz";
+		}
+		if (Current.ExpiresUtc == DateTime.MaxValue)
+		{
+			return "Lisans: SINIRSIZ (VIP)";
+		}
+		TimeSpan remaining = Current.TimeRemaining;
+		if (remaining.TotalDays >= 1.0)
+		{
+			return $"Lisans: {(int)remaining.TotalDays} gün kaldı";
+		}
+		if (remaining.TotalHours >= 1.0)
+		{
+			return $"Lisans: {(int)remaining.TotalHours} saat kaldı";
+		}
+		return "Lisans: az sonra dolacak";
+	}
+
+	public static Color GetStatusColor()
+	{
+		if (Current == null || Current.IsExpired)
+		{
+			return Color.FromArgb(220, 120, 120);
+		}
+		if (Current.ExpiresUtc == DateTime.MaxValue)
+		{
+			return Color.FromArgb(230, 190, 90);
+		}
+		if (Current.TimeRemaining.TotalDays <= 3.0)
+		{
+			return Color.FromArgb(230, 160, 90);
+		}
+		return Color.FromArgb(130, 200, 130);
 	}
 
 	public static bool EnsureLicensed(string appDisplayName)

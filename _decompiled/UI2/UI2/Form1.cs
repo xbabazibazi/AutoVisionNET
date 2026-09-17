@@ -98,6 +98,10 @@ public class Form1 : Form
 
 	private Label lblVersion;
 
+	private Label lblLicenseStatus;
+
+	private System.Threading.Timer _licenseStatusTimer;
+
 	public static Form1 Instance { get; private set; }
 
 	public ToolStripItem ToolStripButtonClient => toolStripButtonClient;
@@ -143,8 +147,19 @@ public class Form1 : Form
 				{
 					Environment.Exit(0);
 				}
+				UpdateLicenseStatusLabel();
 			});
 		});
+		_licenseStatusTimer = new System.Threading.Timer(delegate
+		{
+			this.InvokeIfRequired(UpdateLicenseStatusLabel);
+		}, null, 30000, 30000);
+	}
+
+	private void UpdateLicenseStatusLabel()
+	{
+		lblLicenseStatus.Text = LicenseCore.LicenseGate.GetStatusText();
+		lblLicenseStatus.ForeColor = LicenseCore.LicenseGate.GetStatusColor();
 	}
 
 	private void Form1_Paint(object sender, PaintEventArgs e)
@@ -439,6 +454,7 @@ public class Form1 : Form
 		try
 		{
 			SaveFormPosition();
+			_licenseStatusTimer?.Dispose();
 			_cancellationTokenSourceTpParty?.Cancel();
 			_formManager.CloseAllForms();
 			Task.Run(delegate
@@ -694,11 +710,22 @@ public class Form1 : Form
 		this.lblVersion.TabIndex = 1;
 		this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.lblVersion.Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		this.lblLicenseStatus = new System.Windows.Forms.Label();
+		this.lblLicenseStatus.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
+		this.lblLicenseStatus.Font = new System.Drawing.Font("Tahoma", 7.5f, System.Drawing.FontStyle.Bold);
+		this.lblLicenseStatus.ForeColor = LicenseCore.LicenseGate.GetStatusColor();
+		this.lblLicenseStatus.Location = new System.Drawing.Point(0, 51);
+		this.lblLicenseStatus.Name = "lblLicenseStatus";
+		this.lblLicenseStatus.Size = new System.Drawing.Size(240, 16);
+		this.lblLicenseStatus.TabIndex = 2;
+		this.lblLicenseStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+		this.lblLicenseStatus.Text = LicenseCore.LicenseGate.GetStatusText();
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-		base.ClientSize = new System.Drawing.Size(240, 51);
+		base.ClientSize = new System.Drawing.Size(240, 67);
 		base.ControlBox = false;
+		base.Controls.Add(this.lblLicenseStatus);
 		base.Controls.Add(this.lblVersion);
 		base.Controls.Add(this.toolStrip1);
 		this.Font = new System.Drawing.Font("Tahoma", 8f);

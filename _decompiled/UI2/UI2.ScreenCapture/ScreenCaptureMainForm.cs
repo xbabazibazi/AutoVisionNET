@@ -46,6 +46,8 @@ public class ScreenCaptureMainForm : Form
 
 	private IContainer components = null;
 
+	private Panel headerPanel;
+
 	private Label lblTitle;
 
 	private Panel pnlContainer;
@@ -53,8 +55,6 @@ public class ScreenCaptureMainForm : Form
 	private ListBox listBoxScreenCaptureSettings;
 
 	private Panel panelScreenCaptureOptions;
-
-	private Button btnClose;
 
 	private Button btnHide;
 
@@ -380,50 +380,31 @@ public class ScreenCaptureMainForm : Form
 
 	private void InitializeComponent()
 	{
+		this.headerPanel = new System.Windows.Forms.Panel();
 		this.lblTitle = new System.Windows.Forms.Label();
+		this.btnHide = new System.Windows.Forms.Button();
 		this.pnlContainer = new System.Windows.Forms.Panel();
 		this.listBoxScreenCaptureSettings = new System.Windows.Forms.ListBox();
 		this.panelScreenCaptureOptions = new System.Windows.Forms.Panel();
-		this.btnHide = new System.Windows.Forms.Button();
-		this.btnClose = new System.Windows.Forms.Button();
+		this.headerPanel.SuspendLayout();
 		this.pnlContainer.SuspendLayout();
 		base.SuspendLayout();
-		this.lblTitle.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
-		this.lblTitle.Font = new System.Drawing.Font("Tahoma", 12f, System.Drawing.FontStyle.Bold);
+		this.headerPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.headerPanel.Controls.Add(this.lblTitle);
+		this.headerPanel.Controls.Add(this.btnHide);
+		this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+		this.headerPanel.Location = new System.Drawing.Point(0, 0);
+		this.headerPanel.Name = "headerPanel";
+		this.headerPanel.Size = new System.Drawing.Size(650, 30);
+		this.headerPanel.TabIndex = 0;
+		this.lblTitle.AutoSize = true;
+		this.lblTitle.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
 		this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.lblTitle.Location = new System.Drawing.Point(0, 0);
+		this.lblTitle.Location = new System.Drawing.Point(10, 8);
 		this.lblTitle.Name = "lblTitle";
-		this.lblTitle.Size = new System.Drawing.Size(650, 40);
+		this.lblTitle.Size = new System.Drawing.Size(160, 14);
 		this.lblTitle.TabIndex = 0;
-		this.lblTitle.Text = "EKRAN YAKALAMA AYARLARI";
-		this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-		this.pnlContainer.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
-		this.pnlContainer.Controls.Add(this.listBoxScreenCaptureSettings);
-		this.pnlContainer.Controls.Add(this.panelScreenCaptureOptions);
-		this.pnlContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.pnlContainer.Location = new System.Drawing.Point(0, 40);
-		this.pnlContainer.Name = "pnlContainer";
-		this.pnlContainer.Padding = new System.Windows.Forms.Padding(10);
-		this.pnlContainer.Size = new System.Drawing.Size(650, 360);
-		this.pnlContainer.TabIndex = 1;
-		this.listBoxScreenCaptureSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
-		this.listBoxScreenCaptureSettings.BorderStyle = System.Windows.Forms.BorderStyle.None;
-		this.listBoxScreenCaptureSettings.Font = new System.Drawing.Font("Tahoma", 9f);
-		this.listBoxScreenCaptureSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.listBoxScreenCaptureSettings.FormattingEnabled = true;
-		this.listBoxScreenCaptureSettings.ItemHeight = 14;
-		this.listBoxScreenCaptureSettings.Location = new System.Drawing.Point(10, 10);
-		this.listBoxScreenCaptureSettings.Name = "listBoxScreenCaptureSettings";
-		this.listBoxScreenCaptureSettings.Size = new System.Drawing.Size(220, 336);
-		this.listBoxScreenCaptureSettings.TabIndex = 0;
-		this.listBoxScreenCaptureSettings.SelectedIndexChanged += new System.EventHandler(listBoxScreenCaptureSettings_SelectedIndexChanged);
-		this.panelScreenCaptureOptions.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.panelScreenCaptureOptions.Location = new System.Drawing.Point(240, 10);
-		this.panelScreenCaptureOptions.Name = "panelScreenCaptureOptions";
-		this.panelScreenCaptureOptions.Padding = new System.Windows.Forms.Padding(10);
-		this.panelScreenCaptureOptions.Size = new System.Drawing.Size(400, 340);
-		this.panelScreenCaptureOptions.TabIndex = 1;
+		this.lblTitle.Text = "Ekran Yakalama Ayarları";
 		this.btnHide.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnHide.FlatAppearance.BorderSize = 0;
 		this.btnHide.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -432,25 +413,46 @@ public class ScreenCaptureMainForm : Form
 		this.btnHide.Location = new System.Drawing.Point(625, 5);
 		this.btnHide.Name = "btnHide";
 		this.btnHide.Size = new System.Drawing.Size(20, 20);
-		this.btnHide.TabIndex = 2;
+		this.btnHide.TabIndex = 1;
 		this.btnHide.Text = "✕";
 		this.btnHide.UseVisualStyleBackColor = false;
 		this.btnHide.Click += new System.EventHandler(BtnHide_Click);
 		this.btnHide.MouseEnter += new System.EventHandler(btnHide_MouseEnter);
 		this.btnHide.MouseLeave += new System.EventHandler(btnHide_MouseLeave);
-		this.btnClose.Location = new System.Drawing.Point(60, 12);
-		this.btnClose.Name = "btnClose";
-		this.btnClose.Size = new System.Drawing.Size(75, 23);
-		this.btnClose.TabIndex = 2;
-		this.btnClose.Visible = false;
+		this.pnlContainer.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
+		this.pnlContainer.Controls.Add(this.listBoxScreenCaptureSettings);
+		this.pnlContainer.Controls.Add(this.panelScreenCaptureOptions);
+		this.pnlContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+		this.pnlContainer.Location = new System.Drawing.Point(0, 30);
+		this.pnlContainer.Name = "pnlContainer";
+		this.pnlContainer.Padding = new System.Windows.Forms.Padding(10);
+		this.pnlContainer.Size = new System.Drawing.Size(650, 370);
+		this.pnlContainer.TabIndex = 1;
+		this.listBoxScreenCaptureSettings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+		this.listBoxScreenCaptureSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
+		this.listBoxScreenCaptureSettings.BorderStyle = System.Windows.Forms.BorderStyle.None;
+		this.listBoxScreenCaptureSettings.Font = new System.Drawing.Font("Tahoma", 9f);
+		this.listBoxScreenCaptureSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.listBoxScreenCaptureSettings.FormattingEnabled = true;
+		this.listBoxScreenCaptureSettings.ItemHeight = 14;
+		this.listBoxScreenCaptureSettings.Location = new System.Drawing.Point(10, 10);
+		this.listBoxScreenCaptureSettings.Name = "listBoxScreenCaptureSettings";
+		this.listBoxScreenCaptureSettings.Size = new System.Drawing.Size(220, 346);
+		this.listBoxScreenCaptureSettings.TabIndex = 0;
+		this.listBoxScreenCaptureSettings.SelectedIndexChanged += new System.EventHandler(listBoxScreenCaptureSettings_SelectedIndexChanged);
+		this.panelScreenCaptureOptions.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+		this.panelScreenCaptureOptions.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.panelScreenCaptureOptions.Location = new System.Drawing.Point(240, 10);
+		this.panelScreenCaptureOptions.Name = "panelScreenCaptureOptions";
+		this.panelScreenCaptureOptions.Padding = new System.Windows.Forms.Padding(10);
+		this.panelScreenCaptureOptions.Size = new System.Drawing.Size(400, 346);
+		this.panelScreenCaptureOptions.TabIndex = 1;
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 16f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
 		base.ClientSize = new System.Drawing.Size(650, 400);
-		base.Controls.Add(this.btnHide);
 		base.Controls.Add(this.pnlContainer);
-		base.Controls.Add(this.lblTitle);
-		base.Controls.Add(this.btnClose);
+		base.Controls.Add(this.headerPanel);
 		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		base.Name = "ScreenCaptureMainForm";
@@ -459,6 +461,8 @@ public class ScreenCaptureMainForm : Form
 		base.TopMost = true;
 		base.FormClosing += new System.Windows.Forms.FormClosingEventHandler(ScreenCaptureMainForm_FormClosing);
 		base.FormClosed += new System.Windows.Forms.FormClosedEventHandler(ScreenCaptureMainForm_FormClosed);
+		this.headerPanel.ResumeLayout(false);
+		this.headerPanel.PerformLayout();
 		this.pnlContainer.ResumeLayout(false);
 		base.ResumeLayout(false);
 	}

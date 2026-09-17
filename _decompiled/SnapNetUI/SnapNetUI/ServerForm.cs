@@ -96,6 +96,10 @@ public class ServerForm : Form
 
 	private Label lblClientsEmpty;
 
+	private Label lblLicenseStatus;
+
+	private System.Threading.Timer _licenseStatusTimer;
+
 	public ServerForm()
 	{
 		InitializeComponent();
@@ -123,8 +127,13 @@ public class ServerForm : Form
 				{
 					Close();
 				}
+				UpdateLicenseStatusLabel();
 			});
 		});
+		_licenseStatusTimer = new System.Threading.Timer(delegate
+		{
+			SafeInvoke(UpdateLicenseStatusLabel);
+		}, null, 30000, 30000);
 		try
 		{
 			Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
@@ -159,7 +168,7 @@ public class ServerForm : Form
 
 	private void InitializeExtendedStatus()
 	{
-		statusPanel.Height = 60;
+		statusPanel.Height = 78;
 
 		lblUptime = new Label
 		{
@@ -201,9 +210,25 @@ public class ServerForm : Form
 			TextAlign = ContentAlignment.MiddleRight,
 			Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
 		};
+		lblLicenseStatus = new Label
+		{
+			Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+			ForeColor = LicenseCore.LicenseGate.GetStatusColor(),
+			Location = new Point(5, 50),
+			Size = new Size(965, 20),
+			TextAlign = ContentAlignment.MiddleLeft,
+			Text = LicenseCore.LicenseGate.GetStatusText()
+		};
 		statusPanel.Controls.Add(lblJobBreakdown);
 		statusPanel.Controls.Add(lblLastError);
+		statusPanel.Controls.Add(lblLicenseStatus);
 		statusPanel.Controls.Add(lblVersion);
+	}
+
+	private void UpdateLicenseStatusLabel()
+	{
+		lblLicenseStatus.Text = LicenseCore.LicenseGate.GetStatusText();
+		lblLicenseStatus.ForeColor = LicenseCore.LicenseGate.GetStatusColor();
 	}
 
 	private void StartLogTimer()
@@ -644,6 +669,7 @@ public class ServerForm : Form
 			Close();
 		}
 		_logTimer?.Dispose();
+		_licenseStatusTimer?.Dispose();
 		_alarm?.Dispose();
 		base.OnFormClosing(e);
 	}

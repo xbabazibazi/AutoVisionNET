@@ -17,6 +17,44 @@ public class TemplateManagerForm : Form
 		public string DefaultPath = string.Empty;
 	}
 
+	private class TemplateGroup
+	{
+		public string DisplayName = string.Empty;
+		public string DefaultPath = string.Empty;
+		public List<TemplateSlot> Slots = new List<TemplateSlot>();
+	}
+
+	private static readonly Dictionary<string, string> FriendlyNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+	{
+		["Images/IceResistance.jpg"] = "Buz Direnci",
+		["Images/Undy.jpg"] = "Undy",
+		["Images/300Ac.jpg"] = "300 AC",
+		["Images/Sw.jpg"] = "SW",
+		["Images/Wolf.jpg"] = "Wolf",
+		["Images/GenieStart.jpg"] = "Cin (Genie) Başlat",
+		["Images/BrokenTomahawk.jpg"] = "Kırık Tomahawk",
+		["Images/RepairedTomahawk.jpg"] = "Onarılmış Tomahawk",
+		["Images/EmptyInventorySlot.jpg"] = "Boş Envanter Slotu",
+		["Images/Event.jpg"] = "Etkinlik",
+		["Images/OpenMagicBag.jpg"] = "Sihirli Çanta Aç",
+		["Images/CloseMagicBag.jpg"] = "Sihirli Çanta Kapat",
+		["Images/SecondMagicBag.jpg"] = "İkinci Sihirli Çanta",
+		["Images/Dead.jpg"] = "Ölüm",
+		["Images/PartyHeader.jpg"] = "Parti Başlığı",
+		["Images/BreakParty.jpg"] = "Partiden Ayrıl",
+		["Images/DB.jpg"] = "DB (Cure)",
+		["Images/Town.jpg"] = "Şehir",
+		["Images/PartyCount.jpg"] = "Parti Sayacı",
+		["Images/RequestParty.jpg"] = "Parti İsteği",
+		["Images/katadora.jpg"] = "Katadora",
+		["Images/WhellOfFunButton.jpg"] = "Çark Butonu",
+		["Images/WhellOfFunPushButton.jpg"] = "Çark Çevir Butonu",
+		["Images/WhellOfFunYesButton.jpg"] = "Çark Onay Butonu",
+		["Images/BrokenFullPlateArmorPauldron.jpg"] = "Kırık Zırh",
+		["Images/EmptyRightHand.jpg"] = "Boş Sağ El",
+		["Images/EmptyLeftHand.jpg"] = "Boş Sol El"
+	};
+
 	private static readonly TemplateSlot[] Slots = new (string Category, string TaskId, string DefaultPath)[]
 	{
 		("BuffLine", "StartGenieAfterTp", "Images/IceResistance.jpg"),
@@ -62,6 +100,27 @@ public class TemplateManagerForm : Form
 		("Weapons", "CheckRightHandIsEmpty", "Images/EmptyRightHand.jpg"),
 		("Weapons", "CheckLeftHandIsEmpty", "Images/EmptyLeftHand.jpg")
 	}.Select(t => new TemplateSlot { Category = t.Category, TaskId = t.TaskId, DefaultPath = t.DefaultPath }).ToArray();
+
+	private static IEnumerable<TemplateGroup> BuildGroups()
+	{
+		Dictionary<string, TemplateGroup> byPath = new Dictionary<string, TemplateGroup>(StringComparer.OrdinalIgnoreCase);
+		List<TemplateGroup> ordered = new List<TemplateGroup>();
+		foreach (TemplateSlot slot in Slots)
+		{
+			if (!byPath.TryGetValue(slot.DefaultPath, out TemplateGroup group))
+			{
+				group = new TemplateGroup
+				{
+					DefaultPath = slot.DefaultPath,
+					DisplayName = FriendlyNames.TryGetValue(slot.DefaultPath, out string friendly) ? friendly : Path.GetFileNameWithoutExtension(slot.DefaultPath)
+				};
+				byPath[slot.DefaultPath] = group;
+				ordered.Add(group);
+			}
+			group.Slots.Add(slot);
+		}
+		return ordered;
+	}
 
 	private readonly DataGridView _grid = new DataGridView();
 
@@ -158,23 +217,16 @@ public class TemplateManagerForm : Form
 
 		_grid.Columns.Add(new DataGridViewTextBoxColumn
 		{
-			Name = "Category",
-			HeaderText = "Kategori",
+			Name = "Name",
+			HeaderText = "Ad",
 			ReadOnly = true,
-			Width = 100
-		});
-		_grid.Columns.Add(new DataGridViewTextBoxColumn
-		{
-			Name = "TaskId",
-			HeaderText = "Görev",
-			ReadOnly = true,
-			Width = 230
+			Width = 220
 		});
 		DataGridViewComboBoxColumn dataGridViewComboBoxColumn = new DataGridViewComboBoxColumn
 		{
 			Name = "File",
 			HeaderText = "Görsel Dosyası",
-			Width = 260,
+			Width = 340,
 			FlatStyle = FlatStyle.Flat
 		};
 		_grid.Columns.Add(dataGridViewComboBoxColumn);
@@ -182,7 +234,7 @@ public class TemplateManagerForm : Form
 		{
 			Name = "Preview",
 			HeaderText = "Önizleme",
-			Width = 60,
+			Width = 70,
 			ImageLayout = DataGridViewImageCellLayout.Zoom
 		});
 		_grid.Columns.Add(new DataGridViewButtonColumn
@@ -191,7 +243,7 @@ public class TemplateManagerForm : Form
 			HeaderText = "Sıfırla",
 			Text = "Varsayılana Dön",
 			UseColumnTextForButtonValue = true,
-			Width = 120
+			Width = 140
 		});
 
 		bodyPanel.Controls.Add(_grid);
@@ -234,16 +286,20 @@ public class TemplateManagerForm : Form
 		dataGridViewComboBoxColumn.Items.Clear();
 		dataGridViewComboBoxColumn.Items.AddRange(availableFiles.Cast<object>().ToArray());
 
-		foreach (TemplateSlot slot in Slots)
+		foreach (TemplateGroup group in BuildGroups())
 		{
-			string current = TemplateResolver.Resolve(slot.TaskId, slot.DefaultPath);
+			string current = TemplateResolver.Resolve(group.Slots[0].TaskId, group.DefaultPath);
 			if (!availableFiles.Contains(current))
 			{
 				availableFiles.Add(current);
 				dataGridViewComboBoxColumn.Items.Add(current);
 			}
-			int rowIndex = _grid.Rows.Add(slot.Category, slot.TaskId, current, LoadThumbnail(current), "Varsayılana Dön");
-			_grid.Rows[rowIndex].Tag = slot;
+			int rowIndex = _grid.Rows.Add(group.DisplayName, current, LoadThumbnail(current), "Varsayılana Dön");
+			_grid.Rows[rowIndex].Tag = group;
+			if (group.Slots.Count > 1)
+			{
+				_grid.Rows[rowIndex].Cells["Name"].ToolTipText = "Etkilenen görevler: " + string.Join(", ", group.Slots.Select((TemplateSlot s) => s.TaskId));
+			}
 		}
 	}
 
@@ -289,7 +345,7 @@ public class TemplateManagerForm : Form
 		{
 			return;
 		}
-		if (_grid.Rows[e.RowIndex].Tag is not TemplateSlot slot)
+		if (_grid.Rows[e.RowIndex].Tag is not TemplateGroup group)
 		{
 			return;
 		}
@@ -298,7 +354,10 @@ public class TemplateManagerForm : Form
 		{
 			return;
 		}
-		TemplateResolver.SetOverride(slot.TaskId, newPath);
+		foreach (TemplateSlot slot in group.Slots)
+		{
+			TemplateResolver.SetOverride(slot.TaskId, newPath);
+		}
 		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(newPath);
 	}
 
@@ -308,13 +367,16 @@ public class TemplateManagerForm : Form
 		{
 			return;
 		}
-		if (_grid.Rows[e.RowIndex].Tag is not TemplateSlot slot)
+		if (_grid.Rows[e.RowIndex].Tag is not TemplateGroup group)
 		{
 			return;
 		}
-		TemplateResolver.ClearOverride(slot.TaskId, slot.DefaultPath);
-		_grid.Rows[e.RowIndex].Cells["File"].Value = slot.DefaultPath;
-		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(slot.DefaultPath);
+		foreach (TemplateSlot slot in group.Slots)
+		{
+			TemplateResolver.ClearOverride(slot.TaskId, group.DefaultPath);
+		}
+		_grid.Rows[e.RowIndex].Cells["File"].Value = group.DefaultPath;
+		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(group.DefaultPath);
 	}
 
 	private void BtnUpload_Click(object sender, EventArgs e)

@@ -33,7 +33,7 @@ public class CureDb : UserControl, IServiceControl
 
 	private Label labelStatus;
 
-	private GroupBox groupBoxSettings;
+	private Panel groupBoxSettings;
 
 	private CheckBox checkBoxAlarm;
 
@@ -189,7 +189,7 @@ public class CureDb : UserControl, IServiceControl
 		this.components = new System.ComponentModel.Container();
 		this.labelHeader = new System.Windows.Forms.Label();
 		this.labelStatus = new System.Windows.Forms.Label();
-		this.groupBoxSettings = new System.Windows.Forms.GroupBox();
+		this.groupBoxSettings = new System.Windows.Forms.Panel();
 		this.checkBoxAlarm = new System.Windows.Forms.CheckBox();
 		this.checkBoxActive = new System.Windows.Forms.CheckBox();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -219,15 +219,12 @@ public class CureDb : UserControl, IServiceControl
 		this.groupBoxSettings.Controls.Add(this.checkBoxAlarm);
 		this.groupBoxSettings.Controls.Add(this.checkBoxActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
 		this.groupBoxSettings.Size = new System.Drawing.Size(380, 150);
 		this.groupBoxSettings.TabIndex = 2;
-		this.groupBoxSettings.TabStop = false;
-		this.groupBoxSettings.Text = "Ayarlar";
 		this.checkBoxAlarm.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkBoxAlarm.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkBoxAlarm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
