@@ -88,6 +88,14 @@ public class ServerForm : Form
 
 	private Label lblVersion;
 
+	private Panel cardStatus;
+
+	private Panel cardClients;
+
+	private Panel cardUptime;
+
+	private Label lblClientsEmpty;
+
 	public ServerForm()
 	{
 		InitializeComponent();
@@ -132,24 +140,26 @@ public class ServerForm : Form
 
 	private void InitializeExtendedStatus()
 	{
-		statusPanel.Height = 105;
+		statusPanel.Height = 60;
 
 		lblUptime = new Label
 		{
-			Font = new Font("Segoe UI Semibold", 9f, FontStyle.Bold),
+			Font = new Font("Segoe UI Semibold", 13f, FontStyle.Bold),
 			ForeColor = Color.FromArgb(235, 235, 240),
-			Location = new Point(5, 30),
-			Size = new Size(220, 25),
+			Location = new Point(12, 18),
+			Size = new Size(170, 24),
 			TextAlign = ContentAlignment.MiddleLeft,
-			Text = "Çalışma süresi: 00:00:00"
+			Text = "00:00:00"
 		};
+		cardUptime.Controls.Add(lblUptime);
+
 		lblJobBreakdown = new Label
 		{
 			Font = new Font("Segoe UI", 9f),
-			ForeColor = Color.FromArgb(235, 235, 240),
-			Location = new Point(230, 30),
-			Size = new Size(745, 25),
-			TextAlign = ContentAlignment.MiddleRight,
+			ForeColor = Color.FromArgb(180, 185, 195),
+			Location = new Point(5, 5),
+			Size = new Size(965, 22),
+			TextAlign = ContentAlignment.MiddleLeft,
 			AutoEllipsis = true,
 			Text = "(bağlı cihaz yok)"
 		};
@@ -157,8 +167,8 @@ public class ServerForm : Form
 		{
 			Font = new Font("Segoe UI", 8.5f),
 			ForeColor = Color.FromArgb(220, 120, 120),
-			Location = new Point(5, 55),
-			Size = new Size(970, 25),
+			Location = new Point(5, 27),
+			Size = new Size(830, 22),
 			TextAlign = ContentAlignment.MiddleLeft,
 			AutoEllipsis = true,
 			Text = ""
@@ -167,12 +177,11 @@ public class ServerForm : Form
 		{
 			Font = new Font("Segoe UI", 7.5f),
 			ForeColor = Color.FromArgb(120, 125, 140),
-			Location = new Point(5, 82),
-			Size = new Size(970, 18),
+			Location = new Point(840, 32),
+			Size = new Size(135, 16),
 			TextAlign = ContentAlignment.MiddleRight,
 			Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
 		};
-		statusPanel.Controls.Add(lblUptime);
 		statusPanel.Controls.Add(lblJobBreakdown);
 		statusPanel.Controls.Add(lblLastError);
 		statusPanel.Controls.Add(lblVersion);
@@ -192,7 +201,7 @@ public class ServerForm : Form
 		TimeSpan elapsed = _uptime.Elapsed;
 		SafeInvoke(delegate
 		{
-			lblUptime.Text = "Çalışma süresi: " + elapsed.ToString("hh\\:mm\\:ss");
+			lblUptime.Text = elapsed.ToString("hh\\:mm\\:ss");
 		});
 	}
 
@@ -387,6 +396,7 @@ public class ServerForm : Form
 				items.AddRange(items2);
 			}
 			lstClients.EndUpdate();
+			lblClientsEmpty.Visible = !clients.Any();
 			lblJobBreakdown.Text = string.IsNullOrEmpty(breakdown) ? "(bağlı cihaz yok)" : breakdown;
 		});
 	}
@@ -484,7 +494,7 @@ public class ServerForm : Form
 			btnStop.Enabled = _isRunning;
 			txtPort.Enabled = !_isRunning;
 			lblServerStatus.Text = (_isRunning ? "● ÇALIŞIYOR" : "● DURDURULDU");
-			lblServerStatus.BackColor = (_isRunning ? Color.FromArgb(80, 180, 80) : Color.FromArgb(180, 80, 80));
+			lblServerStatus.ForeColor = (_isRunning ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 100, 100));
 		});
 	}
 
@@ -547,6 +557,9 @@ public class ServerForm : Form
 		this.statusPanel = new System.Windows.Forms.Panel();
 		this.lblClientCount = new System.Windows.Forms.Label();
 		this.lblServerStatus = new System.Windows.Forms.Label();
+		this.cardStatus = new System.Windows.Forms.Panel();
+		this.cardClients = new System.Windows.Forms.Panel();
+		this.cardUptime = new System.Windows.Forms.Panel();
 		this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
 		this.lstClients = new System.Windows.Forms.ListBox();
 		this.lblClients = new System.Windows.Forms.Label();
@@ -592,38 +605,87 @@ public class ServerForm : Form
 		this.mainContainer.Size = new System.Drawing.Size(1000, 700);
 		this.mainContainer.TabIndex = 0;
 		this.statusPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.statusPanel.Controls.Add(this.lblClientCount);
-		this.statusPanel.Controls.Add(this.lblServerStatus);
 		this.statusPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
 		this.statusPanel.Location = new System.Drawing.Point(10, 650);
 		this.statusPanel.Name = "statusPanel";
 		this.statusPanel.Padding = new System.Windows.Forms.Padding(5);
 		this.statusPanel.Size = new System.Drawing.Size(980, 40);
 		this.statusPanel.TabIndex = 9;
-		this.lblClientCount.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.lblClientCount.Font = new System.Drawing.Font("Segoe UI Semibold", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.lblClientCount.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.lblClientCount.Location = new System.Drawing.Point(780, 5);
+		this.lblClientCount.Font = new System.Drawing.Font("Segoe UI Semibold", 13f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+		this.lblClientCount.ForeColor = System.Drawing.Color.FromArgb(120, 210, 230);
+		this.lblClientCount.Location = new System.Drawing.Point(12, 18);
 		this.lblClientCount.Name = "lblClientCount";
-		this.lblClientCount.Size = new System.Drawing.Size(195, 30);
+		this.lblClientCount.Size = new System.Drawing.Size(126, 24);
 		this.lblClientCount.TabIndex = 7;
 		this.lblClientCount.Text = "0 Bağlı Cihaz";
-		this.lblClientCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-		this.lblServerStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.lblServerStatus.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.lblServerStatus.Location = new System.Drawing.Point(5, 5);
+		this.lblClientCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+		this.lblServerStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 12f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+		this.lblServerStatus.ForeColor = System.Drawing.Color.FromArgb(200, 80, 80);
+		this.lblServerStatus.Location = new System.Drawing.Point(12, 18);
 		this.lblServerStatus.Name = "lblServerStatus";
-		this.lblServerStatus.Size = new System.Drawing.Size(195, 30);
+		this.lblServerStatus.Size = new System.Drawing.Size(126, 24);
 		this.lblServerStatus.TabIndex = 6;
-		this.lblServerStatus.Text = "● DURDURULDU";
+		this.lblServerStatus.Text = "DURDURULDU";
 		this.lblServerStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+		this.cardStatus.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.cardStatus.Location = new System.Drawing.Point(150, 0);
+		this.cardStatus.Name = "cardStatus";
+		this.cardStatus.Size = new System.Drawing.Size(150, 45);
+		this.cardStatus.TabIndex = 20;
+		this.cardStatus.Controls.Add(this.lblServerStatus);
+		this.cardStatus.Controls.Add(new System.Windows.Forms.Label
+		{
+			Text = "DURUM",
+			Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold),
+			ForeColor = System.Drawing.Color.FromArgb(130, 135, 150),
+			Location = new System.Drawing.Point(12, 4),
+			AutoSize = true
+		});
+		this.cardClients.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.cardClients.Location = new System.Drawing.Point(310, 0);
+		this.cardClients.Name = "cardClients";
+		this.cardClients.Size = new System.Drawing.Size(150, 45);
+		this.cardClients.TabIndex = 21;
+		this.cardClients.Controls.Add(this.lblClientCount);
+		this.cardClients.Controls.Add(new System.Windows.Forms.Label
+		{
+			Text = "BAĞLI CİHAZ",
+			Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold),
+			ForeColor = System.Drawing.Color.FromArgb(130, 135, 150),
+			Location = new System.Drawing.Point(12, 4),
+			AutoSize = true
+		});
+		this.cardUptime.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.cardUptime.Location = new System.Drawing.Point(470, 0);
+		this.cardUptime.Name = "cardUptime";
+		this.cardUptime.Size = new System.Drawing.Size(190, 45);
+		this.cardUptime.TabIndex = 22;
+		this.cardUptime.Controls.Add(new System.Windows.Forms.Label
+		{
+			Text = "ÇALIŞMA SÜRESİ",
+			Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold),
+			ForeColor = System.Drawing.Color.FromArgb(130, 135, 150),
+			Location = new System.Drawing.Point(12, 4),
+			AutoSize = true
+		});
 		this.mainSplitContainer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.mainSplitContainer.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Location = new System.Drawing.Point(10, 280);
 		this.mainSplitContainer.Name = "mainSplitContainer";
 		this.mainSplitContainer.Panel1.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
+		this.lblClientsEmpty = new System.Windows.Forms.Label
+		{
+			Text = "Henüz bağlı cihaz yok",
+			Dock = System.Windows.Forms.DockStyle.Fill,
+			TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+			ForeColor = System.Drawing.Color.FromArgb(90, 95, 110),
+			Font = new System.Drawing.Font("Segoe UI", 10f),
+			BackColor = System.Drawing.Color.FromArgb(33, 33, 40)
+		};
+		this.mainSplitContainer.Panel1.Controls.Add(this.lblClientsEmpty);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lstClients);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lblClients);
+		this.lblClientsEmpty.BringToFront();
 		this.mainSplitContainer.Panel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
 		this.mainSplitContainer.Panel2.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Panel2.Controls.Add(this.lstLogs);
@@ -688,7 +750,7 @@ public class ServerForm : Form
 		this.btnCopyLogs.Name = "btnCopyLogs";
 		this.btnCopyLogs.Size = new System.Drawing.Size(130, 25);
 		this.btnCopyLogs.TabIndex = 6;
-		this.btnCopyLogs.Text = "LOGLARI KOPYALA";
+		this.btnCopyLogs.Text = "📋  LOGLARI KOPYALA";
 		this.btnCopyLogs.UseVisualStyleBackColor = false;
 		this.btnCopyLogs.Click += new System.EventHandler(BtnCopyLogs_Click);
 		this.commandPanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
@@ -733,6 +795,9 @@ public class ServerForm : Form
 		this.controlPanel.Controls.Add(this.lblPort);
 		this.controlPanel.Controls.Add(this.btnStop);
 		this.controlPanel.Controls.Add(this.btnStart);
+		this.controlPanel.Controls.Add(this.cardStatus);
+		this.controlPanel.Controls.Add(this.cardClients);
+		this.controlPanel.Controls.Add(this.cardUptime);
 		this.controlPanel.Location = new System.Drawing.Point(10, 70);
 		this.controlPanel.Name = "controlPanel";
 		this.controlPanel.Size = new System.Drawing.Size(980, 100);
