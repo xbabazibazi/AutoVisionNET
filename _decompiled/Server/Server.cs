@@ -290,6 +290,24 @@ public sealed class Server : IDisposable
 		}
 	}
 
+	public async Task<bool> SendCommandToClientAsync(string nickname, string command)
+	{
+		if (!_clients.TryGetValue(nickname, out ClientInfo clientInfo) || !clientInfo.Client.Connected)
+		{
+			return false;
+		}
+		try
+		{
+			await SendMessageAsync(message: $"{nickname}|{(int)clientInfo.Job}|{command}", stream: clientInfo.Stream);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogMessage?.Invoke("Gönderme hatası (" + nickname + "): " + ex.Message);
+			return false;
+		}
+	}
+
 	public async Task SendCommandToAllClientsAsync(string command, bool withDelay = true)
 	{
 		List<KeyValuePair<string, ClientInfo>> clientsToSend = _clients.Where<KeyValuePair<string, ClientInfo>>((KeyValuePair<string, ClientInfo> c) => c.Value.Client.Connected).ToList();

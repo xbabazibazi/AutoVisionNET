@@ -10,6 +10,8 @@ internal static class ApplicationConfiguration
 	{
 		Application.EnableVisualStyles();
 		Application.SetCompatibleTextRenderingDefault(defaultValue: false);
+#if !NET48
 		Application.SetHighDpiMode(HighDpiMode.SystemAware);
+#endif
 	}
 }

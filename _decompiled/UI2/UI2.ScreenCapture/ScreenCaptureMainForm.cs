@@ -60,11 +60,14 @@ public class ScreenCaptureMainForm : Form
 
 	public IAttack Attack { get; }
 
+	public InputUtils InputUtils { get; }
+
 	public ScreenCaptureMainForm(InputUtils inputUtils, Logs logsForm, IAttack attack, IMacroForm macroForm, Form1 form1)
 	{
 		InitializeComponent();
 		base.StartPosition = FormStartPosition.Manual;
 		_logger = logsForm.GetLogInstance();
+		InputUtils = inputUtils;
 		Attack = attack;
 		_macroForm = macroForm;
 		_form1 = form1;
@@ -301,6 +304,28 @@ public class ScreenCaptureMainForm : Form
 		}
 	}
 
+	private void ListBoxScreenCaptureSettings_DrawItem(object sender, DrawItemEventArgs e)
+	{
+		if (e.Index < 0)
+		{
+			return;
+		}
+		bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+		Color backColor = isSelected ? Color.FromArgb(55, 78, 92) : _inputBackgroundColor;
+		using (SolidBrush brush = new SolidBrush(backColor))
+		{
+			e.Graphics.FillRectangle(brush, e.Bounds);
+		}
+		if (isSelected)
+		{
+			using SolidBrush accentBrush = new SolidBrush(Color.FromArgb(90, 190, 210));
+			e.Graphics.FillRectangle(accentBrush, e.Bounds.X, e.Bounds.Y, 3, e.Bounds.Height);
+		}
+		string text = listBoxScreenCaptureSettings.Items[e.Index].ToString();
+		Color textColor = isSelected ? Color.White : _textPrimaryColor;
+		TextRenderer.DrawText(e.Graphics, text, e.Font, new Rectangle(e.Bounds.X + 14, e.Bounds.Y, e.Bounds.Width - 14, e.Bounds.Height), textColor, TextFormatFlags.VerticalCenter | TextFormatFlags.Left);
+	}
+
 	private void listBoxScreenCaptureSettings_SelectedIndexChanged(object sender, EventArgs e)
 	{
 		try
@@ -398,7 +423,7 @@ public class ScreenCaptureMainForm : Form
 		this.headerPanel.Size = new System.Drawing.Size(650, 30);
 		this.headerPanel.TabIndex = 0;
 		this.lblTitle.AutoSize = true;
-		this.lblTitle.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.lblTitle.Font = UI2.AppFonts.Header(12f);
 		this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblTitle.Location = new System.Drawing.Point(10, 8);
 		this.lblTitle.Name = "lblTitle";
@@ -431,14 +456,16 @@ public class ScreenCaptureMainForm : Form
 		this.listBoxScreenCaptureSettings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
 		this.listBoxScreenCaptureSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.listBoxScreenCaptureSettings.BorderStyle = System.Windows.Forms.BorderStyle.None;
-		this.listBoxScreenCaptureSettings.Font = new System.Drawing.Font("Tahoma", 9f);
+		this.listBoxScreenCaptureSettings.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+		this.listBoxScreenCaptureSettings.Font = new System.Drawing.Font("Segoe UI", 9f);
 		this.listBoxScreenCaptureSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.listBoxScreenCaptureSettings.FormattingEnabled = true;
-		this.listBoxScreenCaptureSettings.ItemHeight = 14;
+		this.listBoxScreenCaptureSettings.ItemHeight = 30;
 		this.listBoxScreenCaptureSettings.Location = new System.Drawing.Point(10, 10);
 		this.listBoxScreenCaptureSettings.Name = "listBoxScreenCaptureSettings";
 		this.listBoxScreenCaptureSettings.Size = new System.Drawing.Size(220, 346);
 		this.listBoxScreenCaptureSettings.TabIndex = 0;
+		this.listBoxScreenCaptureSettings.DrawItem += ListBoxScreenCaptureSettings_DrawItem;
 		this.listBoxScreenCaptureSettings.SelectedIndexChanged += new System.EventHandler(listBoxScreenCaptureSettings_SelectedIndexChanged);
 		this.panelScreenCaptureOptions.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.panelScreenCaptureOptions.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
@@ -453,7 +480,7 @@ public class ScreenCaptureMainForm : Form
 		base.ClientSize = new System.Drawing.Size(650, 400);
 		base.Controls.Add(this.pnlContainer);
 		base.Controls.Add(this.headerPanel);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		base.Name = "ScreenCaptureMainForm";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

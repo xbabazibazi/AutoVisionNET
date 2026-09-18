@@ -147,7 +147,7 @@ public class Login : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -157,7 +157,7 @@ public class Login : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -171,7 +171,7 @@ public class Login : UserControl
 		this.groupBoxLogin.Controls.Add(this.textBoxID);
 		this.groupBoxLogin.Controls.Add(this.labelID);
 		this.groupBoxLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxLogin.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxLogin.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxLogin.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxLogin.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxLogin.Name = "groupBoxLogin";
@@ -180,17 +180,19 @@ public class Login : UserControl
 		this.groupBoxLogin.TabStop = false;
 		this.groupBoxLogin.Text = "Login Information";
 		this.textBoxPass.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
-		this.textBoxPass.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.textBoxPass.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.textBoxPass.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.textBoxPass.Location = new System.Drawing.Point(20, 90);
 		this.textBoxPass.Name = "textBoxPass";
+#if !NET48
 		this.textBoxPass.PlaceholderText = "Enter password";
+#endif
 		this.textBoxPass.Size = new System.Drawing.Size(500, 20);
 		this.textBoxPass.TabIndex = 3;
 		this.toolTip.SetToolTip(this.textBoxPass, "Enter your password");
 		this.textBoxPass.TextChanged += new System.EventHandler(textBoxPass_TextChanged);
 		this.labelPass.AutoSize = true;
-		this.labelPass.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelPass.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelPass.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelPass.Location = new System.Drawing.Point(20, 70);
 		this.labelPass.Name = "labelPass";
@@ -198,17 +200,19 @@ public class Login : UserControl
 		this.labelPass.TabIndex = 2;
 		this.labelPass.Text = "Password:";
 		this.textBoxID.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
-		this.textBoxID.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.textBoxID.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.textBoxID.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.textBoxID.Location = new System.Drawing.Point(20, 40);
 		this.textBoxID.Name = "textBoxID";
+#if !NET48
 		this.textBoxID.PlaceholderText = "Enter user ID";
+#endif
 		this.textBoxID.Size = new System.Drawing.Size(500, 20);
 		this.textBoxID.TabIndex = 1;
 		this.toolTip.SetToolTip(this.textBoxID, "Enter your user ID");
 		this.textBoxID.TextChanged += new System.EventHandler(textBoxID_TextChanged);
 		this.labelID.AutoSize = true;
-		this.labelID.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelID.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelID.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelID.Location = new System.Drawing.Point(20, 20);
 		this.labelID.Name = "labelID";
@@ -224,7 +228,7 @@ public class Login : UserControl
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
 		this.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "Login";
 		base.Size = new System.Drawing.Size(570, 300);
 		this.groupBoxLogin.ResumeLayout(false);

@@ -26,7 +26,11 @@ public static class UpdateChecker
 
 	private const string RepoName = "AutoVisionNET";
 
+#if NET48
+	private const string UpdateAssetName = "update-win7.zip";
+#else
 	private const string UpdateAssetName = "update.zip";
+#endif
 
 	public static Version CurrentVersion => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0, 0);
 

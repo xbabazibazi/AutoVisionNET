@@ -162,7 +162,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 			_logger.LogError("Servis durumu değiştirilirken hata: " + ex2.Message);
 			if (base.InvokeRequired)
 			{
-				Invoke(delegate
+				Invoke((MethodInvoker)delegate
 				{
 					checkBoxActive.Checked = !checkBoxActive.Checked;
 				});
@@ -223,7 +223,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -233,7 +233,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelStatus.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelStatus.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.labelStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.labelStatus.ForeColor = System.Drawing.Color.FromArgb(200, 60, 60);
 		this.labelStatus.Location = new System.Drawing.Point(0, 30);
 		this.labelStatus.Name = "labelStatus";
@@ -246,7 +246,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		this.groupBoxSettings.Controls.Add(this.checkBoxAlarm);
 		this.groupBoxSettings.Controls.Add(this.checkBoxActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -257,7 +257,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		this.checkBoxBreakParty.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxBreakParty.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
 		this.checkBoxBreakParty.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxBreakParty.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxBreakParty.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxBreakParty.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxBreakParty.Location = new System.Drawing.Point(20, 110);
 		this.checkBoxBreakParty.Name = "checkBoxBreakParty";
@@ -273,7 +273,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		this.checkBoxAlarm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxAlarm.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
 		this.checkBoxAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxAlarm.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxAlarm.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxAlarm.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxAlarm.Location = new System.Drawing.Point(20, 70);
 		this.checkBoxAlarm.Name = "checkBoxAlarm";
@@ -289,7 +289,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		this.checkBoxActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxActive.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 153, 102);
 		this.checkBoxActive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxActive.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxActive.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxActive.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxActive.Location = new System.Drawing.Point(20, 30);
 		this.checkBoxActive.Name = "checkBoxActive";
@@ -308,7 +308,7 @@ public class HandlePartyMemberDeath : UserControl, IServiceControl
 		base.Controls.Add(this.groupBoxSettings);
 		base.Controls.Add(this.labelStatus);
 		base.Controls.Add(this.labelHeader);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "HandlePartyMemberDeath";
 		base.Size = new System.Drawing.Size(380, 200);
 		this.groupBoxSettings.ResumeLayout(false);

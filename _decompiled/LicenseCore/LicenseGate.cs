@@ -21,24 +21,29 @@ public static class LicenseGate
 
 	public static string GetStatusText()
 	{
+		return "Lisans: " + GetRemainingText();
+	}
+
+	public static string GetRemainingText()
+	{
 		if (Current == null || Current.IsExpired)
 		{
-			return "Lisans: geçersiz";
+			return "geçersiz";
 		}
 		if (Current.ExpiresUtc == DateTime.MaxValue)
 		{
-			return "Lisans: SINIRSIZ (VIP)";
+			return "SINIRSIZ (VIP)";
 		}
 		TimeSpan remaining = Current.TimeRemaining;
 		if (remaining.TotalDays >= 1.0)
 		{
-			return $"Lisans: {(int)remaining.TotalDays} gün kaldı";
+			return $"{(int)remaining.TotalDays} gün kaldı";
 		}
 		if (remaining.TotalHours >= 1.0)
 		{
-			return $"Lisans: {(int)remaining.TotalHours} saat kaldı";
+			return $"{(int)remaining.TotalHours} saat kaldı";
 		}
-		return "Lisans: az sonra dolacak";
+		return "az sonra dolacak";
 	}
 
 	public static Color GetStatusColor()

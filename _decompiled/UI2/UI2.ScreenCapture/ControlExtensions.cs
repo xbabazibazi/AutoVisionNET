@@ -9,7 +9,7 @@ public static class ControlExtensions
 	{
 		if (control.InvokeRequired)
 		{
-			control.Invoke(delegate
+			control.Invoke((MethodInvoker)delegate
 			{
 				action(control);
 			});

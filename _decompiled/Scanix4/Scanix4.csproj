@@ -2,7 +2,8 @@
   <PropertyGroup>
     <AssemblyName>Scanix4</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0-windows10.0.19041.0;net48</TargetFrameworks>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>14.0</LangVersion>
@@ -13,8 +14,16 @@
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
     <PackageReference Include="System.Windows.Extensions" Version="9.0.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Compile Remove="Scanix4.Core\OcrTextScanner.cs" />
+    <Compile Remove="Scanix4.Services.ActionCategories\PartyFormationActions.cs" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FluxDB\FluxDB.csproj" />

@@ -69,6 +69,8 @@ public class Client : IDisposable
 
 	public event Action<Exception> ConnectionFailed;
 
+	public event Action<string[]> PartyFormRequested;
+
 	public async Task ConnectAsync(string ipAddress, int port, string nickname, JobType job, CancellationToken cancellationToken = default(CancellationToken))
 	{
 		try
@@ -85,7 +87,14 @@ public class Client : IDisposable
 			_receiveCts = new CancellationTokenSource();
 			using CancellationTokenSource timeoutCts = new CancellationTokenSource(10000);
 			using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+#if NET48
+			using (linkedCts.Token.Register(() => _tcpClient.Close()))
+			{
+				await _tcpClient.ConnectAsync(ipAddress, port);
+			}
+#else
 			await _tcpClient.ConnectAsync(ipAddress, port, linkedCts.Token);
+#endif
 			_stream = _tcpClient.GetStream();
 			_isRunning = true;
 			IsConnected = true;
@@ -338,6 +347,17 @@ public class Client : IDisposable
 			string value2 = array[1].Trim();
 			string text = array[2].Trim();
 			MessageReceived?.Invoke($"Parçalanmış: Nick={value}, Job={value2}, Komut={text}");
+			if (text.StartsWith("PARTY_FORM:", StringComparison.Ordinal))
+			{
+				string[] members = text.Substring("PARTY_FORM:".Length).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < members.Length; i++)
+				{
+					members[i] = members[i].Trim();
+				}
+				MessageReceived?.Invoke($"PARTY_FORM komutu alındı, {members.Length} üye");
+				PartyFormRequested?.Invoke(members);
+				return;
+			}
 			lock (_commandHandlers)
 			{
 				if (_commandHandlers.TryGetValue(text, out Action value3))

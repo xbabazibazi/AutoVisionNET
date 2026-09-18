@@ -462,7 +462,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.SuspendLayout();
 		base.SuspendLayout();
 		this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
-		this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 12f, System.Drawing.FontStyle.Bold);
+		this.lblTitle.Font = UI2.AppFonts.Header(15f);
 		this.lblTitle.ForeColor = System.Drawing.Color.White;
 		this.lblTitle.Location = new System.Drawing.Point(0, 0);
 		this.lblTitle.Name = "lblTitle";

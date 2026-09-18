@@ -14,6 +14,8 @@ public class StatusDashboardForm : Form
 {
 	private readonly TableLayoutPanel _grid;
 
+	private readonly Panel _bodyPanel;
+
 	private readonly Timer _refreshTimer;
 
 	private readonly ScreenCaptureMainForm _screenCaptureMainForm;
@@ -28,7 +30,7 @@ public class StatusDashboardForm : Form
 		FormBorderStyle = FormBorderStyle.None;
 		BackColor = Color.FromArgb(28, 28, 33);
 		ForeColor = Color.FromArgb(235, 235, 240);
-		Font = new Font("Tahoma", 8f);
+		Font = new Font("Segoe UI", 8f);
 
 		Panel headerPanel = new Panel
 		{
@@ -40,7 +42,7 @@ public class StatusDashboardForm : Form
 		{
 			Text = "Durum",
 			ForeColor = Color.FromArgb(235, 235, 240),
-			Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+			Font = AppFonts.Header(13f),
 			AutoSize = true,
 			Location = new Point(10, 7)
 		};
@@ -68,6 +70,7 @@ public class StatusDashboardForm : Form
 			BackColor = Color.FromArgb(28, 28, 33),
 			AutoScroll = true
 		};
+		_bodyPanel = bodyPanel;
 
 		_grid = new TableLayoutPanel
 		{
@@ -104,6 +107,10 @@ public class StatusDashboardForm : Form
 		_refreshTimer.Start();
 
 		RefreshStatus();
+		Shown += delegate
+		{
+			_bodyPanel.AutoScrollPosition = new Point(0, 0);
+		};
 	}
 
 	private void AddRow(string label, string value, Color? valueColor = null)
@@ -119,6 +126,11 @@ public class StatusDashboardForm : Form
 	{
 		_grid.Controls.Clear();
 		_grid.RowCount = 0;
+
+		LicenseCore.LicenseInfo license = LicenseCore.LicenseGate.Current;
+		AddRow("Lisans Adı:", license?.CustomerName ?? "-", license == null ? Color.OrangeRed : (Color?)null);
+		AddRow("Kalan Süre:", LicenseCore.LicenseGate.GetRemainingText(), LicenseCore.LicenseGate.GetStatusColor());
+		AddRow("", "");
 
 		Version version = Assembly.GetExecutingAssembly().GetName().Version;
 		AddRow("Uygulama Sürümü:", "v" + version);
@@ -156,6 +168,9 @@ public class StatusDashboardForm : Form
 			string sizeText = exists ? $"{new FileInfo(fullPath).Length / 1024} KB" : "bulunamadı";
 			AddRow("  " + dbFile, sizeText, exists ? Color.LightGreen : Color.OrangeRed);
 		}
+
+		_bodyPanel.PerformLayout();
+		_bodyPanel.AutoScrollPosition = new Point(0, 0);
 	}
 
 	private static bool SafeCheckDriverInstalled()

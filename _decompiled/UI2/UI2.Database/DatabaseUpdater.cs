@@ -114,7 +114,8 @@ public sealed class DatabaseUpdater
 		}
 		foreach (KeyValuePair<string, List<string>> databaseSpecificCommand in sqlCommandParser.DatabaseSpecificCommands)
 		{
-			var (dbName, commands) = databaseSpecificCommand;
+			string dbName = databaseSpecificCommand.Key;
+			List<string> commands = databaseSpecificCommand.Value;
 			string text2 = _dbManagers.Keys.FirstOrDefault((string k) => k.Equals(dbName, StringComparison.OrdinalIgnoreCase));
 			if (text2 != null && _dbManagers.TryGetValue(text2, out DbManager value))
 			{

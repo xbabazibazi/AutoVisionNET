@@ -44,7 +44,11 @@ internal class Updater
 			}
 			Directory.CreateDirectory(extractDir);
 			Console.WriteLine("[UPD] Zip çıkarılıyor...");
+#if NET48
+			ZipFile.ExtractToDirectory(tempZip, extractDir);
+#else
 			ZipFile.ExtractToDirectory(tempZip, extractDir, overwriteFiles: true);
+#endif
 			Console.WriteLine("[UPD] Zip çıkarıldı: " + extractDir);
 			Console.WriteLine("[UPD] Dosyalar kopyalanıyor...");
 			await CopyDirectoryWithRetriesAsync(extractDir, targetDir);
@@ -179,7 +183,7 @@ internal class Updater
 		string[] array = files;
 		foreach (string src in array)
 		{
-			string relative = Path.GetRelativePath(sourceDir, src);
+			string relative = GetRelativePathCompat(sourceDir, src);
 			string dst = Path.Combine(destDir, relative);
 			string srcFileName = Path.GetFileName(src);
 			string thisUpdaterName = AppDomain.CurrentDomain.FriendlyName;
@@ -216,6 +220,17 @@ internal class Updater
 				break;
 			}
 		}
+	}
+
+	private static string GetRelativePathCompat(string relativeTo, string path)
+	{
+		string basePath = Path.GetFullPath(relativeTo).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+		string fullPath = Path.GetFullPath(path);
+		if (fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+		{
+			return fullPath.Substring(basePath.Length);
+		}
+		return fullPath;
 	}
 
 	private static bool IsFileUnlocked(string path)

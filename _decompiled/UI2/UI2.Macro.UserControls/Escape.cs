@@ -214,7 +214,7 @@ public class Escape : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -224,7 +224,7 @@ public class Escape : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -237,7 +237,7 @@ public class Escape : UserControl
 		this.groupBoxTimerSettings.Controls.Add(this.labelTimerUnit);
 		this.groupBoxTimerSettings.Controls.Add(this.buttonESCTimer);
 		this.groupBoxTimerSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxTimerSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxTimerSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxTimerSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxTimerSettings.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxTimerSettings.Name = "groupBoxTimerSettings";
@@ -257,7 +257,7 @@ public class Escape : UserControl
 		this.numericUpDownESCTimer.Value = new decimal(new int[4] { 1, 0, 0, 0 });
 		this.numericUpDownESCTimer.ValueChanged += new System.EventHandler(numericUpDownESCTimer_ValueChanged);
 		this.labelTimerUnit.AutoSize = true;
-		this.labelTimerUnit.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelTimerUnit.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelTimerUnit.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelTimerUnit.Location = new System.Drawing.Point(130, 38);
 		this.labelTimerUnit.Name = "labelTimerUnit";
@@ -269,7 +269,7 @@ public class Escape : UserControl
 		this.buttonESCTimer.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(80, 80, 90);
 		this.buttonESCTimer.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(70, 70, 75);
 		this.buttonESCTimer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.buttonESCTimer.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.buttonESCTimer.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.buttonESCTimer.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.buttonESCTimer.Location = new System.Drawing.Point(200, 30);
 		this.buttonESCTimer.Name = "buttonESCTimer";
@@ -282,7 +282,7 @@ public class Escape : UserControl
 		this.groupBoxTimerStatus.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxTimerStatus.Controls.Add(this.labelESCTimer);
 		this.groupBoxTimerStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxTimerStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxTimerStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxTimerStatus.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxTimerStatus.Location = new System.Drawing.Point(15, 140);
 		this.groupBoxTimerStatus.Name = "groupBoxTimerStatus";
@@ -290,7 +290,7 @@ public class Escape : UserControl
 		this.groupBoxTimerStatus.TabIndex = 3;
 		this.groupBoxTimerStatus.TabStop = false;
 		this.groupBoxTimerStatus.Text = "Timer Status";
-		this.labelESCTimer.Font = new System.Drawing.Font("Tahoma", 9f);
+		this.labelESCTimer.Font = new System.Drawing.Font("Segoe UI", 9f);
 		this.labelESCTimer.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelESCTimer.Location = new System.Drawing.Point(20, 25);
 		this.labelESCTimer.Name = "labelESCTimer";
@@ -308,7 +308,7 @@ public class Escape : UserControl
 		base.Controls.Add(this.groupBoxTimerSettings);
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "Escape";
 		base.Size = new System.Drawing.Size(2080, 990);
 		this.groupBoxTimerSettings.ResumeLayout(false);

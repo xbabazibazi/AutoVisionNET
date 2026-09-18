@@ -170,7 +170,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 			_logger.LogError("Servis durumu değiştirilirken hata: " + ex2.Message);
 			if (base.InvokeRequired)
 			{
-				Invoke(delegate
+				Invoke((MethodInvoker)delegate
 				{
 					checkActive.Checked = !checkActive.Checked;
 				});
@@ -249,7 +249,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -259,7 +259,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelStatus.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelStatus.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.labelStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.labelStatus.ForeColor = System.Drawing.Color.FromArgb(200, 60, 60);
 		this.labelStatus.Location = new System.Drawing.Point(0, 30);
 		this.labelStatus.Name = "labelStatus";
@@ -273,7 +273,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.groupBoxSettings.Controls.Add(this.panelThreshold);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -285,7 +285,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.checkAlarm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkAlarm.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
 		this.checkAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkAlarm.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkAlarm.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkAlarm.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkAlarm.Location = new System.Drawing.Point(20, 110);
 		this.checkAlarm.Name = "checkAlarm";
@@ -301,7 +301,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.checkBreakParty.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBreakParty.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
 		this.checkBreakParty.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBreakParty.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBreakParty.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBreakParty.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBreakParty.Location = new System.Drawing.Point(20, 70);
 		this.checkBreakParty.Name = "checkBreakParty";
@@ -321,7 +321,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.panelThreshold.TabIndex = 1;
 		this.numCount.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.numCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.numCount.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.numCount.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.numCount.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.numCount.Location = new System.Drawing.Point(180, 3);
 		this.numCount.Maximum = new decimal(new int[4] { 8, 0, 0, 0 });
@@ -333,7 +333,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.toolTip.SetToolTip(this.numCount, "Parti üye sayısı bu değerin altına düştüğünde uyarı verir");
 		this.numCount.ValueChanged += new System.EventHandler(numCount_ValueChanged);
 		this.labelThreshold.AutoSize = true;
-		this.labelThreshold.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelThreshold.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelThreshold.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelThreshold.Location = new System.Drawing.Point(20, 6);
 		this.labelThreshold.Name = "labelThreshold";
@@ -345,7 +345,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		this.checkActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkActive.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 153, 102);
 		this.checkActive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkActive.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkActive.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkActive.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkActive.Location = new System.Drawing.Point(20, 110);
 		this.checkActive.Name = "checkActive";
@@ -364,7 +364,7 @@ public class PartyMemberCount : UserControl, IServiceControl
 		base.Controls.Add(this.groupBoxSettings);
 		base.Controls.Add(this.labelStatus);
 		base.Controls.Add(this.labelHeader);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "PartyMemberCount";
 		base.Size = new System.Drawing.Size(380, 200);
 		this.groupBoxSettings.ResumeLayout(false);

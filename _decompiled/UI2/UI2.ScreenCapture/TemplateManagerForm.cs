@@ -47,6 +47,7 @@ public class TemplateManagerForm : Form
 		["Images/PartyCount.jpg"] = "Parti Sayacı",
 		["Images/RequestParty.jpg"] = "Parti İsteği",
 		["Images/katadora.jpg"] = "Katadora",
+		["Images/RequestPartyMenuItem.jpg"] = "Parti Daveti (Sağ Tık Menüsü)",
 		["Images/WhellOfFunButton.jpg"] = "Çark Butonu",
 		["Images/WhellOfFunPushButton.jpg"] = "Çark Çevir Butonu",
 		["Images/WhellOfFunYesButton.jpg"] = "Çark Onay Butonu",
@@ -87,6 +88,7 @@ public class TemplateManagerForm : Form
 		("Party", "PartyMemberCount", "Images/PartyCount.jpg"),
 		("Request", "RequestParty", "Images/RequestParty.jpg"),
 		("Request", "katadora", "Images/katadora.jpg"),
+		("Request", "SendPartyInviteMenuItem", "Images/RequestPartyMenuItem.jpg"),
 		("Request", "CheckParty", "Images/RequestParty.jpg"),
 		("Request", "WhellOfFunButton", "Images/WhellOfFunButton.jpg"),
 		("Request", "WhellOfFunPushButton", "Images/WhellOfFunPushButton.jpg"),
@@ -138,7 +140,7 @@ public class TemplateManagerForm : Form
 		FormBorderStyle = FormBorderStyle.None;
 		BackColor = Color.FromArgb(28, 28, 33);
 		ForeColor = Color.FromArgb(235, 235, 240);
-		Font = new Font("Tahoma", 8f);
+		Font = new Font("Segoe UI", 8f);
 
 		Panel headerPanel = new Panel
 		{
@@ -150,7 +152,7 @@ public class TemplateManagerForm : Form
 		{
 			Text = "Şablon Yöneticisi",
 			ForeColor = Color.FromArgb(235, 235, 240),
-			Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+			Font = AppFonts.Header(13f),
 			AutoSize = true,
 			Location = new Point(10, 7)
 		};
@@ -193,6 +195,22 @@ public class TemplateManagerForm : Form
 		btnUpload.FlatAppearance.BorderSize = 0;
 		btnUpload.Click += BtnUpload_Click;
 		headerPanel.Controls.Add(btnUpload);
+
+		Button btnCaptureFromScreen = new Button
+		{
+			Text = "Ekrandan Kes...",
+			Size = new Size(130, 22),
+			Location = new Point(headerPanel.Width - 340, 4),
+			Anchor = AnchorStyles.Top | AnchorStyles.Right,
+			Font = new Font("Segoe UI", 8f, FontStyle.Bold),
+			FlatStyle = FlatStyle.Flat,
+			BackColor = Color.FromArgb(60, 65, 80),
+			ForeColor = Color.White,
+			UseVisualStyleBackColor = false
+		};
+		btnCaptureFromScreen.FlatAppearance.BorderSize = 0;
+		btnCaptureFromScreen.Click += BtnCaptureFromScreen_Click;
+		headerPanel.Controls.Add(btnCaptureFromScreen);
 
 		_grid.Dock = DockStyle.Fill;
 		_grid.BackgroundColor = Color.FromArgb(28, 28, 33);
@@ -418,5 +436,134 @@ public class TemplateManagerForm : Form
 		{
 			MessageBox.Show($"{copied} görsel yüklendi. Şimdi listeden ilgili göreve atayabilirsiniz.", "Yükleme tamamlandı", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
+	}
+
+	private void BtnCaptureFromScreen_Click(object sender, EventArgs e)
+	{
+		List<Form> hiddenForms = new List<Form>();
+		try
+		{
+			foreach (Form openForm in Application.OpenForms.Cast<Form>().ToList())
+			{
+				if (openForm.Visible)
+				{
+					hiddenForms.Add(openForm);
+					openForm.Hide();
+				}
+			}
+			Rectangle selectedArea;
+			using (FullScreenSnipForm snipForm = new FullScreenSnipForm())
+			{
+				if (snipForm.ShowDialog() != DialogResult.OK || snipForm.SelectedArea.IsEmpty)
+				{
+					return;
+				}
+				selectedArea = snipForm.SelectedArea;
+			}
+			using Bitmap capturedBitmap = new Bitmap(selectedArea.Width, selectedArea.Height);
+			using (Graphics graphics = Graphics.FromImage(capturedBitmap))
+			{
+				graphics.CopyFromScreen(selectedArea.X, selectedArea.Y, 0, 0, selectedArea.Size);
+			}
+			string fileName = PromptForFileName();
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				return;
+			}
+			foreach (char invalidChar in Path.GetInvalidFileNameChars())
+			{
+				fileName = fileName.Replace(invalidChar, '_');
+			}
+			string destPath = Path.Combine(_templatesFolder, fileName + ".jpg");
+			int suffix = 1;
+			while (File.Exists(destPath))
+			{
+				destPath = Path.Combine(_templatesFolder, fileName + "_" + suffix + ".jpg");
+				suffix++;
+			}
+			capturedBitmap.Save(destPath, System.Drawing.Imaging.ImageFormat.Jpeg);
+			LoadRows();
+			MessageBox.Show("Kesit kaydedildi: " + Path.GetFileName(destPath) + "\nŞimdi listeden ilgili göreve atayabilirsiniz.", "Kesit alındı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Ekrandan kesit alınırken hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
+		finally
+		{
+			foreach (Form hiddenForm in hiddenForms)
+			{
+				try
+				{
+					hiddenForm.Show();
+					hiddenForm.BringToFront();
+				}
+				catch
+				{
+				}
+			}
+		}
+	}
+
+	private string PromptForFileName()
+	{
+		using Form prompt = new Form
+		{
+			FormBorderStyle = FormBorderStyle.FixedDialog,
+			StartPosition = FormStartPosition.CenterScreen,
+			ClientSize = new Size(360, 140),
+			BackColor = Color.FromArgb(28, 28, 33),
+			ForeColor = Color.FromArgb(235, 235, 240),
+			Font = new Font("Segoe UI", 9f),
+			Text = "Kesit Adı",
+			MinimizeBox = false,
+			MaximizeBox = false,
+			ShowIcon = false
+		};
+		Label label = new Label
+		{
+			Text = "Bu kesit için bir isim girin:",
+			Location = new Point(16, 16),
+			AutoSize = true
+		};
+		TextBox textBox = new TextBox
+		{
+			Location = new Point(16, 44),
+			Size = new Size(328, 24),
+			BackColor = Color.FromArgb(48, 48, 55),
+			ForeColor = Color.White,
+			BorderStyle = BorderStyle.FixedSingle,
+			Text = "Kesit_" + DateTime.Now.ToString("yyyyMMdd_HHmmss")
+		};
+		Button okButton = new Button
+		{
+			Text = "Kaydet",
+			DialogResult = DialogResult.OK,
+			Location = new Point(188, 84),
+			Size = new Size(75, 30),
+			BackColor = Color.FromArgb(55, 78, 92),
+			ForeColor = Color.White,
+			FlatStyle = FlatStyle.Flat
+		};
+		okButton.FlatAppearance.BorderSize = 0;
+		Button cancelButton = new Button
+		{
+			Text = "İptal",
+			DialogResult = DialogResult.Cancel,
+			Location = new Point(269, 84),
+			Size = new Size(75, 30),
+			BackColor = Color.FromArgb(60, 60, 65),
+			ForeColor = Color.White,
+			FlatStyle = FlatStyle.Flat
+		};
+		cancelButton.FlatAppearance.BorderSize = 0;
+		prompt.Controls.Add(label);
+		prompt.Controls.Add(textBox);
+		prompt.Controls.Add(okButton);
+		prompt.Controls.Add(cancelButton);
+		prompt.AcceptButton = okButton;
+		prompt.CancelButton = cancelButton;
+		textBox.SelectAll();
+		return prompt.ShowDialog(this) == DialogResult.OK ? textBox.Text.Trim() : null;
 	}
 }

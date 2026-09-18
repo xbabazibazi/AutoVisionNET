@@ -290,7 +290,7 @@ public class Macro2 : Form, IMacroForm
 		this.listBoxMacros.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.listBoxMacros.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.listBoxMacros.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.listBoxMacros.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.listBoxMacros.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.listBoxMacros.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.listBoxMacros.FormattingEnabled = true;
 		this.listBoxMacros.ItemHeight = 16;
@@ -312,7 +312,7 @@ public class Macro2 : Form, IMacroForm
 		this.btnHide.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.btnHide.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(70, 70, 75);
 		this.btnHide.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnHide.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.btnHide.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.btnHide.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.btnHide.Location = new System.Drawing.Point(765, 5);
 		this.btnHide.Name = "btnHide";

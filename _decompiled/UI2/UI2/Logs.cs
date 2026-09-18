@@ -66,7 +66,7 @@ public class Logs : Form, ILogsForm
 		{
 			if (lstLogs.InvokeRequired)
 			{
-				lstLogs.Invoke(delegate
+				lstLogs.Invoke((MethodInvoker)delegate
 				{
 					AddLogItem(message);
 				});
@@ -143,7 +143,7 @@ public class Logs : Form, ILogsForm
 		string statusText = $"● Aktif | Seviye: {_logger.GetCurrentLogLevel()} | Kayıt: {lstLogs.Items.Count}";
 		if (lblStatus.InvokeRequired)
 		{
-			lblStatus.Invoke(delegate
+			lblStatus.Invoke((MethodInvoker)delegate
 			{
 				lblStatus.Text = statusText;
 			});
@@ -189,7 +189,7 @@ public class Logs : Form, ILogsForm
 	{
 		if (lstLogs.InvokeRequired)
 		{
-			lstLogs.Invoke(delegate
+			lstLogs.Invoke((MethodInvoker)delegate
 			{
 				lstLogs.Items.Clear();
 			});
@@ -205,7 +205,7 @@ public class Logs : Form, ILogsForm
 	{
 		if (lstLogs.InvokeRequired)
 		{
-			lstLogs.Invoke(delegate
+			lstLogs.Invoke((MethodInvoker)delegate
 			{
 				TrimLogItems(maxItems);
 			});
@@ -257,7 +257,7 @@ public class Logs : Form, ILogsForm
 		this.lstLogs.Size = new System.Drawing.Size(570, 220);
 		this.lstLogs.TabIndex = 0;
 		this.lblStatus.AutoSize = true;
-		this.lblStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(0, 153, 102);
 		this.lblStatus.Location = new System.Drawing.Point(15, 8);
 		this.lblStatus.Name = "lblStatus";
@@ -267,7 +267,7 @@ public class Logs : Form, ILogsForm
 		this.cmbLogLevel.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.cmbLogLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cmbLogLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cmbLogLevel.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.cmbLogLevel.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.cmbLogLevel.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.cmbLogLevel.FormattingEnabled = true;
 		this.cmbLogLevel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
@@ -307,7 +307,7 @@ public class Logs : Form, ILogsForm
 		base.ClientSize = new System.Drawing.Size(600, 325);
 		base.Controls.Add(this.mainPanel);
 		base.Controls.Add(this.headerPanel);
-		this.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.Font = new System.Drawing.Font("Segoe UI", 8f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		base.Name = "Logs";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

@@ -89,7 +89,7 @@ public class RectangleOverlayForm : Form
 		{
 			e.Graphics.DrawRectangle(pen, _targetRect);
 		}
-		using Font font = new Font("Arial", 12f, FontStyle.Bold);
+		using Font font = new Font("Segoe UI", 12f, FontStyle.Bold);
 		using SolidBrush brush = new SolidBrush(Color.White);
 		using SolidBrush brush2 = new SolidBrush(Color.Black);
 		string areaName = _areaName;

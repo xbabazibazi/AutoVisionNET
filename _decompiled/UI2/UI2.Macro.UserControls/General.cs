@@ -123,7 +123,7 @@ public class General : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -133,7 +133,7 @@ public class General : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -144,7 +144,7 @@ public class General : UserControl
 		this.groupBoxSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxSettings.Controls.Add(this.checkBoxStartGenieAfterTp);
 		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -157,7 +157,7 @@ public class General : UserControl
 		this.checkBoxStartGenieAfterTp.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxStartGenieAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxStartGenieAfterTp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxStartGenieAfterTp.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxStartGenieAfterTp.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxStartGenieAfterTp.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxStartGenieAfterTp.Location = new System.Drawing.Point(20, 25);
 		this.checkBoxStartGenieAfterTp.Name = "checkBoxStartGenieAfterTp";
@@ -177,7 +177,7 @@ public class General : UserControl
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
 		this.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "General";
 		base.Size = new System.Drawing.Size(570, 300);
 		this.groupBoxSettings.ResumeLayout(false);

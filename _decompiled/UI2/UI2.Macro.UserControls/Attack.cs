@@ -318,7 +318,7 @@ public class Attack : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -328,7 +328,7 @@ public class Attack : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -343,7 +343,7 @@ public class Attack : UserControl
 		this.groupBoxAttackKeys.Controls.Add(this.checkBoxR);
 		this.groupBoxAttackKeys.Controls.Add(this.checkBoxSkill);
 		this.groupBoxAttackKeys.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxAttackKeys.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxAttackKeys.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxAttackKeys.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxAttackKeys.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxAttackKeys.Name = "groupBoxAttackKeys";
@@ -356,7 +356,7 @@ public class Attack : UserControl
 		this.checkBox9.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBox9.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBox9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBox9.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBox9.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBox9.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBox9.Location = new System.Drawing.Point(436, 20);
 		this.checkBox9.Name = "checkBox9";
@@ -372,7 +372,7 @@ public class Attack : UserControl
 		this.checkBox8.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBox8.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBox8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBox8.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBox8.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBox8.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBox8.Location = new System.Drawing.Point(336, 20);
 		this.checkBox8.Name = "checkBox8";
@@ -388,7 +388,7 @@ public class Attack : UserControl
 		this.checkBoxZ.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxZ.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxZ.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxZ.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxZ.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxZ.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxZ.Location = new System.Drawing.Point(236, 20);
 		this.checkBoxZ.Name = "checkBoxZ";
@@ -404,7 +404,7 @@ public class Attack : UserControl
 		this.checkBoxR.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxR.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxR.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxR.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxR.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxR.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxR.Location = new System.Drawing.Point(136, 20);
 		this.checkBoxR.Name = "checkBoxR";
@@ -420,7 +420,7 @@ public class Attack : UserControl
 		this.checkBoxSkill.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxSkill.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxSkill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxSkill.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxSkill.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxSkill.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxSkill.Location = new System.Drawing.Point(36, 20);
 		this.checkBoxSkill.Name = "checkBoxSkill";
@@ -437,7 +437,7 @@ public class Attack : UserControl
 		this.groupBoxDelays.Controls.Add(this.numericUpDownSkillDelay);
 		this.groupBoxDelays.Controls.Add(this.labelSkillDelay);
 		this.groupBoxDelays.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxDelays.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxDelays.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxDelays.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxDelays.Location = new System.Drawing.Point(15, 130);
 		this.groupBoxDelays.Name = "groupBoxDelays";
@@ -455,7 +455,7 @@ public class Attack : UserControl
 		this.toolTip.SetToolTip(this.numericUpDownRDelay, "R delay in milliseconds");
 		this.numericUpDownRDelay.ValueChanged += new System.EventHandler(numericUpDownRDelay_ValueChanged);
 		this.labelRDelay.AutoSize = true;
-		this.labelRDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelRDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelRDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelRDelay.Location = new System.Drawing.Point(250, 43);
 		this.labelRDelay.Name = "labelRDelay";
@@ -472,7 +472,7 @@ public class Attack : UserControl
 		this.toolTip.SetToolTip(this.numericUpDownSkillDelay, "Skill delay in milliseconds");
 		this.numericUpDownSkillDelay.ValueChanged += new System.EventHandler(numericUpDownSkillDelay_ValueChanged);
 		this.labelSkillDelay.AutoSize = true;
-		this.labelSkillDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelSkillDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelSkillDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelSkillDelay.Location = new System.Drawing.Point(250, 18);
 		this.labelSkillDelay.Name = "labelSkillDelay";
@@ -483,7 +483,7 @@ public class Attack : UserControl
 		this.groupBoxFeatures.Controls.Add(this.checkBoxRandomDelay);
 		this.groupBoxFeatures.Controls.Add(this.checkBoxGenie);
 		this.groupBoxFeatures.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxFeatures.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxFeatures.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxFeatures.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxFeatures.Location = new System.Drawing.Point(15, 210);
 		this.groupBoxFeatures.Name = "groupBoxFeatures";
@@ -496,7 +496,7 @@ public class Attack : UserControl
 		this.checkBoxRandomDelay.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxRandomDelay.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxRandomDelay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxRandomDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxRandomDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxRandomDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxRandomDelay.Location = new System.Drawing.Point(290, 25);
 		this.checkBoxRandomDelay.Name = "checkBoxRandomDelay";
@@ -512,7 +512,7 @@ public class Attack : UserControl
 		this.checkBoxGenie.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxGenie.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxGenie.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxGenie.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxGenie.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxGenie.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxGenie.Location = new System.Drawing.Point(140, 25);
 		this.checkBoxGenie.Name = "checkBoxGenie";
@@ -532,7 +532,7 @@ public class Attack : UserControl
 		base.Controls.Add(this.groupBoxAttackKeys);
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "Attack";
 		base.Size = new System.Drawing.Size(2080, 990);
 		this.groupBoxAttackKeys.ResumeLayout(false);

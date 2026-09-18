@@ -167,7 +167,7 @@ public class TpParty : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -177,7 +177,7 @@ public class TpParty : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -192,7 +192,7 @@ public class TpParty : UserControl
 		this.groupBoxSettings.Controls.Add(this.PartyMemberCount);
 		this.groupBoxSettings.Controls.Add(this.labelMemberCount);
 		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -205,7 +205,7 @@ public class TpParty : UserControl
 		this.checkBoxResistAfterTp.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxResistAfterTp.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxResistAfterTp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxResistAfterTp.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxResistAfterTp.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxResistAfterTp.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxResistAfterTp.Location = new System.Drawing.Point(20, 105);
 		this.checkBoxResistAfterTp.Name = "checkBoxResistAfterTp";
@@ -228,7 +228,7 @@ public class TpParty : UserControl
 		this.toolTip.SetToolTip(this.numericUpDownTPPartyDelay, "Set teleport delay in milliseconds");
 		this.numericUpDownTPPartyDelay.ValueChanged += new System.EventHandler(numericUpDownTPPartyDelay_ValueChanged);
 		this.labelDelay.AutoSize = true;
-		this.labelDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelDelay.Location = new System.Drawing.Point(20, 56);
 		this.labelDelay.Name = "labelDelay";
@@ -247,7 +247,7 @@ public class TpParty : UserControl
 		this.toolTip.SetToolTip(this.PartyMemberCount, "Set number of party members");
 		this.PartyMemberCount.ValueChanged += new System.EventHandler(PartyMemberCount_ValueChanged);
 		this.labelMemberCount.AutoSize = true;
-		this.labelMemberCount.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelMemberCount.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelMemberCount.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelMemberCount.Location = new System.Drawing.Point(20, 14);
 		this.labelMemberCount.Name = "labelMemberCount";
@@ -263,7 +263,7 @@ public class TpParty : UserControl
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
 		this.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "TpParty";
 		base.Size = new System.Drawing.Size(570, 300);
 		this.groupBoxSettings.ResumeLayout(false);

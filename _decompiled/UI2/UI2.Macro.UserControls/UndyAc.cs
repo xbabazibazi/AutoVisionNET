@@ -167,7 +167,7 @@ public class UndyAc : UserControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -177,7 +177,7 @@ public class UndyAc : UserControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelShortcut.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelShortcut.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelShortcut.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Italic);
+		this.labelShortcut.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Italic);
 		this.labelShortcut.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelShortcut.Location = new System.Drawing.Point(0, 25);
 		this.labelShortcut.Name = "labelShortcut";
@@ -192,7 +192,7 @@ public class UndyAc : UserControl
 		this.groupBoxSettings.Controls.Add(this.numericUpDownUndyAcTabDelay);
 		this.groupBoxSettings.Controls.Add(this.labelTabDelay);
 		this.groupBoxSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -205,7 +205,7 @@ public class UndyAc : UserControl
 		this.checkBoxUndyAcLoop.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkBoxUndyAcLoop.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.checkBoxUndyAcLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxUndyAcLoop.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkBoxUndyAcLoop.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkBoxUndyAcLoop.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkBoxUndyAcLoop.Location = new System.Drawing.Point(20, 100);
 		this.checkBoxUndyAcLoop.Name = "checkBoxUndyAcLoop";
@@ -229,7 +229,7 @@ public class UndyAc : UserControl
 		this.toolTip.SetToolTip(this.numericUpDownUndyAcSkillDelay, "Set skill delay in milliseconds");
 		this.numericUpDownUndyAcSkillDelay.ValueChanged += new System.EventHandler(numericUpDownUndyAcSkillDelay_ValueChanged);
 		this.labelSkillDelay.AutoSize = true;
-		this.labelSkillDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelSkillDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelSkillDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelSkillDelay.Location = new System.Drawing.Point(20, 62);
 		this.labelSkillDelay.Name = "labelSkillDelay";
@@ -249,7 +249,7 @@ public class UndyAc : UserControl
 		this.toolTip.SetToolTip(this.numericUpDownUndyAcTabDelay, "Set tab delay in milliseconds");
 		this.numericUpDownUndyAcTabDelay.ValueChanged += new System.EventHandler(numericUpDownUndyAcTabDelay_ValueChanged);
 		this.labelTabDelay.AutoSize = true;
-		this.labelTabDelay.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.labelTabDelay.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelTabDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelTabDelay.Location = new System.Drawing.Point(20, 22);
 		this.labelTabDelay.Name = "labelTabDelay";
@@ -265,7 +265,7 @@ public class UndyAc : UserControl
 		base.Controls.Add(this.labelShortcut);
 		base.Controls.Add(this.labelHeader);
 		this.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "UndyAc";
 		base.Size = new System.Drawing.Size(570, 300);
 		this.groupBoxSettings.ResumeLayout(false);

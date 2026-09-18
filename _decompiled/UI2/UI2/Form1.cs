@@ -623,7 +623,7 @@ public class Form1 : Form
 		this.toolStrip1.AutoSize = false;
 		this.toolStrip1.ShowItemToolTips = false;
 		this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(40, 40, 45);
-		this.toolStrip1.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.toolStrip1.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.toolStrip1.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
 		this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[6] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools });
@@ -702,7 +702,7 @@ public class Form1 : Form
 		this.toolStripMenuItemCheckForUpdates.Text = "Güncellemeleri Kontrol Et";
 		this.toolStripMenuItemCheckForUpdates.Click += new System.EventHandler(toolStripButtonCheckForUpdates_Click);
 		this.lblVersion.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-		this.lblVersion.Font = new System.Drawing.Font("Tahoma", 7.5f, System.Drawing.FontStyle.Bold);
+		this.lblVersion.Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold);
 		this.lblVersion.ForeColor = System.Drawing.Color.FromArgb(120, 210, 230);
 		this.lblVersion.Location = new System.Drawing.Point(0, 35);
 		this.lblVersion.Name = "lblVersion";
@@ -712,7 +712,7 @@ public class Form1 : Form
 		this.lblVersion.Text = "v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		this.lblLicenseStatus = new System.Windows.Forms.Label();
 		this.lblLicenseStatus.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-		this.lblLicenseStatus.Font = new System.Drawing.Font("Tahoma", 7.5f, System.Drawing.FontStyle.Bold);
+		this.lblLicenseStatus.Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold);
 		this.lblLicenseStatus.ForeColor = LicenseCore.LicenseGate.GetStatusColor();
 		this.lblLicenseStatus.Location = new System.Drawing.Point(0, 51);
 		this.lblLicenseStatus.Name = "lblLicenseStatus";
@@ -728,7 +728,7 @@ public class Form1 : Form
 		base.Controls.Add(this.lblLicenseStatus);
 		base.Controls.Add(this.lblVersion);
 		base.Controls.Add(this.toolStrip1);
-		this.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		try

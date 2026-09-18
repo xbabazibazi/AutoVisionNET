@@ -138,7 +138,7 @@ public class RepairWeapons : UserControl, IServiceControl
 			_logger.LogError("Error changing service state: " + ex2.Message);
 			if (base.InvokeRequired)
 			{
-				Invoke(delegate
+				Invoke((MethodInvoker)delegate
 				{
 					checkActive.Checked = !checkActive.Checked;
 				});
@@ -171,7 +171,7 @@ public class RepairWeapons : UserControl, IServiceControl
 		base.SuspendLayout();
 		this.labelHeader.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelHeader.Font = new System.Drawing.Font("Tahoma", 10f, System.Drawing.FontStyle.Bold);
+		this.labelHeader.Font = UI2.AppFonts.Header(13f);
 		this.labelHeader.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.labelHeader.Location = new System.Drawing.Point(0, 0);
 		this.labelHeader.Name = "labelHeader";
@@ -181,7 +181,7 @@ public class RepairWeapons : UserControl, IServiceControl
 		this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.labelStatus.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.labelStatus.Dock = System.Windows.Forms.DockStyle.Top;
-		this.labelStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.labelStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.labelStatus.ForeColor = System.Drawing.Color.FromArgb(200, 60, 60);
 		this.labelStatus.Location = new System.Drawing.Point(0, 30);
 		this.labelStatus.Name = "labelStatus";
@@ -192,7 +192,7 @@ public class RepairWeapons : UserControl, IServiceControl
 		this.groupBoxSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.groupBoxSettings.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxSettings.Location = new System.Drawing.Point(0, 50);
 		this.groupBoxSettings.Name = "groupBoxSettings";
@@ -204,7 +204,7 @@ public class RepairWeapons : UserControl, IServiceControl
 		this.checkActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
 		this.checkActive.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 153, 102);
 		this.checkActive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkActive.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.checkActive.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.checkActive.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.checkActive.Location = new System.Drawing.Point(20, 25);
 		this.checkActive.Name = "checkActive";
@@ -223,7 +223,7 @@ public class RepairWeapons : UserControl, IServiceControl
 		base.Controls.Add(this.groupBoxSettings);
 		base.Controls.Add(this.labelStatus);
 		base.Controls.Add(this.labelHeader);
-		this.Font = new System.Drawing.Font("Tahoma", 9.75f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		base.Name = "RepairWeapons";
 		base.Size = new System.Drawing.Size(380, 200);
 		this.groupBoxSettings.ResumeLayout(false);

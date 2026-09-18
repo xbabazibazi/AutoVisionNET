@@ -100,6 +100,10 @@ public class ServerForm : Form
 
 	private System.Threading.Timer _licenseStatusTimer;
 
+	private Button btnPartyForm;
+
+	private PartyForm _partyForm;
+
 	public ServerForm()
 	{
 		InitializeComponent();
@@ -367,12 +371,28 @@ public class ServerForm : Form
 			_isRunning = false;
 			_uptime.Stop();
 			UpdateUI();
+			_partyForm?.ResetSelections();
 		}
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
 			HandleError("Durdurma hatası: " + ex2.Message);
 		}
+	}
+
+	private void BtnPartyForm_Click(object sender, EventArgs e)
+	{
+		if (_partyForm == null || _partyForm.IsDisposed)
+		{
+			_partyForm = new PartyForm(_server);
+		}
+		if (_partyForm.Visible)
+		{
+			_partyForm.Hide();
+			return;
+		}
+		_partyForm.Show(this);
+		_partyForm.BringToFront();
 	}
 
 	private void BtnCopyLogs_Click(object sender, EventArgs e)
@@ -671,6 +691,7 @@ public class ServerForm : Form
 		_logTimer?.Dispose();
 		_licenseStatusTimer?.Dispose();
 		_alarm?.Dispose();
+		_partyForm?.Close();
 		base.OnFormClosing(e);
 	}
 
@@ -721,6 +742,7 @@ public class ServerForm : Form
 		this.titlePanel = new System.Windows.Forms.Panel();
 		this.btnClose = new System.Windows.Forms.Button();
 		this.btnMinimize = new System.Windows.Forms.Button();
+		this.btnPartyForm = new System.Windows.Forms.Button();
 		this.lblSubtitle = new System.Windows.Forms.Label();
 		this.lblTitle = new System.Windows.Forms.Label();
 		this.mainContainer.SuspendLayout();
@@ -1050,6 +1072,7 @@ public class ServerForm : Form
 		this.titlePanel.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.titlePanel.Controls.Add(this.btnClose);
 		this.titlePanel.Controls.Add(this.btnMinimize);
+		this.titlePanel.Controls.Add(this.btnPartyForm);
 		this.titlePanel.Controls.Add(this.lblSubtitle);
 		this.titlePanel.Controls.Add(this.lblTitle);
 		this.titlePanel.Location = new System.Drawing.Point(10, 10);
@@ -1083,6 +1106,21 @@ public class ServerForm : Form
 		this.btnMinimize.Text = "_";
 		this.btnMinimize.UseVisualStyleBackColor = true;
 		this.btnMinimize.Click += new System.EventHandler(BtnMinimize_Click);
+		this.btnPartyForm.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
+		this.btnPartyForm.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
+		this.btnPartyForm.FlatAppearance.BorderSize = 0;
+		this.btnPartyForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
+		this.btnPartyForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
+		this.btnPartyForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.btnPartyForm.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+		this.btnPartyForm.ForeColor = System.Drawing.Color.White;
+		this.btnPartyForm.Location = new System.Drawing.Point(650, 8);
+		this.btnPartyForm.Name = "btnPartyForm";
+		this.btnPartyForm.Size = new System.Drawing.Size(180, 34);
+		this.btnPartyForm.TabIndex = 9;
+		this.btnPartyForm.Text = "PARTİ KUR (8 KİŞİ)";
+		this.btnPartyForm.UseVisualStyleBackColor = false;
+		this.btnPartyForm.Click += new System.EventHandler(BtnPartyForm_Click);
 		this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
 		this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
 		this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(200, 200, 205);
@@ -1092,7 +1130,7 @@ public class ServerForm : Form
 		this.lblSubtitle.TabIndex = 1;
 		this.lblSubtitle.Text = "Sunucu Kontrol Paneli";
 		this.lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
-		this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+		this.lblTitle.Font = AppFonts.Header(20f);
 		this.lblTitle.ForeColor = System.Drawing.Color.White;
 		this.lblTitle.Location = new System.Drawing.Point(20, 0);
 		this.lblTitle.Name = "lblTitle";

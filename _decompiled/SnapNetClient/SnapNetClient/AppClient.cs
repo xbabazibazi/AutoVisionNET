@@ -33,6 +33,8 @@ public static class AppClient
 
 	public static event Action<Exception> ConnectionFailed;
 
+	public static event Action<string[]> PartyFormRequested;
+
 	private static void WireClientEvents(Client client)
 	{
 		client.MessageReceived += delegate(string msg)
@@ -50,6 +52,10 @@ public static class AppClient
 		client.ConnectionFailed += delegate(Exception ex)
 		{
 			ConnectionFailed?.Invoke(ex);
+		};
+		client.PartyFormRequested += delegate(string[] members)
+		{
+			PartyFormRequested?.Invoke(members);
 		};
 	}
 

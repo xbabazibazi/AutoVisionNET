@@ -94,6 +94,10 @@ public class ClientForm : Form
 
 	private Label lblStatus;
 
+	private Button btnCancelPartyForm;
+
+	private CancellationTokenSource _partyFormCts;
+
 	public bool IsConnected => AppClient.IsConnected;
 
 	public event Action<bool> ConnectionStatusChanged;
@@ -164,7 +168,7 @@ public class ClientForm : Form
 		{
 			if (base.InvokeRequired)
 			{
-				BeginInvoke(delegate
+				BeginInvoke((System.Windows.Forms.MethodInvoker)delegate
 				{
 					AddLog(msg);
 				});
@@ -281,6 +285,54 @@ public class ClientForm : Form
 				await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetWhellOfFun"));
 			}
 		});
+#if !NET48
+		AppClient.PartyFormRequested += async delegate(string[] members)
+		{
+			InputManager.InputUtils inputUtils = Form1.Instance?._screenCaptureMainForm?.InputUtils;
+			if (inputUtils == null)
+			{
+				return;
+			}
+			_partyFormCts?.Cancel();
+			_partyFormCts?.Dispose();
+			CancellationTokenSource cts = new CancellationTokenSource();
+			_partyFormCts = cts;
+			SafeInvoke(delegate
+			{
+				btnCancelPartyForm.Text = "Parti Kurmayı İptal Et";
+				btnCancelPartyForm.Enabled = true;
+				btnCancelPartyForm.Visible = true;
+			});
+			try
+			{
+				await new Scanix4.Services.ActionCategories.PartyFormationActions(inputUtils, SimpleLogger.Logger.Instance).FormPartyAsync(members, cts.Token);
+			}
+			finally
+			{
+				SafeInvoke(delegate
+				{
+					btnCancelPartyForm.Visible = false;
+				});
+				cts.Dispose();
+				if (_partyFormCts == cts)
+				{
+					_partyFormCts = null;
+				}
+			}
+		};
+#else
+		AppClient.PartyFormRequested += delegate
+		{
+			SimpleLogger.Logger.Instance.LogWarning("Parti kurma (OCR) bu Windows sürümünde desteklenmiyor.");
+		};
+#endif
+	}
+
+	private void BtnCancelPartyForm_Click(object sender, EventArgs e)
+	{
+		_partyFormCts?.Cancel();
+		btnCancelPartyForm.Text = "İptal ediliyor...";
+		btnCancelPartyForm.Enabled = false;
 	}
 
 	private async void btnConnect_Click(object sender, EventArgs e)
@@ -334,13 +386,7 @@ public class ClientForm : Form
 	{
 		lock (_logBuffer)
 		{
-			StringBuilder logBuffer = _logBuffer;
-			StringBuilder.AppendInterpolatedStringHandler handler = new StringBuilder.AppendInterpolatedStringHandler(3, 2, logBuffer);
-			handler.AppendLiteral("[");
-			handler.AppendFormatted(DateTime.Now, "HH:mm:ss.fff");
-			handler.AppendLiteral("] ");
-			handler.AppendFormatted(message);
-			logBuffer.AppendLine(ref handler);
+			_logBuffer.AppendLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
 		}
 		if ((DateTime.Now - _lastLogUpdate).TotalMilliseconds > 500.0 || _logBuffer.Length > 2048)
 		{
@@ -431,6 +477,7 @@ public class ClientForm : Form
 		SaveSettings();
 		_uiUpdateTimer?.Dispose();
 		_verificationReportTimer?.Dispose();
+		_partyFormCts?.Cancel();
 		AppClient.Disconnect();
 		base.OnFormClosing(e);
 	}
@@ -578,6 +625,7 @@ public class ClientForm : Form
 		this.btnSend = new System.Windows.Forms.Button();
 		this.statusPanel = new System.Windows.Forms.Panel();
 		this.lblStatus = new System.Windows.Forms.Label();
+		this.btnCancelPartyForm = new System.Windows.Forms.Button();
 		this.headerPanel.SuspendLayout();
 		this.connectionPanel.SuspendLayout();
 		this.logPanel.SuspendLayout();
@@ -599,7 +647,7 @@ public class ClientForm : Form
 		this.headerPanel.Size = new System.Drawing.Size(500, 30);
 		this.headerPanel.TabIndex = 0;
 		this.lblTitle.AutoSize = true;
-		this.lblTitle.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.lblTitle.Font = UI2.AppFonts.Header(12f);
 		this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblTitle.Location = new System.Drawing.Point(10, 8);
 		this.lblTitle.Name = "lblTitle";
@@ -638,7 +686,7 @@ public class ClientForm : Form
 		this.connectionPanel.Size = new System.Drawing.Size(500, 120);
 		this.connectionPanel.TabIndex = 1;
 		this.lblNickname.AutoSize = true;
-		this.lblNickname.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.lblNickname.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.lblNickname.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblNickname.Location = new System.Drawing.Point(15, 15);
 		this.lblNickname.Name = "lblNickname";
@@ -647,14 +695,14 @@ public class ClientForm : Form
 		this.lblNickname.Text = "Nickname:";
 		this.txtNickname.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.txtNickname.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txtNickname.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.txtNickname.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.txtNickname.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.txtNickname.Location = new System.Drawing.Point(15, 31);
 		this.txtNickname.Name = "txtNickname";
 		this.txtNickname.Size = new System.Drawing.Size(150, 20);
 		this.txtNickname.TabIndex = 1;
 		this.lblJob.AutoSize = true;
-		this.lblJob.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.lblJob.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.lblJob.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblJob.Location = new System.Drawing.Point(15, 60);
 		this.lblJob.Name = "lblJob";
@@ -664,7 +712,7 @@ public class ClientForm : Form
 		this.cmbJob.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.cmbJob.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cmbJob.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cmbJob.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.cmbJob.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.cmbJob.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.cmbJob.FormattingEnabled = true;
 		this.cmbJob.Items.AddRange(new object[5] { "Mage", "Rogue", "Warrior", "Kurian", "Priest" });
@@ -673,7 +721,7 @@ public class ClientForm : Form
 		this.cmbJob.Size = new System.Drawing.Size(150, 21);
 		this.cmbJob.TabIndex = 3;
 		this.lblIp.AutoSize = true;
-		this.lblIp.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.lblIp.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.lblIp.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblIp.Location = new System.Drawing.Point(180, 15);
 		this.lblIp.Name = "lblIp";
@@ -682,14 +730,14 @@ public class ClientForm : Form
 		this.lblIp.Text = "IP Address:";
 		this.txtIpAddress.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.txtIpAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txtIpAddress.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.txtIpAddress.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.txtIpAddress.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.txtIpAddress.Location = new System.Drawing.Point(180, 31);
 		this.txtIpAddress.Name = "txtIpAddress";
 		this.txtIpAddress.Size = new System.Drawing.Size(150, 20);
 		this.txtIpAddress.TabIndex = 5;
 		this.lblPort.AutoSize = true;
-		this.lblPort.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.lblPort.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.lblPort.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lblPort.Location = new System.Drawing.Point(180, 60);
 		this.lblPort.Name = "lblPort";
@@ -698,7 +746,7 @@ public class ClientForm : Form
 		this.lblPort.Text = "Port:";
 		this.txtPort.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.txtPort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txtPort.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.txtPort.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.txtPort.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.txtPort.Location = new System.Drawing.Point(180, 76);
 		this.txtPort.Name = "txtPort";
@@ -707,7 +755,7 @@ public class ClientForm : Form
 		this.btnConnect.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
 		this.btnConnect.FlatAppearance.BorderSize = 0;
 		this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnConnect.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Bold);
+		this.btnConnect.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold);
 		this.btnConnect.ForeColor = System.Drawing.Color.White;
 		this.btnConnect.Location = new System.Drawing.Point(345, 15);
 		this.btnConnect.Name = "btnConnect";
@@ -722,7 +770,7 @@ public class ClientForm : Form
 		this.btnDisconnect.Enabled = false;
 		this.btnDisconnect.FlatAppearance.BorderSize = 0;
 		this.btnDisconnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnDisconnect.Font = new System.Drawing.Font("Tahoma", 8f, System.Drawing.FontStyle.Bold);
+		this.btnDisconnect.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold);
 		this.btnDisconnect.ForeColor = System.Drawing.Color.White;
 		this.btnDisconnect.Location = new System.Drawing.Point(345, 60);
 		this.btnDisconnect.Name = "btnDisconnect";
@@ -757,7 +805,7 @@ public class ClientForm : Form
 		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(200, 60, 60);
 		this.btnClearLogs.FlatAppearance.BorderSize = 0;
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnClearLogs.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.btnClearLogs.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.btnClearLogs.ForeColor = System.Drawing.Color.White;
 		this.btnClearLogs.Location = new System.Drawing.Point(350, 163);
 		this.btnClearLogs.Name = "btnClearLogs";
@@ -780,7 +828,7 @@ public class ClientForm : Form
 		this.txtCommand.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.txtCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 		this.txtCommand.Dock = System.Windows.Forms.DockStyle.Fill;
-		this.txtCommand.Font = new System.Drawing.Font("Tahoma", 9f);
+		this.txtCommand.Font = new System.Drawing.Font("Segoe UI", 9f);
 		this.txtCommand.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.txtCommand.Location = new System.Drawing.Point(15, 15);
 		this.txtCommand.Name = "txtCommand";
@@ -790,7 +838,7 @@ public class ClientForm : Form
 		this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
 		this.btnSend.FlatAppearance.BorderSize = 0;
 		this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnSend.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.btnSend.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.btnSend.ForeColor = System.Drawing.Color.White;
 		this.btnSend.Location = new System.Drawing.Point(365, 15);
 		this.btnSend.Name = "btnSend";
@@ -803,19 +851,34 @@ public class ClientForm : Form
 		this.btnSend.MouseLeave += new System.EventHandler(btnSend_MouseLeave);
 		this.statusPanel.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.statusPanel.Controls.Add(this.lblStatus);
+		this.statusPanel.Controls.Add(this.btnCancelPartyForm);
 		this.statusPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
 		this.statusPanel.Location = new System.Drawing.Point(0, 400);
 		this.statusPanel.Name = "statusPanel";
 		this.statusPanel.Size = new System.Drawing.Size(500, 50);
 		this.statusPanel.TabIndex = 4;
 		this.lblStatus.AutoSize = true;
-		this.lblStatus.Font = new System.Drawing.Font("Tahoma", 9f, System.Drawing.FontStyle.Bold);
+		this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(0, 153, 102);
 		this.lblStatus.Location = new System.Drawing.Point(15, 18);
 		this.lblStatus.Name = "lblStatus";
 		this.lblStatus.Size = new System.Drawing.Size(102, 14);
 		this.lblStatus.TabIndex = 0;
 		this.lblStatus.Text = "● Bağlantı Hazır";
+		this.btnCancelPartyForm.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+		this.btnCancelPartyForm.BackColor = System.Drawing.Color.FromArgb(200, 60, 60);
+		this.btnCancelPartyForm.FlatAppearance.BorderSize = 0;
+		this.btnCancelPartyForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.btnCancelPartyForm.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold);
+		this.btnCancelPartyForm.ForeColor = System.Drawing.Color.White;
+		this.btnCancelPartyForm.Location = new System.Drawing.Point(320, 12);
+		this.btnCancelPartyForm.Name = "btnCancelPartyForm";
+		this.btnCancelPartyForm.Size = new System.Drawing.Size(165, 26);
+		this.btnCancelPartyForm.TabIndex = 1;
+		this.btnCancelPartyForm.Text = "Parti Kurmayı İptal Et";
+		this.btnCancelPartyForm.UseVisualStyleBackColor = false;
+		this.btnCancelPartyForm.Visible = false;
+		this.btnCancelPartyForm.Click += new System.EventHandler(BtnCancelPartyForm_Click);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.ClientSize = new System.Drawing.Size(500, 450);
@@ -824,7 +887,7 @@ public class ClientForm : Form
 		base.Controls.Add(this.headerPanel);
 		base.Controls.Add(this.commandPanel);
 		base.Controls.Add(this.statusPanel);
-		this.Font = new System.Drawing.Font("Tahoma", 8f);
+		this.Font = new System.Drawing.Font("Segoe UI", 8f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		base.Name = "ClientForm";
 		this.Text = "SnapNet Client";
