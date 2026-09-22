@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <AssemblyName>SnapNetUI</AssemblyName>
+    <AssemblyName>EVOX.Service</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>True</UseWindowsForms>
@@ -23,8 +23,11 @@
   <ItemGroup>
     <EmbeddedResource Include="SnapNetUI\Fonts\Rajdhani-SemiBold.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <Compile Remove="Properties\AssemblyInfo.cs" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>

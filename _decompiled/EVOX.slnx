@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="FluxDB/FluxDB.csproj" />
-  <Project Path="FluxioUpdater/FluxioUpdater.csproj" />
+  <Project Path="FluxDB/EVOX.Data.csproj" />
+  <Project Path="FluxioUpdater/EVOX.Updater.csproj" />
   <Project Path="InputInterceptor/InputInterceptor.csproj" />
   <Project Path="InputManager/InputManager.csproj" />
   <Project Path="Scanix4/Scanix4.csproj" />

@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using OpenCvSharp;
 using Scanix4.Interfaces;
 using Scanix4.Models;
@@ -21,6 +22,8 @@ public class ImageSearchService : IDisposable
 
 	private bool _disposed;
 
+	private bool _hasWarnedInvalidSearchArea;
+
 	public ImageSearchService(SearchConfig config, Logger logger = null)
 	{
 		_config = config ?? throw new ArgumentNullException("config");
@@ -29,6 +32,13 @@ public class ImageSearchService : IDisposable
 		if (!IsValidSearchArea(_config.SearchArea))
 		{
 			_logger.LogWarning($"Geçersiz arama alanı: {_config.SearchArea}. Servis pasif moda alındı.");
+			return;
+		}
+		// A template file that is simply not there means "this slot has not been assigned yet",
+		// which is a normal state for optional steps - not a failure worth alarming about.
+		if (!TemplateFileExists(_config.TemplatePath))
+		{
+			_logger.LogInformation("Şablon atanmamış (" + _config.TemplatePath + "). Bu adım, görsel atanana kadar pasif.");
 			return;
 		}
 		try
@@ -57,9 +67,14 @@ public class ImageSearchService : IDisposable
 		{
 			if (!IsValidSearchArea(_config.SearchArea))
 			{
-				_logger.LogWarning("Geçersiz arama alanı tespit edildi. Arama iptal edildi.");
+				if (!_hasWarnedInvalidSearchArea)
+				{
+					_hasWarnedInvalidSearchArea = true;
+					_logger.LogWarning("Geçersiz arama alanı tespit edildi. Arama iptal edildi.");
+				}
 				return GetSafeResult();
 			}
+			_hasWarnedInvalidSearchArea = false;
 			if (_matcher == null || _capturer == null)
 			{
 				return GetSafeResult();
@@ -87,6 +102,26 @@ public class ImageSearchService : IDisposable
 		catch (Exception)
 		{
 			return (_config.Mode == MatchMode.SingleMatch) ? null : ((object)0);
+		}
+	}
+
+	private static bool TemplateFileExists(string templatePath)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(templatePath))
+			{
+				return false;
+			}
+			if (File.Exists(templatePath))
+			{
+				return true;
+			}
+			return File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, templatePath));
+		}
+		catch
+		{
+			return true;   // let the normal load path report anything unexpected
 		}
 	}
 

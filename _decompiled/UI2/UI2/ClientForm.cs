@@ -106,6 +106,7 @@ public class ClientForm : Form
 	{
 		InitializeComponent();
 		base.StartPosition = FormStartPosition.Manual;
+		Icon = Icon.ExtractAssociatedIcon(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
 		btnClearLogs.BringToFront();
 		InitializeAdvancedComponents();
 		SetupClientEvents();
@@ -221,6 +222,47 @@ public class ClientForm : Form
 				});
 			});
 		};
+#if !NET48
+		AppClient.PartyFormRequested += async delegate(string[] members)
+		{
+			InputManager.InputUtils inputUtils = Form1.Instance?._screenCaptureMainForm?.InputUtils;
+			if (inputUtils == null)
+			{
+				return;
+			}
+			_partyFormCts?.Cancel();
+			_partyFormCts?.Dispose();
+			CancellationTokenSource cts = new CancellationTokenSource();
+			_partyFormCts = cts;
+			SafeInvoke(delegate
+			{
+				btnCancelPartyForm.Text = "Parti Kurmayı İptal Et";
+				btnCancelPartyForm.Enabled = true;
+				btnCancelPartyForm.Visible = true;
+			});
+			try
+			{
+				await new Scanix4.Services.ActionCategories.PartyFormationActions(inputUtils, SimpleLogger.Logger.Instance).FormPartyAsync(members, cts.Token);
+			}
+			finally
+			{
+				SafeInvoke(delegate
+				{
+					btnCancelPartyForm.Visible = false;
+				});
+				cts.Dispose();
+				if (_partyFormCts == cts)
+				{
+					_partyFormCts = null;
+				}
+			}
+		};
+#else
+		AppClient.PartyFormRequested += delegate
+		{
+			SimpleLogger.Logger.Instance.LogWarning("Parti kurma (OCR) bu Windows sürümünde desteklenmiyor.");
+		};
+#endif
 	}
 
 	private void StartVerificationReporting()
@@ -228,13 +270,23 @@ public class ClientForm : Form
 		_verificationReportTimer?.Dispose();
 		_verificationReportTimer = new System.Threading.Timer(async delegate
 		{
-			if (!AppClient.IsConnected || !VisualVerificationTracker.LastSuccess.HasValue)
+			if (!AppClient.IsConnected)
 			{
 				return;
 			}
 			try
 			{
-				await AppClient.SendCommandAsync(VisualVerificationTracker.LastSuccess.Value ? "VOK" : "VFAIL");
+				if (VisualVerificationTracker.LastSuccess.HasValue)
+				{
+					await AppClient.SendCommandAsync(VisualVerificationTracker.LastSuccess.Value ? "VOK" : "VFAIL");
+				}
+				// Report this character's empty inventory slots so the panel can show it per
+				// character. Readings taken while a repair dialog covered the region are skipped -
+				// they describe the dialog, not the bag.
+				if (Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out var _) && !suppressed)
+				{
+					await AppClient.SendCommandAsync("SLOTS:" + emptySlots);
+				}
 			}
 			catch
 			{
@@ -285,47 +337,6 @@ public class ClientForm : Form
 				await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetWhellOfFun"));
 			}
 		});
-#if !NET48
-		AppClient.PartyFormRequested += async delegate(string[] members)
-		{
-			InputManager.InputUtils inputUtils = Form1.Instance?._screenCaptureMainForm?.InputUtils;
-			if (inputUtils == null)
-			{
-				return;
-			}
-			_partyFormCts?.Cancel();
-			_partyFormCts?.Dispose();
-			CancellationTokenSource cts = new CancellationTokenSource();
-			_partyFormCts = cts;
-			SafeInvoke(delegate
-			{
-				btnCancelPartyForm.Text = "Parti Kurmayı İptal Et";
-				btnCancelPartyForm.Enabled = true;
-				btnCancelPartyForm.Visible = true;
-			});
-			try
-			{
-				await new Scanix4.Services.ActionCategories.PartyFormationActions(inputUtils, SimpleLogger.Logger.Instance).FormPartyAsync(members, cts.Token);
-			}
-			finally
-			{
-				SafeInvoke(delegate
-				{
-					btnCancelPartyForm.Visible = false;
-				});
-				cts.Dispose();
-				if (_partyFormCts == cts)
-				{
-					_partyFormCts = null;
-				}
-			}
-		};
-#else
-		AppClient.PartyFormRequested += delegate
-		{
-			SimpleLogger.Logger.Instance.LogWarning("Parti kurma (OCR) bu Windows sürümünde desteklenmiyor.");
-		};
-#endif
 	}
 
 	private void BtnCancelPartyForm_Click(object sender, EventArgs e)
@@ -653,7 +664,7 @@ public class ClientForm : Form
 		this.lblTitle.Name = "lblTitle";
 		this.lblTitle.Size = new System.Drawing.Size(98, 14);
 		this.lblTitle.TabIndex = 1;
-		this.lblTitle.Text = "SnapNet Client";
+		this.lblTitle.Text = "EVOX İstemci";
 		this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
 		this.btnClose.FlatAppearance.BorderSize = 0;
 		this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -890,7 +901,7 @@ public class ClientForm : Form
 		this.Font = new System.Drawing.Font("Segoe UI", 8f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		base.Name = "ClientForm";
-		this.Text = "SnapNet Client";
+		this.Text = "EVOX İstemci";
 		this.headerPanel.ResumeLayout(false);
 		this.headerPanel.PerformLayout();
 		this.connectionPanel.ResumeLayout(false);

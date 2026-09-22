@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SnapNetUI;
@@ -25,6 +26,12 @@ public class ServerForm : Form
 	private Alarm _alarm = new Alarm();
 
 	private bool _isSilentMode = false;
+
+	private DateTime? _lastErrorTime;
+
+	private string _lastErrorMessage;
+
+	private static readonly TimeSpan LastErrorAutoClearAfter = TimeSpan.FromMinutes(5.0);
 
 	private IContainer components = null;
 
@@ -127,7 +134,7 @@ public class ServerForm : Form
 					UpdateUI();
 				}
 				MessageBox.Show("Lisansınızın süresi doldu. Devam etmek için yeni bir lisans anahtarı girin.", "Lisans Süresi Doldu", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-				if (!LicenseCore.LicenseGate.EnsureLicensed("SnapNet Server"))
+				if (!LicenseCore.LicenseGate.EnsureLicensed("EVOX.Service"))
 				{
 					Close();
 				}
@@ -241,7 +248,32 @@ public class ServerForm : Form
 		{
 			UpdateLogs();
 			UpdateUptimeLabel();
+			UpdateLastErrorLabel();
 		}, null, 100, 100);
+	}
+
+	private void UpdateLastErrorLabel()
+	{
+		if (_lastErrorTime == null)
+		{
+			return;
+		}
+		TimeSpan elapsed = DateTime.Now - _lastErrorTime.Value;
+		if (elapsed >= LastErrorAutoClearAfter)
+		{
+			SafeInvoke(delegate
+			{
+				lblLastError.Text = "Son hata: yok";
+			});
+			_lastErrorTime = null;
+			_lastErrorMessage = null;
+			return;
+		}
+		string ago = (elapsed.TotalSeconds < 60.0) ? $"{(int)elapsed.TotalSeconds} sn önce" : $"{(int)elapsed.TotalMinutes} dk önce";
+		SafeInvoke(delegate
+		{
+			lblLastError.Text = $"Son hata ({ago}): {_lastErrorMessage}";
+		});
 	}
 
 	private void UpdateUptimeLabel()
@@ -457,7 +489,9 @@ public class ServerForm : Form
 			{
 				Text = $"{c.nickname} | {c.job} | {c.endpoint}",
 				VerificationOk = c.lastVerificationOk,
-				VerificationTime = c.lastVerificationTime
+				VerificationTime = c.lastVerificationTime,
+				EmptySlots = c.emptySlots,
+				EmptySlotsTime = c.emptySlotsTime
 			}).ToArray();
 		string breakdown = string.Join("   ", clientList
 			.GroupBy((c) => c.job)
@@ -486,6 +520,10 @@ public class ServerForm : Form
 		public bool? VerificationOk { get; set; }
 
 		public DateTime? VerificationTime { get; set; }
+
+		public int? EmptySlots { get; set; }
+
+		public DateTime? EmptySlotsTime { get; set; }
 	}
 
 	private void LstClients_DrawItem(object sender, DrawItemEventArgs e)
@@ -524,6 +562,28 @@ public class ServerForm : Form
 		using (Font statusFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
 		{
 			e.Graphics.DrawString(statusText, statusFont, statusBrush, e.Bounds.Left + 4, e.Bounds.Top + 19);
+		}
+		string slotText;
+		Color slotColor;
+		if (!item.EmptySlots.HasValue)
+		{
+			slotText = "● Boş envanter slotu: veri yok";
+			slotColor = Color.FromArgb(110, 115, 130);
+		}
+		else
+		{
+			string reportedAt = item.EmptySlotsTime.HasValue
+				? item.EmptySlotsTime.Value.ToLocalTime().ToString("HH:mm:ss")
+				: "-";
+			slotText = $"● Boş envanter slotu: {item.EmptySlots.Value}  ({reportedAt})";
+			slotColor = (item.EmptySlots.Value == 0)
+				? Color.FromArgb(210, 100, 100)
+				: ((item.EmptySlots.Value <= 5) ? Color.FromArgb(230, 160, 90) : Color.FromArgb(110, 200, 110));
+		}
+		using (SolidBrush slotBrush = new SolidBrush(slotColor))
+		using (Font slotFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
+		{
+			e.Graphics.DrawString(slotText, slotFont, slotBrush, e.Bounds.Left + 4, e.Bounds.Top + 34);
 		}
 		e.DrawFocusRectangle();
 	}
@@ -669,10 +729,16 @@ public class ServerForm : Form
 
 	private void ShowErrorNotification(string message)
 	{
+		_lastErrorTime = DateTime.Now;
+		_lastErrorMessage = message;
 		SafeInvoke(delegate
 		{
-			lblLastError.Text = $"Son hata ({DateTime.Now:HH:mm:ss}): {message}";
-			_currentToast?.Close();
+			lblLastError.Text = $"Son hata (az önce): {message}";
+			if (_currentToast != null && _currentToast.IsUsable)
+			{
+				_currentToast.UpdateMessage(message);
+				return;
+			}
 			_currentToast = new ErrorToastForm(message);
 			_currentToast.Show();
 		});
@@ -869,7 +935,7 @@ public class ServerForm : Form
 		this.lstClients.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstClients.FormattingEnabled = true;
-		this.lstClients.ItemHeight = 36;
+		this.lstClients.ItemHeight = 52;
 		this.lstClients.Location = new System.Drawing.Point(0, 25);
 		this.lstClients.Name = "lstClients";
 		this.lstClients.Size = new System.Drawing.Size(345, 335);
@@ -1128,7 +1194,7 @@ public class ServerForm : Form
 		this.lblSubtitle.Name = "lblSubtitle";
 		this.lblSubtitle.Size = new System.Drawing.Size(200, 20);
 		this.lblSubtitle.TabIndex = 1;
-		this.lblSubtitle.Text = "Sunucu Kontrol Paneli";
+		this.lblSubtitle.Text = "Sunucu · Servis Paneli";
 		this.lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
 		this.lblTitle.Font = AppFonts.Header(20f);
 		this.lblTitle.ForeColor = System.Drawing.Color.White;
@@ -1136,7 +1202,7 @@ public class ServerForm : Form
 		this.lblTitle.Name = "lblTitle";
 		this.lblTitle.Size = new System.Drawing.Size(300, 30);
 		this.lblTitle.TabIndex = 0;
-		this.lblTitle.Text = "SNAP NET SERVER";
+		this.lblTitle.Text = "EVOX.SERVICE";
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 15f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
@@ -1147,7 +1213,7 @@ public class ServerForm : Form
 		this.MinimumSize = new System.Drawing.Size(1000, 700);
 		base.Name = "ServerForm";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-		this.Text = "SnapNet Server Pro v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		this.Text = "EVOX.Service v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		this.mainContainer.ResumeLayout(false);
 		this.statusPanel.ResumeLayout(false);
 		this.mainSplitContainer.Panel1.ResumeLayout(false);

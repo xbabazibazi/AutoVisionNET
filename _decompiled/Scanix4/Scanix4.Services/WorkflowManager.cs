@@ -88,18 +88,15 @@ public class WorkflowManager
 				token.ThrowIfCancellationRequested();
 				if (!tasks.TryGetValue(current, out SearchTask task))
 				{
-					if (_workflowId == "GenieStatussdfsdfsdf")
-					{
-						Logger.Instance.LogInformation("Görev bulunamadı: " + current + ". İş akışı sonlandırılıyor.");
-					}
+					// A step whose id has no matching task ends the workflow for good. Logging this
+					// used to be gated behind a debug id that is never true, so a simple typo in a
+					// workflow definition silently disabled the whole feature with no trace.
+					Logger.Instance.LogError($"'{_workflowId}' iş akışı durdu: '{current}' adımı için tanımlı görev yok.");
 					break;
 				}
 				if (!_transitions.TryGetValue(current, out WorkflowTransition transition))
 				{
-					if (_workflowId == "GenieStatussdfsdfsdf")
-					{
-						Logger.Instance.LogInformation("Geçiş tanımı bulunamadı: " + current + ". İş akışı sonlandırılıyor.");
-					}
+					Logger.Instance.LogError($"'{_workflowId}' iş akışı durdu: '{current}' adımı tanımlı değil.");
 					break;
 				}
 				if (_workflowId == "GenieStatussdfsdfsdf")
@@ -169,6 +166,13 @@ public class WorkflowManager
 						}
 						else
 						{
+							// A zero count normally means "nothing found", but for some tasks zero is
+							// the state we actually care about (inventory completely full), so those
+							// opt in to having it reported.
+							if (task.Config.ReportZeroCount)
+							{
+								task.Config.OnFoundCount?.Invoke(0);
+							}
 							task.Config.OnMatchNotFound?.Invoke();
 							current = transition.NextStepOnNotMatch;
 							delayMs = task.Config.IntervalMs;
@@ -205,10 +209,11 @@ public class WorkflowManager
 		}
 		catch (Exception ex2)
 		{
-			if (_workflowId == "GenieStatussdfsdfsdf")
-			{
-				Logger.Instance.LogInformation("HATA: " + ex2.Message);
-			}
+			// This catch sits OUTSIDE the task loop, so anything thrown by a task's action
+			// handler kills the whole workflow for good. Logging it used to be gated behind a
+			// leftover debug workflow id that is never true, which made such a death completely
+			// invisible - the service simply stopped working with no trace at all.
+			Logger.Instance.LogError($"'{_workflowId}' iş akışı hata nedeniyle durdu: {ex2.GetType().Name} - {ex2.Message}");
 		}
 	}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -8,11 +9,152 @@ namespace LicenseCore;
 
 public static class LicenseGate
 {
-	private static string LicenseFilePath => Path.Combine(AppContext.BaseDirectory, "license.key");
+	private const string LicenseFileName = "license.key";
+
+	private const string StoreFolderName = "EVOX";
 
 	private static System.Threading.Timer _recheckTimer;
 
 	public static LicenseInfo Current { get; private set; }
+
+	// The licence used to be stored next to the exe. That location is fragile:
+	//  * the install folder can be read-only (Program Files), and SaveLicense swallowed
+	//    the resulting exception, so the licence silently never persisted;
+	//  * the updater relaunches the app elevated, so post-update runs do not necessarily
+	//    resolve/permission that path the same way a normal run does;
+	//  * re-extracting the package somewhere else leaves the licence behind.
+	// It is now kept in stable per-machine / per-user folders. The old path is still read
+	// so an existing activation migrates across automatically and nobody has to re-enter it.
+	/// <summary>
+	/// A licence dropped next to the executable is adopted and copied into the real store on the
+	/// next run. This is read-only and doubles as the way to provision a machine by hand: put
+	/// license.key beside the exe once and it moves itself into place.
+	/// </summary>
+	private static IReadOnlyList<string> GetLegacyLicensePaths()
+	{
+		List<string> paths = new List<string>();
+		try
+		{
+			paths.Add(Path.Combine(AppContext.BaseDirectory, LicenseFileName));
+		}
+		catch
+		{
+		}
+		return paths;
+	}
+
+	/// <summary>
+	/// Where the licence is persisted, in read priority order. ProgramData comes first
+	/// because it is shared across users *and* across elevated/non-elevated runs of the app.
+	/// </summary>
+	public static IReadOnlyList<string> GetLicenseStorePaths()
+	{
+		List<string> paths = new List<string>();
+		AddStorePath(paths, Environment.SpecialFolder.CommonApplicationData, StoreFolderName);
+		AddStorePath(paths, Environment.SpecialFolder.ApplicationData, StoreFolderName);
+		return paths;
+	}
+
+	private static void AddStorePath(List<string> paths, Environment.SpecialFolder folder, string folderName)
+	{
+		try
+		{
+			string root = Environment.GetFolderPath(folder);
+			if (!string.IsNullOrEmpty(root))
+			{
+				paths.Add(Path.Combine(root, folderName, LicenseFileName));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	public static string ReadStoredLicenseText()
+	{
+		foreach (string path in GetLicenseStorePaths())
+		{
+			string text = TryReadFile(path);
+			if (text != null)
+			{
+				return text;
+			}
+		}
+		foreach (string legacyPath in GetLegacyLicensePaths())
+		{
+			string legacyText = TryReadFile(legacyPath);
+			if (legacyText != null)
+			{
+				return legacyText;
+			}
+		}
+		return null;
+	}
+
+	private static string TryReadFile(string path)
+	{
+		try
+		{
+			if (File.Exists(path))
+			{
+				string text = File.ReadAllText(path);
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool TryWriteFile(string path, string licenseText)
+	{
+		try
+		{
+			string folder = Path.GetDirectoryName(path);
+			if (!string.IsNullOrEmpty(folder))
+			{
+				Directory.CreateDirectory(folder);
+			}
+			File.WriteAllText(path, licenseText);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Writes the licence to every store location that accepts it. Returns false only when
+	/// none of them could be written, which is the case the caller must surface to the user.
+	/// </summary>
+	public static bool WriteLicenseText(string licenseText)
+	{
+		bool written = false;
+		foreach (string path in GetLicenseStorePaths())
+		{
+			if (TryWriteFile(path, licenseText))
+			{
+				written = true;
+			}
+		}
+		return written;
+	}
+
+	private static void EnsureStoredInAllLocations(string licenseText)
+	{
+		foreach (string path in GetLicenseStorePaths())
+		{
+			if (TryReadFile(path) == null)
+			{
+				TryWriteFile(path, licenseText);
+			}
+		}
+	}
 
 	public static bool IsCurrentlyValid()
 	{
@@ -109,29 +251,32 @@ public static class LicenseGate
 	private static bool TryLoadStoredLicense(out LicenseInfo info)
 	{
 		info = null;
-		try
-		{
-			if (!File.Exists(LicenseFilePath))
-			{
-				return false;
-			}
-			string text = File.ReadAllText(LicenseFilePath);
-			return LicenseValidator.TryValidate(text, out info);
-		}
-		catch
+		string licenseText = ReadStoredLicenseText();
+		if (string.IsNullOrWhiteSpace(licenseText))
 		{
 			return false;
 		}
+		if (!LicenseValidator.TryValidate(licenseText, out info))
+		{
+			return false;
+		}
+		// Migrate a licence that still lives in the old install-folder location (or that is
+		// only present in one of the stores) so later runs find it wherever they look.
+		EnsureStoredInAllLocations(licenseText);
+		return true;
 	}
 
 	private static void SaveLicense(string licenseText)
 	{
-		try
+		if (!WriteLicenseText(licenseText))
 		{
-			File.WriteAllText(LicenseFilePath, licenseText);
-		}
-		catch
-		{
+			// Never fail silently here: a licence that cannot be written is exactly why the
+			// activation prompt would keep coming back on every launch.
+			MessageBox.Show(
+				"Lisans diske kaydedilemedi, bu yüzden uygulama tekrar açıldığında lisans isteyebilir.\n\nDenenen konumlar:\n" + string.Join("\n", GetLicenseStorePaths()),
+				"Lisans Kaydedilemedi",
+				MessageBoxButtons.OK,
+				MessageBoxIcon.Warning);
 		}
 	}
 }

@@ -137,13 +137,12 @@ public class Form1 : Form
 		FixMenuTextColors();
 		SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, value: true);
 		Paint += Form1_Paint;
-		_ = CheckForUpdatesOnStartupAsync();
 		LicenseCore.LicenseGate.StartPeriodicRecheck(delegate
 		{
 			this.InvokeIfRequired(delegate
 			{
 				MessageBox.Show(this, "Lisansınızın süresi doldu. Devam etmek için yeni bir lisans anahtarı girin.", "Lisans Süresi Doldu", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-				if (!LicenseCore.LicenseGate.EnsureLicensed("SnapNet"))
+				if (!LicenseCore.LicenseGate.EnsureLicensed("EVOX.Console"))
 				{
 					Environment.Exit(0);
 				}
@@ -211,7 +210,11 @@ public class Form1 : Form
 	{
 		this.InvokeIfRequired(delegate
 		{
-			_currentToast?.Close();
+			if (_currentToast != null && _currentToast.IsUsable)
+			{
+				_currentToast.UpdateMessage(level, message);
+				return;
+			}
 			_currentToast = new ErrorToastForm(level, message);
 			_currentToast.Show();
 		});
@@ -313,24 +316,6 @@ public class Form1 : Form
 		toolStripButtonCheckForUpdates_Click(null, EventArgs.Empty);
 	}
 
-	public async Task CheckForUpdatesOnStartupAsync()
-	{
-		try
-		{
-			UpdateInfo update = await UpdateChecker.CheckForUpdateAsync();
-			if (update != null)
-			{
-				this.InvokeIfRequired(delegate
-				{
-					OfferUpdate(update);
-				});
-			}
-		}
-		catch
-		{
-		}
-	}
-
 	private async void toolStripButtonCheckForUpdates_Click(object sender, EventArgs e)
 	{
 		try
@@ -386,11 +371,11 @@ public class Form1 : Form
 	{
 		try
 		{
-			string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FluxioUpdater.exe");
+			string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EVOX.Updater.exe");
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
 				FileName = fileName,
-				Arguments = "\"" + zipPath + "\"",
+				Arguments = "\"" + zipPath + "\" \"EVOX.Console.exe\"",
 				UseShellExecute = true,
 				Verb = "runas"
 			};
@@ -742,7 +727,7 @@ public class Form1 : Form
 		base.MinimizeBox = false;
 		base.Name = "Form1";
 		base.ShowIcon = true;
-		this.Text = "SnapNet v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		this.Text = "EVOX.Console v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		base.TopMost = true;
 		base.FormClosing += new System.Windows.Forms.FormClosingEventHandler(Form1_FormClosing);
 		base.Shown += new System.EventHandler(Form1_Shown);

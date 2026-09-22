@@ -1,4 +1,4 @@
-namespace FluxDB;
+namespace EVOX.Data;
 
 public class SqliteDataConnector : DataConnector
 {

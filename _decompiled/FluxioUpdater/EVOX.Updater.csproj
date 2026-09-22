@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>FluxDB</AssemblyName>
+    <AssemblyName>EVOX.Updater</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <OutputType>Exe</OutputType>
     <TargetFrameworks>net8.0;net48</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
@@ -9,7 +10,9 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
 </Project>

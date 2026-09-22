@@ -150,5 +150,21 @@ public class MagicBagTasks : ITaskCategory
 			},
 			Mode = SearchMode.Single
 		});
+		// Second-pass twin of OpenSecondMagicBag. The SwapTomahawk workflow has a step keyed
+		// "OpenSecondMagicBag2" (like OpenMagicBag2 and the ...MagicBag2 checks), but the task
+		// itself was never defined - and the engine resolves tasks by the step KEY, so that step
+		// found nothing and the whole swap workflow stopped dead there.
+		Tasks.Add(new SearchTask
+		{
+			TaskId = "OpenSecondMagicBag2",
+			Config = new SearchConfig
+			{
+				TemplatePath = TemplateResolver.Resolve("OpenSecondMagicBag2", "Images/SecondMagicBag.jpg"),
+				SearchArea = DefaultSearchArea,
+				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
+				OnMatchNotFound = null
+			},
+			Mode = SearchMode.Single
+		});
 	}
 }

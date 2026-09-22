@@ -4,9 +4,9 @@ using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.Linq;
-using FluxDB.Models;
+using EVOX.Data.Models;
 
-namespace FluxDB;
+namespace EVOX.Data;
 
 public class DbManager : SqliteDataConnector
 {

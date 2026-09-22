@@ -1,5 +1,5 @@
 using System;
-using FluxDB;
+using EVOX.Data;
 using SettingsManager.ScreenCapture;
 
 namespace SettingsManager.GeneralSettingss;

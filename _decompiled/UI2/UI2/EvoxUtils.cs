@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace UI2;
 
-internal static class FluxioUtiles
+internal static class EvoxUtils
 {
 	public static decimal ToDecimalOrZero(this string value, decimal defaultValue = 0m)
 	{

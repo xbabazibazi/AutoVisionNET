@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using InputInterceptorNS;
 using InputManager;
+using Scanix4.Services;
 using Scanix4.Services.BaseClasses;
 using SimpleLogger;
 
@@ -31,6 +32,9 @@ public class WeaponsActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 	public void OnMatchFoundBrokenFullPlateArmorPauldron(Point coordinates)
 	{
 		Logger.LogInformation("RepairArmors OnMatchFoundBrokenFullPlateArmorPauldron");
+		// The repair dialog is about to cover the inventory region; tell the inventory alert to
+		// ignore its readings until it is gone, otherwise it counts the dialog and false-alarms.
+		InventoryScanSuppressor.Suppress();
 		inputUtils.SimulateKeyPress(KeyCode.Seven, 50);
 		Thread.Sleep(200);
 	}
@@ -38,6 +42,7 @@ public class WeaponsActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 	public void OnMatchFoundRepairTomahawk(Point coordinates)
 	{
 		Logger.LogInformation("RepairWeapons OnMatchFoundRepairTomahawk");
+		InventoryScanSuppressor.Suppress();
 		inputUtils.SimulateKeyPress(KeyCode.Seven, 50);
 		Thread.Sleep(200);
 	}

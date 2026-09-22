@@ -43,6 +43,10 @@ public class InventorySlotAlert : UserControl, IServiceControl
 
 	private NumericUpDown numThreshold;
 
+	private Label lblLiveCount;
+
+	private System.Windows.Forms.Timer _liveCountTimer;
+
 	public bool IsActive => checkActive.Checked;
 
 	public InventorySlotAlert(WorkflowEngine workflowEngine)
@@ -53,6 +57,41 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		_settings = Settings.Instance.ScreenCapture.InventorySlotAlert;
 		LoadSettings();
 		SetupEventHandlers();
+		StartLiveCountTimer();
+	}
+
+	private void StartLiveCountTimer()
+	{
+		_liveCountTimer = new System.Windows.Forms.Timer { Interval = 500 };
+		_liveCountTimer.Tick += delegate { UpdateLiveCount(); };
+		_liveCountTimer.Start();
+		UpdateLiveCount();
+	}
+
+	private void UpdateLiveCount()
+	{
+		try
+		{
+			if (!Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out var _))
+			{
+				lblLiveCount.Text = "Şu an: — (tarama çalışmıyor)";
+				lblLiveCount.ForeColor = Color.FromArgb(140, 145, 155);
+				return;
+			}
+			if (suppressed)
+			{
+				lblLiveCount.Text = $"Şu an: {emptySlots} boş slot (onarım nedeniyle yok sayılıyor)";
+				lblLiveCount.ForeColor = Color.FromArgb(230, 160, 90);
+				return;
+			}
+			bool wouldAlarm = emptySlots <= (int)numThreshold.Value;
+			lblLiveCount.Text = $"Şu an: {emptySlots} boş slot" + (wouldAlarm ? "  → ALARM sınırında" : "");
+			lblLiveCount.ForeColor = wouldAlarm ? Color.FromArgb(230, 120, 120) : Color.FromArgb(130, 200, 130);
+		}
+		catch
+		{
+			// The live readout must never be able to take the settings panel down with it.
+		}
 	}
 
 	private void LoadSettings()
@@ -171,9 +210,11 @@ public class InventorySlotAlert : UserControl, IServiceControl
 
 	protected override void Dispose(bool disposing)
 	{
-		if (disposing && components != null)
+		if (disposing)
 		{
-			components.Dispose();
+			_liveCountTimer?.Stop();
+			_liveCountTimer?.Dispose();
+			components?.Dispose();
 		}
 		base.Dispose(disposing);
 	}
@@ -187,6 +228,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.numThreshold = new System.Windows.Forms.NumericUpDown();
 		this.lblThreshold = new System.Windows.Forms.Label();
 		this.checkActive = new System.Windows.Forms.CheckBox();
+		this.lblLiveCount = new System.Windows.Forms.Label();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 		this.groupBoxSettings.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)this.numThreshold).BeginInit();
@@ -212,6 +254,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.labelStatus.Text = "● Devre Dışı";
 		this.labelStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 		this.groupBoxSettings.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
+		this.groupBoxSettings.Controls.Add(this.lblLiveCount);
 		this.groupBoxSettings.Controls.Add(this.numThreshold);
 		this.groupBoxSettings.Controls.Add(this.lblThreshold);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
@@ -242,6 +285,14 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.lblThreshold.Size = new System.Drawing.Size(140, 15);
 		this.lblThreshold.TabIndex = 1;
 		this.lblThreshold.Text = "Düşük Yuva Eşiği:";
+		this.lblLiveCount.Font = new System.Drawing.Font("Segoe UI", 8.5f, System.Drawing.FontStyle.Bold);
+		this.lblLiveCount.ForeColor = System.Drawing.Color.FromArgb(140, 145, 155);
+		this.lblLiveCount.Location = new System.Drawing.Point(20, 100);
+		this.lblLiveCount.Name = "lblLiveCount";
+		this.lblLiveCount.Size = new System.Drawing.Size(340, 22);
+		this.lblLiveCount.TabIndex = 3;
+		this.lblLiveCount.Text = "Şu an: —";
+		this.toolTip.SetToolTip(this.lblLiveCount, "Taramanin su an gordugu bos slot sayisi. Esigi buna bakarak ayarlayin.");
 		this.checkActive.Appearance = System.Windows.Forms.Appearance.Button;
 		this.checkActive.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.checkActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);

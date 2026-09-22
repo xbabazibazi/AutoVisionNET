@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>FluxioUpdater</AssemblyName>
+    <AssemblyName>EVOX.Data</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <OutputType>Exe</OutputType>
     <TargetFrameworks>net8.0;net48</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
@@ -10,9 +9,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 </Project>

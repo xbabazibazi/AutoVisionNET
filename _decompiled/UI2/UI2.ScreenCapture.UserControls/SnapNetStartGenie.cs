@@ -196,7 +196,7 @@ public class SnapNetStartGenie : UserControl, IServiceControl
 		this.checkActive.TabIndex = 0;
 		this.checkActive.Text = "Enable";
 		this.checkActive.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-		this.toolTip.SetToolTip(this.checkActive, "Enable SnapNet StartGenie monitoring");
+		this.toolTip.SetToolTip(this.checkActive, "EVOX Start Genie izlemesini etkinleştirir");
 		this.checkActive.UseVisualStyleBackColor = false;
 		this.checkActive.CheckedChanged += new System.EventHandler(checkActive_CheckedChanged);
 		this.toolTip.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);

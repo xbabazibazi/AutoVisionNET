@@ -143,7 +143,7 @@ public class StatusDashboardForm : Form
 
 		bool isConnected = SnapNetClient.AppClient.IsConnected;
 		string serverInfo = Settings.Instance.ClientSettings.ClientSettings.ServerIP + ":" + Settings.Instance.ClientSettings.ClientSettings.ServerPort;
-		AddRow("SnapNet Bağlantısı:", isConnected ? ("Bağlı (" + serverInfo + ")") : "Bağlı Değil", isConnected ? Color.LightGreen : Color.Gray);
+		AddRow("EVOX.Service Bağlantısı:", isConnected ? ("Bağlı (" + serverInfo + ")") : "Bağlı Değil", isConnected ? Color.LightGreen : Color.Gray);
 
 		string activeProfile = Settings.Instance.ScreenCapture.RectanglesSettings.ActiveProfileName;
 		AddRow("Aktif Çözünürlük Profili:", string.IsNullOrEmpty(activeProfile) ? "(kaydedilmemiş)" : activeProfile);

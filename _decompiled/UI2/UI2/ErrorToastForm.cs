@@ -7,9 +7,25 @@ namespace UI2;
 
 public class ErrorToastForm : Form
 {
+	private const int WS_EX_NOACTIVATE = 134217728;
+
+	private readonly Label _titleLabel;
+
 	private readonly Label _messageLabel;
 
 	private readonly Timer _autoCloseTimer;
+
+	protected override bool ShowWithoutActivation => true;
+
+	protected override CreateParams CreateParams
+	{
+		get
+		{
+			CreateParams cp = base.CreateParams;
+			cp.ExStyle |= WS_EX_NOACTIVATE;
+			return cp;
+		}
+	}
 
 	public ErrorToastForm(LogLevel level, string message)
 	{
@@ -21,7 +37,7 @@ public class ErrorToastForm : Form
 		Height = 90;
 		BackColor = (level == LogLevel.Error) ? Color.FromArgb(180, 40, 40) : Color.FromArgb(190, 130, 20);
 
-		Label title = new Label
+		_titleLabel = new Label
 		{
 			Text = (level == LogLevel.Error) ? "HATA" : "UYARI",
 			ForeColor = Color.White,
@@ -50,7 +66,7 @@ public class ErrorToastForm : Form
 		closeButton.FlatAppearance.BorderSize = 0;
 		closeButton.Click += (s, e) => Close();
 
-		Controls.Add(title);
+		Controls.Add(_titleLabel);
 		Controls.Add(_messageLabel);
 		Controls.Add(closeButton);
 
@@ -59,6 +75,17 @@ public class ErrorToastForm : Form
 
 		_autoCloseTimer = new Timer { Interval = 8000 };
 		_autoCloseTimer.Tick += (s, e) => Close();
+		_autoCloseTimer.Start();
+	}
+
+	public bool IsUsable => !IsDisposed && !Disposing;
+
+	public void UpdateMessage(LogLevel level, string message)
+	{
+		BackColor = (level == LogLevel.Error) ? Color.FromArgb(180, 40, 40) : Color.FromArgb(190, 130, 20);
+		_titleLabel.Text = (level == LogLevel.Error) ? "HATA" : "UYARI";
+		_messageLabel.Text = message;
+		_autoCloseTimer.Stop();
 		_autoCloseTimer.Start();
 	}
 

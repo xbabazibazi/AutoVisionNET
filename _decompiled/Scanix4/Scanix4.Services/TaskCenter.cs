@@ -26,6 +26,7 @@ public class TaskCenter
 		RegisterTasks(new MagicBagTasks(ActionCenter).Tasks);
 		RegisterTasks(new InventoryTasks(ActionCenter).Tasks);
 		RegisterTasks(new LeftBotMenuTasks(ActionCenter).Tasks);
+		RegisterTasks(new WeaponSwapTasks(ActionCenter).Tasks);
 	}
 
 	private void RegisterTasks(List<SearchTask> tasks)

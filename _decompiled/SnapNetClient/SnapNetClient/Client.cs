@@ -41,6 +41,8 @@ public class Client : IDisposable
 
 	private int _reconnectAttempts = 0;
 
+	private CancellationTokenSource _reconnectCts = new CancellationTokenSource();
+
 	private const int MAX_RECONNECT_ATTEMPTS = 5;
 
 	private const int MAX_MESSAGE_SIZE = 67108864;
@@ -116,9 +118,11 @@ public class Client : IDisposable
 		}
 		catch (Exception ex)
 		{
+			IsConnected = false;
+			_isRunning = false;
 			MessageReceived?.Invoke("Bağlantı hatası: " + ex.Message);
 			ConnectionFailed?.Invoke(ex);
-			if (!_autoReconnect || _reconnectAttempts >= 5)
+			if (!_autoReconnect || _reconnectAttempts >= 5 || _reconnectCts.IsCancellationRequested)
 			{
 				Disconnect();
 				throw;
@@ -146,11 +150,23 @@ public class Client : IDisposable
 
 	private async Task ReconnectWithBackoffAsync()
 	{
-		while (_reconnectAttempts < 5 && _autoReconnect)
+		CancellationToken reconnectToken = _reconnectCts.Token;
+		while (_reconnectAttempts < 5 && _autoReconnect && !reconnectToken.IsCancellationRequested)
 		{
 			_reconnectAttempts++;
 			int delay = Math.Min(1000 * (int)Math.Pow(2.0, _reconnectAttempts), 30000);
-			await Task.Delay(delay);
+			try
+			{
+				await Task.Delay(delay, reconnectToken);
+			}
+			catch (OperationCanceledException)
+			{
+				return;
+			}
+			if (reconnectToken.IsCancellationRequested)
+			{
+				return;
+			}
 			try
 			{
 				await ConnectAsync(ServerIp, ServerPort, Nickname, Job);
@@ -162,7 +178,7 @@ public class Client : IDisposable
 				MessageReceived?.Invoke($"Yeniden bağlanma hatası ({_reconnectAttempts}/{5})");
 			}
 		}
-		if (_autoReconnect)
+		if (_autoReconnect && !reconnectToken.IsCancellationRequested)
 		{
 			MessageReceived?.Invoke("Maksimum yeniden bağlanma denemesi aşıldı.");
 			Disconnect();
@@ -379,9 +395,14 @@ public class Client : IDisposable
 
 	public void Dispose()
 	{
+		// Disconnect() cancels _receiveCts and touches _pingTimer, so it has to run BEFORE those
+		// are disposed. Disposing first made Dispose() throw ObjectDisposedException whenever the
+		// client was still connected.
+		_reconnectCts.Cancel();
+		Disconnect();
+		_reconnectCts.Dispose();
 		_sendLock?.Dispose();
 		_receiveCts?.Dispose();
 		_pingTimer?.Dispose();
-		Disconnect();
 	}
 }

@@ -23,6 +23,10 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 
 	private readonly Mat _nonZeroCoordinatesBuffer;
 
+	private readonly Mat _binaryBuffer;
+
+	private readonly Mat _labelsBuffer;
+
 	private readonly object _lock = new object();
 
 	private bool _disposed;
@@ -63,6 +67,8 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 		_resultBuffer = new Mat();
 		_thresholdedBuffer = new Mat();
 		_nonZeroCoordinatesBuffer = new Mat();
+		_binaryBuffer = new Mat();
+		_labelsBuffer = new Mat();
 	}
 
 	public MatchResult TryMatch(Mat screen)
@@ -130,16 +136,46 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 		{
 			try
 			{
-				Cv2.MatchTemplate(screen, _template, _resultBuffer, TemplateMatchModes.CCorrNormed);
-				Cv2.Threshold(_resultBuffer, _thresholdedBuffer, _threshold, 1.0, ThresholdTypes.Binary);
-				Cv2.FindNonZero(_thresholdedBuffer, _nonZeroCoordinatesBuffer);
-				return _nonZeroCoordinatesBuffer.Rows;
+				int count = CountMatchesForTemplate(screen, _template);
+				if (count > 0)
+				{
+					return count;
+				}
+				// Same scaling fallback TryMatch uses: the templates were captured at 100%,
+				// so on a 125%/150% Windows scaling nothing matches at the base size.
+				foreach (var (_, scaledTemplate) in _scaledTemplates)
+				{
+					count = CountMatchesForTemplate(screen, scaledTemplate);
+					if (count > 0)
+					{
+						return count;
+					}
+				}
+				return 0;
 			}
 			catch (Exception)
 			{
 				return 0;
 			}
 		}
+	}
+
+	private int CountMatchesForTemplate(Mat screen, Mat template)
+	{
+		if (screen.Width < template.Width || screen.Height < template.Height)
+		{
+			return 0;
+		}
+		Cv2.MatchTemplate(screen, template, _resultBuffer, TemplateMatchModes.CCorrNormed);
+		Cv2.Threshold(_resultBuffer, _thresholdedBuffer, _threshold, 1.0, ThresholdTypes.Binary);
+		// A single real match lights up a whole cluster of neighbouring offsets in the
+		// correlation map, so counting raw above-threshold pixels counts each match several
+		// times over - it reports pixels, not slots. Collapsing each connected cluster into
+		// one match is what makes the returned number an actual count of matches, which is
+		// what the caller's threshold ("how many empty slots are left") is compared against.
+		_thresholdedBuffer.ConvertTo(_binaryBuffer, MatType.CV_8U, 255.0);
+		int labelCount = Cv2.ConnectedComponents(_binaryBuffer, _labelsBuffer);
+		return Math.Max(0, labelCount - 1);   // label 0 is the background
 	}
 
 	public void Dispose()
@@ -152,6 +188,8 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 				_resultBuffer.Dispose();
 				_thresholdedBuffer.Dispose();
 				_nonZeroCoordinatesBuffer.Dispose();
+				_binaryBuffer.Dispose();
+				_labelsBuffer.Dispose();
 				foreach (var (_, scaledTemplate) in _scaledTemplates)
 				{
 					scaledTemplate.Dispose();

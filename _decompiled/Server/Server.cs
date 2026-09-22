@@ -33,6 +33,11 @@ public sealed class Server : IDisposable
 
 		public DateTime? LastVerificationTime { get; set; }
 
+		/// <summary>Empty inventory slots last reported by this character, if any.</summary>
+		public int? EmptySlots { get; set; }
+
+		public DateTime? EmptySlotsTime { get; set; }
+
 		public NetworkStream Stream { get; }
 
 		public ClientInfo(TcpClient client, JobType job)
@@ -228,6 +233,18 @@ public sealed class Server : IDisposable
 										ClientStatusUpdated?.Invoke();
 										continue;
 									}
+									// Per-character inventory telemetry: "SLOTS:<n>" carries how many
+									// empty inventory slots that character currently has.
+									if (commandStr.StartsWith("SLOTS:", StringComparison.OrdinalIgnoreCase))
+									{
+										if (int.TryParse(commandStr.Substring("SLOTS:".Length).Trim(), out int reportedSlots))
+										{
+											clientInfo.EmptySlots = reportedSlots;
+											clientInfo.EmptySlotsTime = DateTime.UtcNow;
+											ClientStatusUpdated?.Invoke();
+										}
+										continue;
+									}
 									if (_commandHandlers.TryGetValue(commandStr, out Action<string> handler))
 									{
 										handler(nickname);
@@ -420,9 +437,16 @@ public sealed class Server : IDisposable
 		StopAsync().Wait();
 	}
 
-	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime)> GetClientList()
+	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime, int? emptySlots, DateTime? emptySlotsTime)> GetClientList()
 	{
-		return _clients.Select<KeyValuePair<string, ClientInfo>, (string, string, string, bool?, DateTime?)>((KeyValuePair<string, ClientInfo> c) => (Key: c.Key, c.Value.Job.ToString(), c.Value.Client.Client.RemoteEndPoint?.ToString() ?? "disconnected", c.Value.LastVerificationOk, c.Value.LastVerificationTime));
+		return _clients.Select((KeyValuePair<string, ClientInfo> c) => (
+			c.Key,
+			c.Value.Job.ToString(),
+			c.Value.Client.Client.RemoteEndPoint?.ToString() ?? "disconnected",
+			c.Value.LastVerificationOk,
+			c.Value.LastVerificationTime,
+			c.Value.EmptySlots,
+			c.Value.EmptySlotsTime));
 	}
 
 	public async Task StopAsync()

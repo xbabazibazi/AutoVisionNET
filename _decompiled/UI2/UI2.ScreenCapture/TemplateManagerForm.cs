@@ -53,7 +53,19 @@ public class TemplateManagerForm : Form
 		["Images/WhellOfFunYesButton.jpg"] = "Çark Onay Butonu",
 		["Images/BrokenFullPlateArmorPauldron.jpg"] = "Kırık Zırh",
 		["Images/EmptyRightHand.jpg"] = "Boş Sağ El",
-		["Images/EmptyLeftHand.jpg"] = "Boş Sol El"
+		["Images/EmptyLeftHand.jpg"] = "Boş Sol El",
+		["Images/Weapon1Broken.jpg"] = "Silah 1 — KIRIK hali (kuşanılanı tespit eder)",
+		["Images/Weapon1Repaired.jpg"] = "Silah 1 — SAĞLAM hali (envanterden takılır)",
+		["Images/Weapon2Broken.jpg"] = "Silah 2 — KIRIK hali (kuşanılanı tespit eder)",
+		["Images/Weapon2Repaired.jpg"] = "Silah 2 — SAĞLAM hali (envanterden takılır)",
+		["Images/Weapon3Broken.jpg"] = "Silah 3 — KIRIK hali (kuşanılanı tespit eder)",
+		["Images/Weapon3Repaired.jpg"] = "Silah 3 — SAĞLAM hali (envanterden takılır)",
+		["Images/LeftHand1Broken.jpg"] = "SOL EL 1 — KIRIK hali (sol eldekini tespit eder)",
+		["Images/LeftHand1Repaired.jpg"] = "SOL EL 1 — SAĞLAM hali (sol ele sürüklenir)",
+		["Images/LeftHand2Broken.jpg"] = "SOL EL 2 — KIRIK hali (sol eldekini tespit eder)",
+		["Images/LeftHand2Repaired.jpg"] = "SOL EL 2 — SAĞLAM hali (sol ele sürüklenir)",
+		["Images/LeftHand3Broken.jpg"] = "SOL EL 3 — KIRIK hali (sol eldekini tespit eder)",
+		["Images/LeftHand3Repaired.jpg"] = "SOL EL 3 — SAĞLAM hali (sol ele sürüklenir)"
 	};
 
 	private static readonly TemplateSlot[] Slots = new (string Category, string TaskId, string DefaultPath)[]
@@ -80,6 +92,7 @@ public class TemplateManagerForm : Form
 		("MagicBag", "FindRepairedTomahawkOnMagicBag", "Images/RepairedTomahawk.jpg"),
 		("MagicBag", "CloseMagicBag", "Images/CloseMagicBag.jpg"),
 		("MagicBag", "OpenSecondMagicBag", "Images/SecondMagicBag.jpg"),
+		("MagicBag", "OpenSecondMagicBag2", "Images/SecondMagicBag.jpg"),
 		("Party", "HandlePartyMemberDeath", "Images/Dead.jpg"),
 		("Party", "PartyHeader", "Images/PartyHeader.jpg"),
 		("Party", "BreakParty", "Images/BreakParty.jpg"),
@@ -100,7 +113,19 @@ public class TemplateManagerForm : Form
 		("Weapons", "RepairWeapons", "Images/BrokenTomahawk.jpg"),
 		("Weapons", "SwapTomahawk", "Images/BrokenTomahawk.jpg"),
 		("Weapons", "CheckRightHandIsEmpty", "Images/EmptyRightHand.jpg"),
-		("Weapons", "CheckLeftHandIsEmpty", "Images/EmptyLeftHand.jpg")
+		("Weapons", "CheckLeftHandIsEmpty", "Images/EmptyLeftHand.jpg"),
+		("WeaponSwap", "Weapon1Broken", "Images/Weapon1Broken.jpg"),
+		("WeaponSwap", "Weapon1Repaired", "Images/Weapon1Repaired.jpg"),
+		("WeaponSwap", "Weapon2Broken", "Images/Weapon2Broken.jpg"),
+		("WeaponSwap", "Weapon2Repaired", "Images/Weapon2Repaired.jpg"),
+		("WeaponSwap", "Weapon3Broken", "Images/Weapon3Broken.jpg"),
+		("WeaponSwap", "Weapon3Repaired", "Images/Weapon3Repaired.jpg"),
+		("SolEl", "LeftHand1Broken", "Images/LeftHand1Broken.jpg"),
+		("SolEl", "LeftHand1Repaired", "Images/LeftHand1Repaired.jpg"),
+		("SolEl", "LeftHand2Broken", "Images/LeftHand2Broken.jpg"),
+		("SolEl", "LeftHand2Repaired", "Images/LeftHand2Repaired.jpg"),
+		("SolEl", "LeftHand3Broken", "Images/LeftHand3Broken.jpg"),
+		("SolEl", "LeftHand3Repaired", "Images/LeftHand3Repaired.jpg")
 	}.Select(t => new TemplateSlot { Category = t.Category, TaskId = t.TaskId, DefaultPath = t.DefaultPath }).ToArray();
 
 	private static IEnumerable<TemplateGroup> BuildGroups()

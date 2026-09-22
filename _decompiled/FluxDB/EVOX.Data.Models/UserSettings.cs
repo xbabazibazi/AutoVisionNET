@@ -1,4 +1,4 @@
-namespace FluxDB.Models;
+namespace EVOX.Data.Models;
 
 public class UserSettings
 {

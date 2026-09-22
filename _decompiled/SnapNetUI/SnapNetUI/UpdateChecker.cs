@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace UI2;
+namespace SnapNetUI;
 
 public class UpdateInfo
 {
@@ -20,27 +20,25 @@ public class UpdateInfo
 	public string HtmlUrl { get; set; }
 }
 
-// NOTE: UI2 and SnapNetUI are published together under the same GitHub release
-// (same repo, same tag), but they are versioned independently (UI2 on a 1.3.x
-// track, SnapNetUI on a 1.1.x track). Comparing UI2's own version against the
-// shared release TAG is wrong - a SnapNetUI-only release bumps the tag without
-// UI2 ever changing, which made UI2 see "update available" forever (the tag
-// kept climbing while UI2's embedded version stayed frozen), reinstall the
-// same unchanged files every launch, and never catch up. Instead, UI2's real
-// version is published as the tiny "evox-console-version.txt" asset, and only THAT is
-// compared against CurrentVersion.
+// NOTE: SnapNetUI and UI2 are published together under the same GitHub release
+// (same repo, same tag), but they are versioned independently (UI2 is on a
+// 1.3.x track, SnapNetUI on a 1.1.x track). Comparing SnapNetUI's own version
+// against the shared release TAG would be wrong - a UI2-only release would
+// always look like a "new SnapNetUI version" forever. Instead, SnapNetUI's
+// real version is published as the tiny "evox-service-version.txt" asset, and
+// only THAT is compared against CurrentVersion.
 public static class UpdateChecker
 {
 	private const string RepoOwner = "xbabazibazi";
 
 	private const string RepoName = "AutoVisionNET";
 
-	private const string VersionMarkerAssetName = "evox-console-version.txt";
+	private const string VersionMarkerAssetName = "evox-service-version.txt";
 
 #if NET48
-	private const string UpdateAssetName = "evox-console-update-win7.zip";
+	private const string UpdateAssetName = "evox-service-update-win7.zip";
 #else
-	private const string UpdateAssetName = "update.zip";
+	private const string UpdateAssetName = "update-snapnetui.zip";
 #endif
 
 	public static Version CurrentVersion => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0, 0);
@@ -113,7 +111,7 @@ public static class UpdateChecker
 		client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AutoVisionNET-UpdateChecker", "1.0"));
 		client.Timeout = TimeSpan.FromMinutes(5.0);
 
-		string tempZip = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"AutoVisionNET_update_{Guid.NewGuid()}.zip");
+		string tempZip = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"AutoVisionNET_snapnetui_update_{Guid.NewGuid()}.zip");
 		using HttpResponseMessage response = await client.GetAsync(downloadUrl);
 		response.EnsureSuccessStatusCode();
 		using System.IO.FileStream fs = new System.IO.FileStream(tempZip, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);

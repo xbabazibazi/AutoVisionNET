@@ -1,18 +1,36 @@
 using System.Collections.Generic;
-using FluxDB;
-using FluxDB.Models;
+using EVOX.Data;
+using EVOX.Data.Models;
 
 namespace SettingsManager.ScreenCapture;
 
 public class RectanglesSettings
 {
-	private static readonly string[] AreaNames = new string[11]
+	private static readonly string[] AreaNames = new string[12]
 	{
 		"AcceptParty", "Genie", "ChatWindow", "BuffLine", "Weapons", "Inventory",
-		"MagicBag", "Town", "Party", "Info", "LeftBotMenu"
+		"MagicBag", "Town", "Party", "Info", "LeftBotMenu", "WeaponInventory"
 	};
 
 	private readonly DbManager _dbManager;
+
+	/// <summary>
+	/// Where the weapon swap looks for a replacement in the bag. Separate from <see cref="Inventory"/>
+	/// so the search can be narrowed to the rows the spare weapons live in without also narrowing
+	/// the empty-slot count, which needs to see the whole bag. Left unset it falls back to
+	/// <see cref="Inventory"/>.
+	/// </summary>
+	public RectangleSettings WeaponInventory
+	{
+		get
+		{
+			return Get("WeaponInventory");
+		}
+		set
+		{
+			Set(value, "WeaponInventory");
+		}
+	}
 
 	public RectangleSettings AcceptParty
 	{

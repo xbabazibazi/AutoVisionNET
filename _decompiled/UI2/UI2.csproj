@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <AssemblyName>UI2</AssemblyName>
+    <AssemblyName>EVOX.Console</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>True</UseWindowsForms>
@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LicenseCore\LicenseCore.csproj" />
-    <ProjectReference Include="..\FluxDB\FluxDB.csproj" />
+    <ProjectReference Include="..\FluxDB\EVOX.Data.csproj" />
     <ProjectReference Include="..\InputInterceptor\InputInterceptor.csproj" />
     <ProjectReference Include="..\InputManager\InputManager.csproj" />
     <ProjectReference Include="..\Scanix4\Scanix4.csproj" />

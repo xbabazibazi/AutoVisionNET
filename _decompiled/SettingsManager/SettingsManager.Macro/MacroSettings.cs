@@ -1,4 +1,4 @@
-using FluxDB;
+using EVOX.Data;
 
 namespace SettingsManager.Macro;
 

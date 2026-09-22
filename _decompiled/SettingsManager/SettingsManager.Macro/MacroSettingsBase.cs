@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using FluxDB;
+using EVOX.Data;
 
 namespace SettingsManager.Macro;
 

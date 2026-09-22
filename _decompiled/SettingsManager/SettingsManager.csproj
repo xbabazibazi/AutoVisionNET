@@ -13,7 +13,7 @@
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FluxDB\FluxDB.csproj" />
+    <ProjectReference Include="..\FluxDB\EVOX.Data.csproj" />
     <ProjectReference Include="..\SimpleLogger\SimpleLogger.csproj" />
   </ItemGroup>
 </Project>

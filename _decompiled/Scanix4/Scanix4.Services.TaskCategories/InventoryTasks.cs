@@ -78,6 +78,9 @@ public class InventoryTasks : ITaskCategory
 				OnMatchFound = null,
 				OnMatchNotFound = null,
 				OnFoundCount = _actionCenter._inventortyActions.OnInventorySlotAlert,
+				// 0 empty slots means the bag is completely full - the exact case this alert
+				// exists for - so the zero reading must reach OnInventorySlotAlert too.
+				ReportZeroCount = true,
 				Mode = MatchMode.CountMatches
 			},
 			Mode = SearchMode.Continuous

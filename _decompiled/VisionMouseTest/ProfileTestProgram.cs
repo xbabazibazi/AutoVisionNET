@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using FluxDB;
-using FluxDB.Models;
+using EVOX.Data;
+using EVOX.Data.Models;
 using SettingsManager.ScreenCapture;
 
 namespace VisionMouseTest;

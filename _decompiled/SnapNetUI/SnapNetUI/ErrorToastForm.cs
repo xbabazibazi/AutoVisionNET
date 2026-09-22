@@ -6,7 +6,32 @@ namespace SnapNetUI;
 
 public class ErrorToastForm : Form
 {
+	private const int WS_EX_NOACTIVATE = 134217728;
+
+	private readonly Label _messageLabel;
+
 	private readonly Timer _autoCloseTimer;
+
+	protected override bool ShowWithoutActivation => true;
+
+	protected override CreateParams CreateParams
+	{
+		get
+		{
+			CreateParams cp = base.CreateParams;
+			cp.ExStyle |= WS_EX_NOACTIVATE;
+			return cp;
+		}
+	}
+
+	public bool IsUsable => !IsDisposed && !Disposing;
+
+	public void UpdateMessage(string message)
+	{
+		_messageLabel.Text = message;
+		_autoCloseTimer.Stop();
+		_autoCloseTimer.Start();
+	}
 
 	public ErrorToastForm(string message)
 	{
@@ -26,7 +51,7 @@ public class ErrorToastForm : Form
 			AutoSize = true,
 			Location = new Point(10, 8)
 		};
-		Label messageLabel = new Label
+		_messageLabel = new Label
 		{
 			Text = message,
 			ForeColor = Color.White,
@@ -48,7 +73,7 @@ public class ErrorToastForm : Form
 		closeButton.Click += (s, e) => Close();
 
 		Controls.Add(title);
-		Controls.Add(messageLabel);
+		Controls.Add(_messageLabel);
 		Controls.Add(closeButton);
 
 		Rectangle workingArea = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1024, 768);

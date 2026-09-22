@@ -129,7 +129,7 @@ public class ScreenCaptureMainForm : Form
 			new
 			{
 				Type = typeof(SnapNetReReRe),
-				DisplayName = "SnapNet ReReRe",
+				DisplayName = "EVOX ReReRe",
 				ServiceName = "SnapNetReReRe"
 			},
 			new
@@ -147,13 +147,13 @@ public class ScreenCaptureMainForm : Form
 			new
 			{
 				Type = typeof(SnapNetWhellOfFun),
-				DisplayName = "SnapNet Whell Of Fun",
+				DisplayName = "EVOX Whell Of Fun",
 				ServiceName = "SnapNetWhellOfFun"
 			},
 			new
 			{
 				Type = typeof(SnapNetStartGenie),
-				DisplayName = "SnapNet Start Genie",
+				DisplayName = "EVOX Start Genie",
 				ServiceName = "SnapNetStartGenie"
 			}
 		};
@@ -376,7 +376,7 @@ public class ScreenCaptureMainForm : Form
 
 	private void UpdateGenieStatus(bool isWorking, string statusText)
 	{
-		FluxioUtiles.InvokeIfRequired(this, delegate
+		EvoxUtils.InvokeIfRequired(this, delegate
 		{
 			_isGenieWorking = isWorking;
 		});

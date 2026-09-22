@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace FluxDB.Models;
+namespace EVOX.Data.Models;
 
 public class RectangleSettings
 {

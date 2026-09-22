@@ -9,16 +9,19 @@ using System.Threading.Tasks;
 
 internal class Updater
 {
-	private const string AppBaseName = "UI2";
-
-	private static readonly string[] ProcessVariants = new string[5] { "UI2", "UI2.vshost", "UI2.exe", "UI2Client", "UI2Game" };
+	private static string[] ProcessVariants = new string[3] { "EVOX.Console", "EVOX.Console.vshost", "EVOX.Console.exe" };
 
 	private static async Task<int> Main(string[] args)
 	{
 		string tempZip = Path.Combine(Path.GetTempPath(), $"update_{Guid.NewGuid()}.zip");
 		string extractDir = Path.Combine(Path.GetTempPath(), $"update_extract_{Guid.NewGuid()}");
 		string targetDir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
-		string targetExe = Path.Combine(targetDir, "UI2.exe");
+		string targetExeName = (args.Length >= 2 && !string.IsNullOrWhiteSpace(args[1])) ? args[1] : "EVOX.Console.exe";
+		string targetExe = Path.Combine(targetDir, targetExeName);
+		string targetBaseName = Path.GetFileNameWithoutExtension(targetExeName);
+		ProcessVariants = (string.Equals(targetBaseName, "EVOX.Console", StringComparison.OrdinalIgnoreCase)
+			? new string[3] { "EVOX.Console", "EVOX.Console.vshost", "EVOX.Console.exe" }
+			: new string[3] { targetBaseName, targetBaseName + ".vshost", targetExeName });
 		Console.WriteLine("[UPD] Başlıyor. Hedef klasör: " + targetDir);
 		if (args.Length == 0)
 		{
@@ -28,7 +31,7 @@ internal class Updater
 		string source = args[0];
 		try
 		{
-			Console.WriteLine("[UPD] 'UI2' kapatılıyor...");
+			Console.WriteLine("[UPD] '" + targetBaseName + "' kapatılıyor...");
 			await CloseAppProcessesAsync();
 			Console.WriteLine("[UPD] Uygulama kapalı. Güncelleme sürecine geçiliyor.");
 			if (Uri.TryCreate(source, UriKind.Absolute, out Uri sourceUri) && (sourceUri.Scheme == Uri.UriSchemeHttp || sourceUri.Scheme == Uri.UriSchemeHttps))
@@ -187,9 +190,16 @@ internal class Updater
 			string dst = Path.Combine(destDir, relative);
 			string srcFileName = Path.GetFileName(src);
 			string thisUpdaterName = AppDomain.CurrentDomain.FriendlyName;
-			if (string.Equals(srcFileName, thisUpdaterName, StringComparison.OrdinalIgnoreCase) || string.Equals(srcFileName, "FluxioUpdater.exe", StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(srcFileName, thisUpdaterName, StringComparison.OrdinalIgnoreCase) || string.Equals(srcFileName, "EVOX.Updater.exe", StringComparison.OrdinalIgnoreCase))
 			{
 				Console.WriteLine("[UPD] Atlandı (updater): " + relative);
+				continue;
+			}
+			if (string.Equals(srcFileName, "license.key", StringComparison.OrdinalIgnoreCase))
+			{
+				// A user's activated license must never be clobbered by an update package,
+				// even if one is accidentally bundled into a release by mistake.
+				Console.WriteLine("[UPD] Atlandı (lisans korunuyor): " + relative);
 				continue;
 			}
 			Directory.CreateDirectory(Path.GetDirectoryName(dst) ?? destDir);

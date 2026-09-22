@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 
-namespace FluxDB;
+namespace EVOX.Data;
 
 public abstract class DataConnector(string connectionString)
 {

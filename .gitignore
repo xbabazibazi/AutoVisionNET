@@ -9,3 +9,6 @@ _decompiled/LicenseGenerator/
 *.lic
 license.key
 .claude/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

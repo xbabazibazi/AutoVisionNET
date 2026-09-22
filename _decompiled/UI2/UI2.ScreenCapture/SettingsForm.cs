@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using FluxDB.Models;
+using EVOX.Data.Models;
 using SettingsManager;
 using SettingsManager.ScreenCapture;
 using UI2.Interfaces;
@@ -36,6 +36,8 @@ public class SettingsForm : Form, ISettingsForm
 
 	private Label labelInventory;
 
+	private Label labelWeaponInventory;
+
 	private Button buttonMagicBag;
 
 	private Label labelBuffLine;
@@ -51,6 +53,8 @@ public class SettingsForm : Form, ISettingsForm
 	private Button buttonStopMacrosWhenGenieStopped;
 
 	private Button buttonInventory;
+
+	private Button buttonWeaponInventory;
 
 	private Button buttonChatWindowReSaveCoordinates;
 
@@ -251,6 +255,9 @@ public class SettingsForm : Form, ISettingsForm
 		_areaDefinitions.Add(new AreaDefinition("Party", buttonParty, labelParty, "Parti Üyeleri"));
 		_areaDefinitions.Add(new AreaDefinition("Info", buttonInfo, labelInfo, "Info"));
 		_areaDefinitions.Add(new AreaDefinition("LeftBotMenu", buttonLeftBotMenu, labelLeftBotMenu, "Left Bot Menu"));
+		// Optional: only the rows the spare weapons sit in. Left unset, the weapon swap falls back
+		// to the full Envanter area, so the empty-slot count is never affected by narrowing this.
+		_areaDefinitions.Add(new AreaDefinition("WeaponInventory", buttonWeaponInventory, labelWeaponInventory, "Silah Envanteri (boş bırakılırsa Envanter kullanılır)"));
 	}
 
 	private void WireUpAllEvents()
@@ -445,6 +452,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonTown = new System.Windows.Forms.Button();
 		this.labelAcceptPartyCoordinates = new System.Windows.Forms.Label();
 		this.labelInventory = new System.Windows.Forms.Label();
+		this.labelWeaponInventory = new System.Windows.Forms.Label();
 		this.buttonMagicBag = new System.Windows.Forms.Button();
 		this.labelBuffLine = new System.Windows.Forms.Label();
 		this.labelStopMacrosWhenGenieStoppedCoordinates = new System.Windows.Forms.Label();
@@ -453,6 +461,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelWeapons = new System.Windows.Forms.Label();
 		this.buttonStopMacrosWhenGenieStopped = new System.Windows.Forms.Button();
 		this.buttonInventory = new System.Windows.Forms.Button();
+		this.buttonWeaponInventory = new System.Windows.Forms.Button();
 		this.buttonChatWindowReSaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonAcceptPartySaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonWeapons = new System.Windows.Forms.Button();
@@ -479,6 +488,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.Controls.Add(this.buttonTown);
 		this.pnlContainer.Controls.Add(this.labelAcceptPartyCoordinates);
 		this.pnlContainer.Controls.Add(this.labelInventory);
+		this.pnlContainer.Controls.Add(this.labelWeaponInventory);
 		this.pnlContainer.Controls.Add(this.buttonMagicBag);
 		this.pnlContainer.Controls.Add(this.labelBuffLine);
 		this.pnlContainer.Controls.Add(this.labelStopMacrosWhenGenieStoppedCoordinates);
@@ -487,6 +497,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.Controls.Add(this.labelWeapons);
 		this.pnlContainer.Controls.Add(this.buttonStopMacrosWhenGenieStopped);
 		this.pnlContainer.Controls.Add(this.buttonInventory);
+		this.pnlContainer.Controls.Add(this.buttonWeaponInventory);
 		this.pnlContainer.Controls.Add(this.buttonChatWindowReSaveCoordinates);
 		this.pnlContainer.Controls.Add(this.buttonAcceptPartySaveCoordinates);
 		this.pnlContainer.Controls.Add(this.buttonWeapons);
@@ -570,6 +581,14 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelInventory.Size = new System.Drawing.Size(147, 17);
 		this.labelInventory.TabIndex = 18;
 		this.labelInventory.Text = "(0000,0000)-(0000,0000)";
+		this.labelWeaponInventory.AutoSize = true;
+		this.labelWeaponInventory.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.labelWeaponInventory.ForeColor = System.Drawing.Color.White;
+		this.labelWeaponInventory.Location = new System.Drawing.Point(220, 336);
+		this.labelWeaponInventory.Name = "labelWeaponInventory";
+		this.labelWeaponInventory.Size = new System.Drawing.Size(147, 17);
+		this.labelWeaponInventory.TabIndex = 21;
+		this.labelWeaponInventory.Text = "(0000,0000)-(0000,0000)";
 		this.buttonMagicBag.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonMagicBag.Location = new System.Drawing.Point(20, 128);
 		this.buttonMagicBag.Name = "buttonMagicBag";
@@ -632,6 +651,12 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonInventory.Size = new System.Drawing.Size(180, 28);
 		this.buttonInventory.TabIndex = 8;
 		this.buttonInventory.Text = "Inventory";
+		this.buttonWeaponInventory.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.buttonWeaponInventory.Location = new System.Drawing.Point(20, 332);
+		this.buttonWeaponInventory.Name = "buttonWeaponInventory";
+		this.buttonWeaponInventory.Size = new System.Drawing.Size(180, 28);
+		this.buttonWeaponInventory.TabIndex = 11;
+		this.buttonWeaponInventory.Text = "Silah Envanteri";
 		this.buttonInventory.UseVisualStyleBackColor = true;
 		this.buttonInventory.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonChatWindowReSaveCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);
