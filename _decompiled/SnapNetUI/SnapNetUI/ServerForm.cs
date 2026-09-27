@@ -483,7 +483,10 @@ public class ServerForm : Form
 
 	private void UpdateClientList()
 	{
-		var clientList = _server.GetClientList().ToList();
+		var clientList = _server.GetClientList()
+			.OrderBy((c) => c.job, StringComparer.OrdinalIgnoreCase)
+			.ThenBy((c) => c.nickname, StringComparer.OrdinalIgnoreCase)
+			.ToList();
 		ClientListItem[] clients = (from c in clientList
 			select new ClientListItem
 			{
