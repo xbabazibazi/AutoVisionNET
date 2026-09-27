@@ -64,7 +64,10 @@ public class GenieTasks : ITaskCategory
 				// hookup (OnIsGenieStart) never ran no matter how correctly the template was set up.
 				Threshold = 0.95,
 				IntervalMs = 3000,
-				UseColor = false,
+				// The active-icon template is a small, mostly solid-colour block, exactly the kind
+				// of image that grayscale matching confuses with other similarly-toned UI elements.
+				// Its colour is the strongest distinguishing feature it has, so use it.
+				UseColor = true,
 				OnMatchFound = OnGenieStatusMatch,
 				OnMatchNotFound = OnGenieStatusNoMatch
 			},
