@@ -19,6 +19,16 @@ public class GenieTasks : ITaskCategory
 
 	private readonly Action _onMatchNotFoundAction;
 
+	// The status icon can flicker/animate from one 3s poll to the next, so a single match or miss
+	// isn't trusted on its own - that was flipping the Genie-started macro on and off every few
+	// seconds ("çalışıyor kafasına göre"). Requiring a couple of consecutive, consistent readings
+	// before actually calling the real callback smooths that out.
+	private const int RequiredConsecutiveReadings = 2;
+
+	private int _consecutiveMatches;
+
+	private int _consecutiveMisses;
+
 	public List<SearchTask> Tasks { get; } = new List<SearchTask>();
 
 	public GenieTasks(ActionCenter actionCenter, Action<Point> onMatchFoundAction, Action onMatchNotFoundAction)
@@ -28,10 +38,12 @@ public class GenieTasks : ITaskCategory
 		var rectangles = Settings.Instance.ScreenCapture.RectanglesSettings;
 		DefaultSearchArea = rectangles.Genie.GetRectangle();
 		// The "Genie is active" icon and the start button don't share a screen location, so the
-		// status check needs its own area. Unset (never configured) falls back to the button's
-		// area, matching the old behaviour rather than silently never matching anything.
-		Rectangle genieStatus = rectangles.GenieStatus.GetRectangle();
-		_genieStatusArea = (genieStatus.Width > 0 && genieStatus.Height > 0) ? genieStatus : DefaultSearchArea;
+		// status check needs its own area. This deliberately does NOT fall back to the button's
+		// area when unset: the button is visible exactly when Genie is OFF, so searching for the
+		// status icon there instead risked stray matches against the button and flipped the macro
+		// on/off backwards. Left unset, the search area is simply invalid and the status check
+		// stays inactive (never calls OnMatchFound) until the operator configures its own area.
+		_genieStatusArea = rectangles.GenieStatus.GetRectangle();
 		_actionCenter = actionCenter;
 		CreateTasks();
 	}
@@ -51,8 +63,8 @@ public class GenieTasks : ITaskCategory
 				Threshold = 0.95,
 				IntervalMs = 3000,
 				UseColor = false,
-				OnMatchFound = _onMatchFoundAction,
-				OnMatchNotFound = _onMatchNotFoundAction
+				OnMatchFound = OnGenieStatusMatch,
+				OnMatchNotFound = OnGenieStatusNoMatch
 			},
 			Mode = SearchMode.Continuous
 		});
@@ -70,5 +82,25 @@ public class GenieTasks : ITaskCategory
 			},
 			Mode = SearchMode.Continuous
 		});
+	}
+
+	private void OnGenieStatusMatch(Point coordinates)
+	{
+		_consecutiveMisses = 0;
+		_consecutiveMatches++;
+		if (_consecutiveMatches >= RequiredConsecutiveReadings)
+		{
+			_onMatchFoundAction?.Invoke(coordinates);
+		}
+	}
+
+	private void OnGenieStatusNoMatch()
+	{
+		_consecutiveMatches = 0;
+		_consecutiveMisses++;
+		if (_consecutiveMisses >= RequiredConsecutiveReadings)
+		{
+			_onMatchNotFoundAction?.Invoke();
+		}
 	}
 }
