@@ -9,7 +9,14 @@ public class SnapNetStartGenieWorkFlow : IWorkflow
 {
 	public string WorkflowId => "SnapNetStartGenie";
 
-	public bool IsActive => Settings.Instance.Macro.General.StartGenieOnTp;
+	// NOT Macro.General.StartGenieOnTp - that's the unrelated "start genie after
+	// teleport" macro's own gate (see StartGenieAfterTpWorkFlow). This workflow is
+	// what the server's remote "Warrior/Priest Genie Aç" command actually starts,
+	// so it must follow the same setting ClientForm's "401" handler already checks
+	// and the SnapNetStartGenie settings panel actually exposes - otherwise the
+	// command is received and silently dropped with no feedback on the operator's
+	// side at all.
+	public bool IsActive => Settings.Instance.ScreenCapture.StartGenie.IsActive;
 
 	public Dictionary<string, WorkflowTransition> Steps { get; } = new Dictionary<string, WorkflowTransition>();
 
