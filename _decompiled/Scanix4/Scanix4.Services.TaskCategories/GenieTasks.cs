@@ -37,7 +37,10 @@ public class GenieTasks : ITaskCategory
 			{
 				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStart.jpg"),
 				SearchArea = DefaultSearchArea,
-				Threshold = 0.9997,
+				// 0.9997 demands a near pixel-perfect match - normal JPEG/rendering noise never
+				// clears it, so this never actually fired OnMatchFound and the Genie-start macro
+				// hookup (OnIsGenieStart) never ran no matter how correctly the template was set up.
+				Threshold = 0.95,
 				IntervalMs = 3000,
 				UseColor = false,
 				OnMatchFound = _onMatchFoundAction,
