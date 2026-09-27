@@ -55,7 +55,9 @@ public class GenieTasks : ITaskCategory
 			TaskId = "GenieStatus",
 			Config = new SearchConfig
 			{
-				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStart.jpg"),
+				// Must match the DefaultPath used for this TaskId in TemplateManagerForm's Slots
+				// list, or "reset to default" there and this fallback would disagree.
+				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStatusActive.jpg"),
 				SearchArea = _genieStatusArea,
 				// 0.9997 demands a near pixel-perfect match - normal JPEG/rendering noise never
 				// clears it, so this never actually fired OnMatchFound and the Genie-start macro

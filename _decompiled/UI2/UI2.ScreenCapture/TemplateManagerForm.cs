@@ -32,6 +32,7 @@ public class TemplateManagerForm : Form
 		["Images/Sw.jpg"] = "SW",
 		["Images/Wolf.jpg"] = "Wolf",
 		["Images/GenieStart.jpg"] = "Cin (Genie) Başlat",
+		["Images/GenieStatusActive.jpg"] = "Genie Aktif İkonu",
 		["Images/BrokenTomahawk.jpg"] = "Kırık Tomahawk",
 		["Images/RepairedTomahawk.jpg"] = "Onarılmış Tomahawk",
 		["Images/EmptyInventorySlot.jpg"] = "Boş Envanter Slotu",
@@ -76,7 +77,13 @@ public class TemplateManagerForm : Form
 		("BuffLine", "300Ac", "Images/300Ac.jpg"),
 		("BuffLine", "Sw", "Images/Sw.jpg"),
 		("BuffLine", "Wolf", "Images/Wolf.jpg"),
-		("Genie", "GenieStatus", "Images/GenieStart.jpg"),
+		// GenieStatus MUST have a different DefaultPath than StartGenie - slots sharing a
+		// DefaultPath are merged into one grid row (see BuildGroups), and assigning an image
+		// through that row overrides every slot in it. With both on "GenieStart.jpg" they were
+		// invisibly merged: capturing the "Genie is active" icon for GenieStatus silently
+		// overwrote StartGenie's start-button image too, and there was no separate row to tell
+		// them apart in the grid.
+		("Genie", "GenieStatus", "Images/GenieStatusActive.jpg"),
 		("Genie", "StartGenie", "Images/GenieStart.jpg"),
 		("Inventory", "FindBrokenTomahawkOnInventory", "Images/BrokenTomahawk.jpg"),
 		("Inventory", "CheckRepairedTomahawkOnInventory", "Images/RepairedTomahawk.jpg"),
