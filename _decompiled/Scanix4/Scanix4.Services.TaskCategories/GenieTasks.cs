@@ -13,6 +13,8 @@ public class GenieTasks : ITaskCategory
 
 	private readonly Rectangle DefaultSearchArea;
 
+	private readonly Rectangle _genieStatusArea;
+
 	private readonly Action<Point> _onMatchFoundAction;
 
 	private readonly Action _onMatchNotFoundAction;
@@ -23,7 +25,13 @@ public class GenieTasks : ITaskCategory
 	{
 		_onMatchFoundAction = onMatchFoundAction;
 		_onMatchNotFoundAction = onMatchNotFoundAction;
-		DefaultSearchArea = Settings.Instance.ScreenCapture.RectanglesSettings.Genie.GetRectangle();
+		var rectangles = Settings.Instance.ScreenCapture.RectanglesSettings;
+		DefaultSearchArea = rectangles.Genie.GetRectangle();
+		// The "Genie is active" icon and the start button don't share a screen location, so the
+		// status check needs its own area. Unset (never configured) falls back to the button's
+		// area, matching the old behaviour rather than silently never matching anything.
+		Rectangle genieStatus = rectangles.GenieStatus.GetRectangle();
+		_genieStatusArea = (genieStatus.Width > 0 && genieStatus.Height > 0) ? genieStatus : DefaultSearchArea;
 		_actionCenter = actionCenter;
 		CreateTasks();
 	}
@@ -36,7 +44,7 @@ public class GenieTasks : ITaskCategory
 			Config = new SearchConfig
 			{
 				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStart.jpg"),
-				SearchArea = DefaultSearchArea,
+				SearchArea = _genieStatusArea,
 				// 0.9997 demands a near pixel-perfect match - normal JPEG/rendering noise never
 				// clears it, so this never actually fired OnMatchFound and the Genie-start macro
 				// hookup (OnIsGenieStart) never ran no matter how correctly the template was set up.

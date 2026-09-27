@@ -38,6 +38,10 @@ public class SettingsForm : Form, ISettingsForm
 
 	private Label labelWeaponInventory;
 
+	private Label labelGenieStatus;
+
+	private Button buttonGenieStatus;
+
 	private Button buttonMagicBag;
 
 	private Label labelBuffLine;
@@ -258,6 +262,9 @@ public class SettingsForm : Form, ISettingsForm
 		// Optional: only the rows the spare weapons sit in. Left unset, the weapon swap falls back
 		// to the full Envanter area, so the empty-slot count is never affected by narrowing this.
 		_areaDefinitions.Add(new AreaDefinition("WeaponInventory", buttonWeaponInventory, labelWeaponInventory, "Silah Envanteri (boş bırakılırsa Envanter kullanılır)"));
+		// Where the "Genie is active" status icon shows up - separate from the "Genie" area above
+		// (that one is the start button, which sits somewhere else on screen).
+		_areaDefinitions.Add(new AreaDefinition("GenieStatus", buttonGenieStatus, labelGenieStatus, "Genie Aktif İkonu"));
 	}
 
 	private void WireUpAllEvents()
@@ -453,6 +460,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelAcceptPartyCoordinates = new System.Windows.Forms.Label();
 		this.labelInventory = new System.Windows.Forms.Label();
 		this.labelWeaponInventory = new System.Windows.Forms.Label();
+		this.labelGenieStatus = new System.Windows.Forms.Label();
 		this.buttonMagicBag = new System.Windows.Forms.Button();
 		this.labelBuffLine = new System.Windows.Forms.Label();
 		this.labelStopMacrosWhenGenieStoppedCoordinates = new System.Windows.Forms.Label();
@@ -462,6 +470,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonStopMacrosWhenGenieStopped = new System.Windows.Forms.Button();
 		this.buttonInventory = new System.Windows.Forms.Button();
 		this.buttonWeaponInventory = new System.Windows.Forms.Button();
+		this.buttonGenieStatus = new System.Windows.Forms.Button();
 		this.buttonChatWindowReSaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonAcceptPartySaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonWeapons = new System.Windows.Forms.Button();
@@ -489,6 +498,8 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.Controls.Add(this.labelAcceptPartyCoordinates);
 		this.pnlContainer.Controls.Add(this.labelInventory);
 		this.pnlContainer.Controls.Add(this.labelWeaponInventory);
+		this.pnlContainer.Controls.Add(this.labelGenieStatus);
+		this.pnlContainer.Controls.Add(this.buttonGenieStatus);
 		this.pnlContainer.Controls.Add(this.buttonMagicBag);
 		this.pnlContainer.Controls.Add(this.labelBuffLine);
 		this.pnlContainer.Controls.Add(this.labelStopMacrosWhenGenieStoppedCoordinates);
@@ -589,6 +600,14 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelWeaponInventory.Size = new System.Drawing.Size(147, 17);
 		this.labelWeaponInventory.TabIndex = 21;
 		this.labelWeaponInventory.Text = "(0000,0000)-(0000,0000)";
+		this.labelGenieStatus.AutoSize = true;
+		this.labelGenieStatus.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.labelGenieStatus.ForeColor = System.Drawing.Color.White;
+		this.labelGenieStatus.Location = new System.Drawing.Point(220, 365);
+		this.labelGenieStatus.Name = "labelGenieStatus";
+		this.labelGenieStatus.Size = new System.Drawing.Size(147, 17);
+		this.labelGenieStatus.TabIndex = 22;
+		this.labelGenieStatus.Text = "(0000,0000)-(0000,0000)";
 		this.buttonMagicBag.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonMagicBag.Location = new System.Drawing.Point(20, 128);
 		this.buttonMagicBag.Name = "buttonMagicBag";
@@ -657,6 +676,13 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonWeaponInventory.Size = new System.Drawing.Size(180, 28);
 		this.buttonWeaponInventory.TabIndex = 11;
 		this.buttonWeaponInventory.Text = "Silah Envanteri";
+		this.buttonGenieStatus.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.buttonGenieStatus.Location = new System.Drawing.Point(20, 361);
+		this.buttonGenieStatus.Name = "buttonGenieStatus";
+		this.buttonGenieStatus.Size = new System.Drawing.Size(180, 28);
+		this.buttonGenieStatus.TabIndex = 23;
+		this.buttonGenieStatus.Text = "Genie Aktif İkonu";
+		this.buttonGenieStatus.UseVisualStyleBackColor = true;
 		this.buttonInventory.UseVisualStyleBackColor = true;
 		this.buttonInventory.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonChatWindowReSaveCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);

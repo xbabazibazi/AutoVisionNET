@@ -6,10 +6,10 @@ namespace SettingsManager.ScreenCapture;
 
 public class RectanglesSettings
 {
-	private static readonly string[] AreaNames = new string[12]
+	private static readonly string[] AreaNames = new string[13]
 	{
 		"AcceptParty", "Genie", "ChatWindow", "BuffLine", "Weapons", "Inventory",
-		"MagicBag", "Town", "Party", "Info", "LeftBotMenu", "WeaponInventory"
+		"MagicBag", "Town", "Party", "Info", "LeftBotMenu", "WeaponInventory", "GenieStatus"
 	};
 
 	private readonly DbManager _dbManager;
@@ -53,6 +53,22 @@ public class RectanglesSettings
 		set
 		{
 			Set(value, "Genie");
+		}
+	}
+
+	/// <summary>
+	/// Where the "Genie is active" status icon appears - separate from <see cref="Genie"/> (the
+	/// start button's area), since the icon and the button don't sit at the same screen location.
+	/// </summary>
+	public RectangleSettings GenieStatus
+	{
+		get
+		{
+			return Get("GenieStatus");
+		}
+		set
+		{
+			Set(value, "GenieStatus");
 		}
 	}
 
