@@ -41,6 +41,17 @@ public static class UpdateChecker
 	private const string UpdateAssetName = "update-snapnetui.zip";
 #endif
 
+#if NET48
+	// Windows 7's default schannel config doesn't negotiate TLS 1.2 unless the
+	// process opts in explicitly, and GitHub's API rejects anything older -
+	// without this, HttpClient fails with a generic error that gives no hint
+	// it's a TLS version mismatch.
+	static UpdateChecker()
+	{
+		System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
+	}
+#endif
+
 	public static Version CurrentVersion => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0, 0);
 
 	public static async Task<UpdateInfo> CheckForUpdateAsync()
