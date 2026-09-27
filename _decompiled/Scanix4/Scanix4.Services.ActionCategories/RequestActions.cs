@@ -42,6 +42,10 @@ public class RequestActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 		_logger.LogDebug("Escape tuşu simüle edildi.");
 		_inputUtils.SimulateKeyPress(KeyCode.Escape, 100);
 		_logger.LogDebug("Escape tuşu simüle edildi.");
+		// The I keypress toggles the inventory panel, so it can just as easily close an
+		// already-open bag as open a closed one - either way the next scan or two would
+		// otherwise read a false "0 empty slots" off the mid-toggle/closed window.
+		InventoryScanSuppressor.Suppress();
 		_inputUtils.SimulateKeyPress(KeyCode.I, 100);
 	}
 
@@ -51,6 +55,7 @@ public class RequestActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 		_logger.LogDebug("Escape tuşu simüle edildi.");
 		_inputUtils.SimulateKeyPress(KeyCode.Escape, 100);
 		_logger.LogDebug("Escape tuşu simüle edildi.");
+		InventoryScanSuppressor.Suppress();
 		_inputUtils.SimulateKeyPress(KeyCode.I, 100);
 	}
 

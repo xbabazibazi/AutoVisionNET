@@ -16,6 +16,15 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 	/// </summary>
 	private const int RequiredZeroReadings = 2;
 
+	// A count of 0 is ambiguous: it means "bag completely full" but it is also what the scan
+	// returns whenever the inventory window simply isn't open right now - which, in normal bot
+	// operation, is most of the time. A zero is only trusted as "full" if the bag was confirmed
+	// open (a non-zero reading) recently; once that confirmation goes stale, the bag is assumed
+	// closed rather than full, however long ago it was last actually seen full or empty. Without
+	// this window, a single non-zero reading anywhere in the session would make the alert fire
+	// every single time the bag was later closed for more than a couple of polls.
+	private static readonly TimeSpan MaxGapSinceConfirmedOpen = TimeSpan.FromSeconds(20.0);
+
 	private readonly Alarm _alarm = alarm;
 
 	private new readonly InputUtils _inputUtils = inputUtils;
@@ -26,11 +35,7 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 
 	private readonly InventorySlotAlert _settings = Settings.Instance.ScreenCapture.InventorySlotAlert;
 
-	// A count of 0 is ambiguous: it means "bag completely full" but it is also what the scan
-	// returns when the inventory window simply is not open. We only trust a zero once we have
-	// actually seen empty slots at least once, which proves the window is open and the template
-	// matching works for this resolution/layout.
-	private bool _hasSeenEmptySlots;
+	private DateTime? _lastConfirmedOpenUtc;
 
 	private int _consecutiveZeroReadings;
 
@@ -47,14 +52,17 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 	/// <summary>
 	/// Pure decision logic for the inventory alert, split out so it can be exercised directly.
 	/// </summary>
-	public static bool ShouldAlert(int emptySlot, int lowSlotThreshold, bool hasSeenEmptySlots, int consecutiveZeroReadings)
+	public static bool ShouldAlert(int emptySlot, int lowSlotThreshold, TimeSpan? timeSinceConfirmedOpen, int consecutiveZeroReadings)
 	{
 		if (emptySlot > 0)
 		{
 			return emptySlot <= lowSlotThreshold;
 		}
-		// emptySlot == 0: only a genuinely full bag, never a closed/undetected inventory window.
-		return hasSeenEmptySlots && consecutiveZeroReadings >= RequiredZeroReadings;
+		// emptySlot == 0: only trust this as "genuinely full" while we recently confirmed the bag
+		// was actually open (otherwise 0 just means "the window is closed right now").
+		return timeSinceConfirmedOpen.HasValue
+			&& timeSinceConfirmedOpen.Value <= MaxGapSinceConfirmedOpen
+			&& consecutiveZeroReadings >= RequiredZeroReadings;
 	}
 
 	public void OnInventorySlotAlert(int EmptySlot)
@@ -72,9 +80,10 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 			return;
 		}
 
+		DateTime now = DateTime.UtcNow;
 		if (EmptySlot > 0)
 		{
-			_hasSeenEmptySlots = true;
+			_lastConfirmedOpenUtc = now;
 			_consecutiveZeroReadings = 0;
 		}
 		else
@@ -82,7 +91,8 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 			_consecutiveZeroReadings++;
 		}
 
-		if (!ShouldAlert(EmptySlot, _settings.LowSlotThreshold, _hasSeenEmptySlots, _consecutiveZeroReadings))
+		TimeSpan? timeSinceConfirmedOpen = _lastConfirmedOpenUtc.HasValue ? now - _lastConfirmedOpenUtc.Value : null;
+		if (!ShouldAlert(EmptySlot, _settings.LowSlotThreshold, timeSinceConfirmedOpen, _consecutiveZeroReadings))
 		{
 			return;
 		}
