@@ -19,11 +19,15 @@ public class GenieTasks : ITaskCategory
 
 	private readonly Action _onMatchNotFoundAction;
 
-	// The status icon can flicker/animate from one 3s poll to the next, so a single match or miss
-	// isn't trusted on its own - that was flipping the Genie-started macro on and off every few
-	// seconds ("çalışıyor kafasına göre"). Requiring a couple of consecutive, consistent readings
-	// before actually calling the real callback smooths that out.
-	private const int RequiredConsecutiveReadings = 2;
+	// The status icon can flicker/animate from one 3s poll to the next (a counter/particle effect
+	// briefly covering it), so a single match or miss isn't trusted on its own. Confirmed by logs:
+	// "stopped" was firing after as little as 9s of real Genie uptime, then immediately "started"
+	// again a few seconds later - a real stop/restart doesn't look like that. A false MISS (brief
+	// occlusion) is far more likely and far more disruptive here than a false match, so stopping
+	// requires a lot more consistent misses than starting requires consistent matches.
+	private const int RequiredMatchReadings = 2;
+
+	private const int RequiredMissReadings = 6;
 
 	private int _consecutiveMatches;
 
@@ -93,7 +97,7 @@ public class GenieTasks : ITaskCategory
 	{
 		_consecutiveMisses = 0;
 		_consecutiveMatches++;
-		if (_consecutiveMatches >= RequiredConsecutiveReadings)
+		if (_consecutiveMatches >= RequiredMatchReadings)
 		{
 			_onMatchFoundAction?.Invoke(coordinates);
 		}
@@ -103,7 +107,7 @@ public class GenieTasks : ITaskCategory
 	{
 		_consecutiveMatches = 0;
 		_consecutiveMisses++;
-		if (_consecutiveMisses >= RequiredConsecutiveReadings)
+		if (_consecutiveMisses >= RequiredMissReadings)
 		{
 			_onMatchNotFoundAction?.Invoke();
 		}
