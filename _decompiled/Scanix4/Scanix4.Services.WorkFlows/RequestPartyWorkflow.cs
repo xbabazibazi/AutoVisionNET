@@ -25,9 +25,14 @@ public class RequestPartyWorkflow : IWorkflow
 			NextStepOnMatch = "RequestParty",
 			NextStepOnNotMatch = "katadora"
 		};
+		// After a successful click, drop back to "katadora" instead of immediately
+		// re-scanning "RequestParty" - the accept dialog can take longer than the
+		// workflow's 300ms post-match delay to actually close (client animation /
+		// server round-trip), and looping back onto itself was re-clicking the same
+		// still-visible dialog over and over instead of registering the invite as handled.
 		Steps["RequestParty"] = new WorkflowTransition("RequestParty")
 		{
-			NextStepOnMatch = "RequestParty",
+			NextStepOnMatch = "katadora",
 			NextStepOnNotMatch = "katadora"
 		};
 	}
