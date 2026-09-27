@@ -18,6 +18,11 @@ public class Alarm : IDisposable
 
 	private bool _disposed;
 
+	// Exposed so callers can warn the operator when alarm.wav is missing from the
+	// install folder - StartAlarm() otherwise "succeeds" silently (no exception,
+	// no sound) and the missing file goes unnoticed until an alert never fires.
+	public bool IsSoundLoaded => _player != null;
+
 	public Alarm()
 	{
 		_alarmFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "alarm.wav");

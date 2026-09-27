@@ -122,6 +122,10 @@ public class ServerForm : Form
 		StartLogTimer();
 		UpdateSilentModeButton();
 		UpdateUI();
+		if (!_alarm.IsSoundLoaded)
+		{
+			_logQueue.Enqueue("UYARI: alarm.wav bulunamadı veya yüklenemedi - envanter/üst dolu alarmı sesli çalmayacak.");
+		}
 		LicenseCore.LicenseGate.StartPeriodicRecheck(delegate
 		{
 			SafeInvoke(async delegate
@@ -927,7 +931,7 @@ public class ServerForm : Form
 		this.mainSplitContainer.Panel2.Controls.Add(this.lblLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.btnCopyLogs);
 		this.mainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-		this.mainSplitContainer.Size = new System.Drawing.Size(980, 360);
+		this.mainSplitContainer.Size = new System.Drawing.Size(980, 322);
 		this.mainSplitContainer.SplitterDistance = 350;
 		this.mainSplitContainer.SplitterWidth = 10;
 		this.mainSplitContainer.TabIndex = 8;
