@@ -72,7 +72,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 	{
 		try
 		{
-			if (!Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out var _))
+			if (!Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out bool looksClosed, out var _))
 			{
 				lblLiveCount.Text = "Şu an: — (tarama çalışmıyor)";
 				lblLiveCount.ForeColor = Color.FromArgb(140, 145, 155);
@@ -82,6 +82,12 @@ public class InventorySlotAlert : UserControl, IServiceControl
 			{
 				lblLiveCount.Text = $"Şu an: {emptySlots} boş slot (onarım nedeniyle yok sayılıyor)";
 				lblLiveCount.ForeColor = Color.FromArgb(230, 160, 90);
+				return;
+			}
+			if (looksClosed)
+			{
+				lblLiveCount.Text = "Şu an: Envanter kapalı";
+				lblLiveCount.ForeColor = Color.FromArgb(140, 145, 155);
 				return;
 			}
 			bool wouldAlarm = emptySlots <= (int)numThreshold.Value;

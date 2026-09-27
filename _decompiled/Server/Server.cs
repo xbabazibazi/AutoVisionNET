@@ -38,6 +38,10 @@ public sealed class Server : IDisposable
 
 		public DateTime? EmptySlotsTime { get; set; }
 
+		/// <summary>True when the client last reported "SLOTS:CLOSED" - the inventory window
+		/// isn't open right now, as opposed to genuinely full.</summary>
+		public bool InventoryClosed { get; set; }
+
 		public NetworkStream Stream { get; }
 
 		public ClientInfo(TcpClient client, JobType job)
@@ -234,12 +238,24 @@ public sealed class Server : IDisposable
 										continue;
 									}
 									// Per-character inventory telemetry: "SLOTS:<n>" carries how many
-									// empty inventory slots that character currently has.
+									// empty inventory slots that character currently has, and
+									// "SLOTS:CLOSED" means the inventory window isn't open right now
+									// (as opposed to genuinely full - the client already tells the
+									// two apart, since it has certainty about the transition an
+									// isolated reading here doesn't).
 									if (commandStr.StartsWith("SLOTS:", StringComparison.OrdinalIgnoreCase))
 									{
-										if (int.TryParse(commandStr.Substring("SLOTS:".Length).Trim(), out int reportedSlots))
+										string slotsValue = commandStr.Substring("SLOTS:".Length).Trim();
+										if (string.Equals(slotsValue, "CLOSED", StringComparison.OrdinalIgnoreCase))
+										{
+											clientInfo.InventoryClosed = true;
+											clientInfo.EmptySlotsTime = DateTime.UtcNow;
+											ClientStatusUpdated?.Invoke();
+										}
+										else if (int.TryParse(slotsValue, out int reportedSlots))
 										{
 											clientInfo.EmptySlots = reportedSlots;
+											clientInfo.InventoryClosed = false;
 											clientInfo.EmptySlotsTime = DateTime.UtcNow;
 											ClientStatusUpdated?.Invoke();
 										}
@@ -437,7 +453,7 @@ public sealed class Server : IDisposable
 		StopAsync().Wait();
 	}
 
-	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime, int? emptySlots, DateTime? emptySlotsTime)> GetClientList()
+	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime, int? emptySlots, DateTime? emptySlotsTime, bool inventoryClosed)> GetClientList()
 	{
 		return _clients.Select((KeyValuePair<string, ClientInfo> c) => (
 			c.Key,
@@ -446,7 +462,8 @@ public sealed class Server : IDisposable
 			c.Value.LastVerificationOk,
 			c.Value.LastVerificationTime,
 			c.Value.EmptySlots,
-			c.Value.EmptySlotsTime));
+			c.Value.EmptySlotsTime,
+			c.Value.InventoryClosed));
 	}
 
 	public async Task StopAsync()

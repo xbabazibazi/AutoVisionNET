@@ -498,7 +498,8 @@ public class ServerForm : Form
 				VerificationOk = c.lastVerificationOk,
 				VerificationTime = c.lastVerificationTime,
 				EmptySlots = c.emptySlots,
-				EmptySlotsTime = c.emptySlotsTime
+				EmptySlotsTime = c.emptySlotsTime,
+				InventoryClosed = c.inventoryClosed
 			}).ToArray();
 		string breakdown = string.Join("   ", clientList
 			.GroupBy((c) => c.job)
@@ -531,6 +532,8 @@ public class ServerForm : Form
 		public int? EmptySlots { get; set; }
 
 		public DateTime? EmptySlotsTime { get; set; }
+
+		public bool InventoryClosed { get; set; }
 	}
 
 	private void LstClients_DrawItem(object sender, DrawItemEventArgs e)
@@ -572,7 +575,15 @@ public class ServerForm : Form
 		}
 		string slotText;
 		Color slotColor;
-		if (!item.EmptySlots.HasValue)
+		if (item.InventoryClosed)
+		{
+			string reportedAt = item.EmptySlotsTime.HasValue
+				? item.EmptySlotsTime.Value.ToLocalTime().ToString("HH:mm:ss")
+				: "-";
+			slotText = $"● Envanter kapalı  ({reportedAt})";
+			slotColor = Color.FromArgb(110, 115, 130);
+		}
+		else if (!item.EmptySlots.HasValue)
 		{
 			slotText = "● Boş envanter slotu: veri yok";
 			slotColor = Color.FromArgb(110, 115, 130);

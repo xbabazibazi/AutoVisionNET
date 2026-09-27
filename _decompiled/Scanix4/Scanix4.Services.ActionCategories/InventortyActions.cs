@@ -20,9 +20,7 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 	// returns whenever the inventory window simply isn't open right now - which, in normal bot
 	// operation, is most of the time. A zero is only trusted as "full" if the bag was confirmed
 	// open (a non-zero reading) recently; once that confirmation goes stale, the bag is assumed
-	// closed rather than full, however long ago it was last actually seen full or empty. Without
-	// this window, a single non-zero reading anywhere in the session would make the alert fire
-	// every single time the bag was later closed for more than a couple of polls.
+	// closed rather than full, however long ago it was last actually seen full or empty.
 	private static readonly TimeSpan MaxGapSinceConfirmedOpen = TimeSpan.FromSeconds(20.0);
 
 	private readonly Alarm _alarm = alarm;
@@ -36,6 +34,14 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 	private readonly InventorySlotAlert _settings = Settings.Instance.ScreenCapture.InventorySlotAlert;
 
 	private DateTime? _lastConfirmedOpenUtc;
+
+	// The value of the last non-zero reading, kept alongside its timestamp. Closing the window
+	// drops the count straight to 0 from whatever it last was, while a bag that is genuinely
+	// filling up counts down gradually as it approaches empty. Requiring the last real reading to
+	// already be near the alert threshold catches that difference: 5 -> 3 -> 1 -> 0 is a real
+	// fill, but 18 -> [window closes] -> 0 is not - the window was still well short of full a
+	// moment ago.
+	private int? _lastNonZeroValue;
 
 	private int _consecutiveZeroReadings;
 
@@ -51,32 +57,37 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 
 	/// <summary>
 	/// Pure decision logic for the inventory alert, split out so it can be exercised directly.
+	/// Returns (shouldAlert, looksClosed): looksClosed is true when a 0 reading is being treated
+	/// as "the window isn't open" rather than "the bag is full".
 	/// </summary>
-	public static bool ShouldAlert(int emptySlot, int lowSlotThreshold, TimeSpan? timeSinceConfirmedOpen, int consecutiveZeroReadings)
+	public static (bool ShouldAlert, bool LooksClosed) Evaluate(int emptySlot, int lowSlotThreshold, TimeSpan? timeSinceConfirmedOpen, int? lastNonZeroValue, int consecutiveZeroReadings)
 	{
 		if (emptySlot > 0)
 		{
-			return emptySlot <= lowSlotThreshold;
+			return (emptySlot <= lowSlotThreshold, false);
 		}
-		// emptySlot == 0: only trust this as "genuinely full" while we recently confirmed the bag
-		// was actually open (otherwise 0 just means "the window is closed right now").
-		return timeSinceConfirmedOpen.HasValue
+		// emptySlot == 0: only trust this as "genuinely full" if the bag was recently confirmed
+		// open AND was already close to full the last time it had a real reading. Anything else
+		// (never confirmed open, confirmation stale, or last seen well above the threshold) means
+		// this 0 is almost certainly "window closed", not "bag full".
+		bool trustedAsFull = timeSinceConfirmedOpen.HasValue
 			&& timeSinceConfirmedOpen.Value <= MaxGapSinceConfirmedOpen
+			&& lastNonZeroValue.HasValue
+			&& lastNonZeroValue.Value <= lowSlotThreshold
 			&& consecutiveZeroReadings >= RequiredZeroReadings;
+		return (trustedAsFull, !trustedAsFull);
 	}
 
 	public void OnInventorySlotAlert(int EmptySlot)
 	{
 		bool suppressed = InventoryScanSuppressor.IsSuppressed;
-		// Publish every reading - including suppressed ones - so the UI can show what the scanner
-		// currently sees and the threshold can be set against real numbers instead of guesswork.
-		InventorySlotMonitor.Report(EmptySlot, suppressed);
 
 		// A repair dialog (or anything else that covers the inventory region) makes this reading
 		// meaningless - it counts the dialog, not the bag. Drop it entirely without touching the
 		// streak state, so a covered screen can neither raise an alarm nor corrupt the zero run.
 		if (suppressed)
 		{
+			InventorySlotMonitor.Report(EmptySlot, suppressed: true, looksClosed: false);
 			return;
 		}
 
@@ -84,6 +95,7 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 		if (EmptySlot > 0)
 		{
 			_lastConfirmedOpenUtc = now;
+			_lastNonZeroValue = EmptySlot;
 			_consecutiveZeroReadings = 0;
 		}
 		else
@@ -92,7 +104,13 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 		}
 
 		TimeSpan? timeSinceConfirmedOpen = _lastConfirmedOpenUtc.HasValue ? now - _lastConfirmedOpenUtc.Value : null;
-		if (!ShouldAlert(EmptySlot, _settings.LowSlotThreshold, timeSinceConfirmedOpen, _consecutiveZeroReadings))
+		(bool shouldAlert, bool looksClosed) = Evaluate(EmptySlot, _settings.LowSlotThreshold, timeSinceConfirmedOpen, _lastNonZeroValue, _consecutiveZeroReadings);
+
+		// Publish every reading so the UI can show what the scanner currently sees and the
+		// threshold can be set against real numbers instead of guesswork.
+		InventorySlotMonitor.Report(EmptySlot, suppressed: false, looksClosed);
+
+		if (!shouldAlert)
 		{
 			return;
 		}

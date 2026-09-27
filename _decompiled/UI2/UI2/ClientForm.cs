@@ -282,10 +282,12 @@ public class ClientForm : Form
 				}
 				// Report this character's empty inventory slots so the panel can show it per
 				// character. Readings taken while a repair dialog covered the region are skipped -
-				// they describe the dialog, not the bag.
-				if (Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out var _) && !suppressed)
+				// they describe the dialog, not the bag. A 0 reading that looks like a closed
+				// window (rather than a genuinely full bag) is reported as CLOSED so the operator's
+				// panel shows "Envanter kapalı" instead of an alarming "0 boş slot".
+				if (Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out bool looksClosed, out var _) && !suppressed)
 				{
-					await AppClient.SendCommandAsync("SLOTS:" + emptySlots);
+					await AppClient.SendCommandAsync(looksClosed ? "SLOTS:CLOSED" : "SLOTS:" + emptySlots);
 				}
 			}
 			catch
