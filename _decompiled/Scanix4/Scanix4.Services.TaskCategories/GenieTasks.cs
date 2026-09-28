@@ -19,15 +19,15 @@ public class GenieTasks : ITaskCategory
 
 	private readonly Action _onMatchNotFoundAction;
 
-	// The status icon can flicker/animate from one 3s poll to the next (a counter/particle effect
-	// briefly covering it), so a single match or miss isn't trusted on its own. Confirmed by logs:
-	// "stopped" was firing after as little as 9s of real Genie uptime, then immediately "started"
-	// again a few seconds later - a real stop/restart doesn't look like that. A false MISS (brief
-	// occlusion) is far more likely and far more disruptive here than a false match, so stopping
-	// requires a lot more consistent misses than starting requires consistent matches.
+	// Starting still waits for 2 consistent matches (6s) to avoid a one-frame flicker instantly
+	// flipping the macro on. Stopping is intentionally instant (1 miss): log evidence showed
+	// "Attack stopped" firing in the same millisecond as "Genie durduruldu" - the debounce here
+	// was entirely in how long it took to CONFIRM the real-world stop, and a delayed stop means
+	// the attack macro keeps swinging for real seconds after Genie is actually off, which is worse
+	// than the rare false stop a brief icon occlusion might cause.
 	private const int RequiredMatchReadings = 2;
 
-	private const int RequiredMissReadings = 6;
+	private const int RequiredMissReadings = 1;
 
 	private int _consecutiveMatches;
 
