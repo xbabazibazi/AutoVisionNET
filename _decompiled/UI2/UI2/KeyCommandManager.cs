@@ -15,6 +15,14 @@ public class KeyCommandManager
 {
 	private readonly Dictionary<(KeyCode Key, bool Control), Func<Task>> _commands;
 
+	// The underlying hook reports repeated KeyState.Down events while a key is held (normal OS
+	// key-repeat), and Execute() never awaited its command - holding Ctrl+D for even a moment
+	// spawned several overlapping TPParty() runs whose F1/Tab/skill presses interleaved and
+	// stomped on each other's target selection, degrading several intended TPs into what looked
+	// like just one. This tracks which keys currently have a command in flight and ignores
+	// repeats until it finishes.
+	private readonly HashSet<(KeyCode Key, bool Control)> _running = new HashSet<(KeyCode, bool)>();
+
 	private readonly AttackService _attackService;
 
 	private readonly InputUtils _inputUtils;
@@ -86,11 +94,34 @@ public class KeyCommandManager
 
 	public bool Execute(KeyCode key, bool control)
 	{
-		if (_commands.TryGetValue((key, control), out Func<Task> value))
+		if (!_commands.TryGetValue((key, control), out Func<Task> value))
 		{
-			value();
-			return true;
+			return false;
 		}
-		return false;
+		var commandKey = (key, control);
+		lock (_running)
+		{
+			if (!_running.Add(commandKey))
+			{
+				return true;
+			}
+		}
+		RunAndRelease(commandKey, value);
+		return true;
+	}
+
+	private async void RunAndRelease((KeyCode Key, bool Control) commandKey, Func<Task> command)
+	{
+		try
+		{
+			await command();
+		}
+		finally
+		{
+			lock (_running)
+			{
+				_running.Remove(commandKey);
+			}
+		}
 	}
 }
