@@ -82,26 +82,33 @@ public class Client : IDisposable
 			ServerPort = port;
 			Nickname = nickname;
 			Job = job;
-			_tcpClient = new TcpClient
+			// Held in a local and used for the rest of this method instead of re-reading the
+			// _tcpClient field after every await: a concurrent Disconnect() call (e.g. the user
+			// hitting "Bağlantıyı Kes" while this connection attempt is still in flight) nulls
+			// that field in its finally block, which was throwing an irregular, timing-dependent
+			// NullReferenceException here whenever it raced with this method's later field reads.
+			TcpClient tcpClient = new TcpClient
 			{
 				NoDelay = true
 			};
+			_tcpClient = tcpClient;
 			_receiveCts = new CancellationTokenSource();
 			using CancellationTokenSource timeoutCts = new CancellationTokenSource(10000);
 			using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 #if NET48
-			using (linkedCts.Token.Register(() => _tcpClient.Close()))
+			using (linkedCts.Token.Register(() => tcpClient.Close()))
 			{
-				await _tcpClient.ConnectAsync(ipAddress, port);
+				await tcpClient.ConnectAsync(ipAddress, port);
 			}
 #else
-			await _tcpClient.ConnectAsync(ipAddress, port, linkedCts.Token);
+			await tcpClient.ConnectAsync(ipAddress, port, linkedCts.Token);
 #endif
-			_stream = _tcpClient.GetStream();
+			NetworkStream stream = tcpClient.GetStream();
+			_stream = stream;
 			_isRunning = true;
 			IsConnected = true;
 			await SendMessageAsync($"{nickname}|{(int)job}");
-			string handshakeResponse = await ReadMessageAsync(linkedCts.Token);
+			string handshakeResponse = await ReadMessageAsync(stream, linkedCts.Token);
 			if (handshakeResponse != "OK")
 			{
 				IsConnected = false;
@@ -114,7 +121,7 @@ public class Client : IDisposable
 			}, null, 15000, 15000);
 			Connected?.Invoke();
 			MessageReceived?.Invoke("Bağlantı başarılı: " + nickname);
-			ReceiveMessagesAsync(_receiveCts.Token);
+			ReceiveMessagesAsync(stream, _receiveCts.Token);
 		}
 		catch (Exception ex)
 		{
@@ -254,12 +261,15 @@ public class Client : IDisposable
 		}
 	}
 
-	private async Task<string> ReadMessageAsync(CancellationToken token)
+	// Takes the stream explicitly rather than reading the _stream field, so a concurrent
+	// Disconnect() call (e.g. the user hitting "Bağlantıyı Kes" mid-handshake) nulling that field
+	// can't turn a read this method is already using into a NullReferenceException.
+	private async Task<string> ReadMessageAsync(NetworkStream stream, CancellationToken token)
 	{
 		try
 		{
 			byte[] lengthBuffer = new byte[4];
-			if (await _stream.ReadAsync(lengthBuffer, 0, 4, token) != 4)
+			if (await stream.ReadAsync(lengthBuffer, 0, 4, token) != 4)
 			{
 				return null;
 			}
@@ -275,7 +285,7 @@ public class Client : IDisposable
 				for (int totalRead = 0; totalRead < length; totalRead += read)
 				{
 					int toRead = Math.Min(_chunkBuffer.Length, length - totalRead);
-					read = await _stream.ReadAsync(_chunkBuffer, 0, toRead, token);
+					read = await stream.ReadAsync(_chunkBuffer, 0, toRead, token);
 					if (read == 0)
 					{
 						return null;
@@ -297,9 +307,13 @@ public class Client : IDisposable
 		{
 			return null;
 		}
+		catch (NullReferenceException)
+		{
+			return null;
+		}
 	}
 
-	private async Task ReceiveMessagesAsync(CancellationToken token)
+	private async Task ReceiveMessagesAsync(NetworkStream stream, CancellationToken token)
 	{
 		DateTime lastReceiveTime = DateTime.UtcNow;
 		try
@@ -312,7 +326,7 @@ public class Client : IDisposable
 					Disconnect();
 					break;
 				}
-				string message = await ReadMessageAsync(token);
+				string message = await ReadMessageAsync(stream, token);
 				if (message == null)
 				{
 					MessageReceived?.Invoke("Sunucu bağlantıyı kapattı");
