@@ -44,6 +44,13 @@ public sealed class Server : IDisposable
 
 		public NetworkStream Stream { get; }
 
+		// Guards writes to Stream: the 5s server-wide ping timer and this client's own PING/PONG
+		// and command replies run on independent tasks and both write to the same NetworkStream.
+		// Without serializing them, two concurrent writes interleave their bytes mid-message,
+		// corrupting the length-prefix framing the client expects - which reads as garbage and
+		// disconnects. This mirrors the lock Client.cs already has on the client side.
+		public SemaphoreSlim SendLock { get; } = new SemaphoreSlim(1, 1);
+
 		public ClientInfo(TcpClient client, JobType job)
 		{
 			Client = client;
@@ -58,6 +65,7 @@ public sealed class Server : IDisposable
 			{
 				Stream?.Dispose();
 				Client.Dispose();
+				SendLock.Dispose();
 			}
 			catch
 			{
@@ -114,7 +122,7 @@ public sealed class Server : IDisposable
 			{
 				if (client.Client.Connected)
 				{
-					tasks.Add(SendMessageAsync(client.Stream, "PING"));
+					tasks.Add(SendMessageAsync(client, "PING"));
 				}
 			}
 			catch
@@ -207,7 +215,7 @@ public sealed class Server : IDisposable
 					clientInfo.LastActivity = DateTime.UtcNow;
 					if (message == "PING")
 					{
-						await SendMessageAsync(stream, "PONG");
+						await SendMessageAsync(clientInfo, "PONG");
 					}
 					else
 					{
@@ -310,7 +318,7 @@ public sealed class Server : IDisposable
 			KeyValuePair<string, ClientInfo> client = clientsToSend[i];
 			try
 			{
-				await SendMessageAsync(message: $"{client.Key}|{(int)client.Value.Job}|{command}", stream: client.Value.Stream);
+				await SendMessageAsync(client.Value, $"{client.Key}|{(int)client.Value.Job}|{command}");
 			}
 			catch (Exception ex)
 			{
@@ -331,7 +339,7 @@ public sealed class Server : IDisposable
 		}
 		try
 		{
-			await SendMessageAsync(message: $"{nickname}|{(int)clientInfo.Job}|{command}", stream: clientInfo.Stream);
+			await SendMessageAsync(clientInfo, $"{nickname}|{(int)clientInfo.Job}|{command}");
 			return true;
 		}
 		catch (Exception ex)
@@ -349,7 +357,7 @@ public sealed class Server : IDisposable
 			KeyValuePair<string, ClientInfo> client = clientsToSend[i];
 			try
 			{
-				await SendMessageAsync(message: $"{client.Key}|{(int)client.Value.Job}|{command}", stream: client.Value.Stream);
+				await SendMessageAsync(client.Value, $"{client.Key}|{(int)client.Value.Job}|{command}");
 			}
 			catch (Exception ex)
 			{
@@ -392,6 +400,24 @@ public sealed class Server : IDisposable
 		finally
 		{
 			ArrayPool<byte>.Shared.Return(buffer);
+		}
+	}
+
+	/// <summary>
+	/// Use this (not the raw stream overload) for any send once a client is registered - it
+	/// serializes against every other sender of that client's stream (ping timer, PONG replies,
+	/// command dispatch) so their writes can never interleave.
+	/// </summary>
+	private async Task SendMessageAsync(ClientInfo client, string message)
+	{
+		await client.SendLock.WaitAsync();
+		try
+		{
+			await SendMessageAsync(client.Stream, message);
+		}
+		finally
+		{
+			client.SendLock.Release();
 		}
 	}
 
