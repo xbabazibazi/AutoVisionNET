@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,6 +109,10 @@ public class ServerForm : Form
 	private System.Threading.Timer _licenseStatusTimer;
 
 	private Button btnPartyForm;
+
+	private Button btnCheckForUpdate;
+
+	private bool _isCheckingForUpdate;
 
 	private PartyForm _partyForm;
 
@@ -230,13 +235,27 @@ public class ServerForm : Form
 			Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
 			ForeColor = LicenseCore.LicenseGate.GetStatusColor(),
 			Location = new Point(5, 50),
-			Size = new Size(965, 20),
+			Size = new Size(820, 20),
 			TextAlign = ContentAlignment.MiddleLeft,
 			Text = LicenseCore.LicenseGate.GetStatusText()
 		};
+		btnCheckForUpdate = new Button
+		{
+			Font = new Font("Segoe UI", 8f, FontStyle.Bold),
+			BackColor = Color.FromArgb(55, 78, 92),
+			ForeColor = Color.White,
+			FlatStyle = FlatStyle.Flat,
+			Location = new Point(830, 47),
+			Size = new Size(140, 26),
+			Text = "Güncellemeyi Kontrol Et"
+		};
+		btnCheckForUpdate.FlatAppearance.BorderSize = 0;
+		btnCheckForUpdate.FlatAppearance.MouseOverBackColor = Color.FromArgb(75, 98, 112);
+		btnCheckForUpdate.Click += BtnCheckForUpdate_Click;
 		statusPanel.Controls.Add(lblJobBreakdown);
 		statusPanel.Controls.Add(lblLastError);
 		statusPanel.Controls.Add(lblLicenseStatus);
+		statusPanel.Controls.Add(btnCheckForUpdate);
 		statusPanel.Controls.Add(lblVersion);
 	}
 
@@ -429,6 +448,66 @@ public class ServerForm : Form
 		}
 		_partyForm.Show(this);
 		_partyForm.BringToFront();
+	}
+
+	private async void BtnCheckForUpdate_Click(object sender, EventArgs e)
+	{
+		if (_isCheckingForUpdate)
+		{
+			return;
+		}
+		_isCheckingForUpdate = true;
+		string originalText = btnCheckForUpdate.Text;
+		btnCheckForUpdate.Enabled = false;
+		btnCheckForUpdate.Text = "Kontrol ediliyor...";
+		try
+		{
+			UpdateInfo update = await UpdateChecker.CheckForUpdateAsync();
+			if (update == null)
+			{
+				MessageBox.Show(this, "Güncelleme bulunamadı. En güncel sürümü kullanıyorsunuz.", "Güncelleme Yok", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+			string message = $"Yeni sürüm bulundu: v{update.Version} (mevcut: v{UpdateChecker.CurrentVersion})\n\nŞimdi güncellensin mi?";
+			if (MessageBox.Show(this, message, "Güncelleme Mevcut", MessageBoxButtons.YesNo, MessageBoxIcon.Information) != DialogResult.Yes)
+			{
+				return;
+			}
+			if (string.IsNullOrEmpty(update.DownloadUrl))
+			{
+				MessageBox.Show(this, "Güncelleme dosyası bulunamadı. Lütfen manuel indirin: " + update.HtmlUrl, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				return;
+			}
+			btnCheckForUpdate.Text = "İndiriliyor...";
+			string zipPath = await UpdateChecker.DownloadUpdateAsync(update.DownloadUrl);
+			try
+			{
+				string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EVOX.Updater.exe");
+				ProcessStartInfo startInfo = new ProcessStartInfo
+				{
+					FileName = fileName,
+					Arguments = "\"" + zipPath + "\" \"EVOX.Service.exe\"",
+					UseShellExecute = true,
+					Verb = "runas"
+				};
+				Process.Start(startInfo);
+				Close();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(this, "Updater başlatılamadı: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			}
+		}
+		catch (Exception ex2)
+		{
+			MessageBox.Show(this, "Güncelleme kontrol hatası: " + ex2.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		}
+		finally
+		{
+			_isCheckingForUpdate = false;
+			btnCheckForUpdate.Enabled = true;
+			btnCheckForUpdate.Text = originalText;
+		}
 	}
 
 	private void BtnCopyLogs_Click(object sender, EventArgs e)
