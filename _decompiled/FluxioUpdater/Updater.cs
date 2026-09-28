@@ -190,7 +190,16 @@ internal class Updater
 			string dst = Path.Combine(destDir, relative);
 			string srcFileName = Path.GetFileName(src);
 			string thisUpdaterName = AppDomain.CurrentDomain.FriendlyName;
-			if (string.Equals(srcFileName, thisUpdaterName, StringComparison.OrdinalIgnoreCase) || string.Equals(srcFileName, "EVOX.Updater.exe", StringComparison.OrdinalIgnoreCase))
+			// On .NET 8 the running process is split across EVOX.Updater.exe (native apphost) and
+			// EVOX.Updater.dll (the actual managed assembly, loaded and locked while running) -
+			// AppDomain.CurrentDomain.FriendlyName doesn't reliably equal either file name across
+			// hosting models, so this used to only ever catch the .exe. The .dll (plus its
+			// runtime siblings) was left unmatched, and copying over a currently-loaded, locked
+			// .dll retried "Hedef dosya kilitli" until it gave up and the whole update failed -
+			// framework-dependent net48 builds (just the one .exe) never hit this.
+			bool isUpdaterOwnFile = string.Equals(srcFileName, thisUpdaterName, StringComparison.OrdinalIgnoreCase)
+				|| srcFileName.StartsWith("EVOX.Updater.", StringComparison.OrdinalIgnoreCase);
+			if (isUpdaterOwnFile)
 			{
 				Console.WriteLine("[UPD] Atlandı (updater): " + relative);
 				continue;
