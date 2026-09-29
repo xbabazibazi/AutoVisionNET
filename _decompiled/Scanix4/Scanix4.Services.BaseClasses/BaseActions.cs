@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Threading;
 using InputManager;
 using SimpleLogger;
@@ -19,17 +21,38 @@ public class BaseActions
 
 	private const int CURSOR_SPEED = 50;
 
+	[DllImport("user32.dll")]
+	private static extern IntPtr GetForegroundWindow();
+
+	[DllImport("user32.dll")]
+	private static extern bool SetForegroundWindow(IntPtr hWnd);
+
 	public BaseActions(InputUtils inputUtils, Logger logger)
 	{
 		_inputUtils = inputUtils;
 		Logger = logger;
 	}
 
+	// Clicks are injected through a low-level driver, so Windows treats them exactly like a real
+	// mouse click - if the click lands on a VM window that wasn't already focused (several bot
+	// instances run side by side on screen), that VM briefly steals the foreground from whatever
+	// the operator was actually looking at. Restoring whatever window had focus right before the
+	// click undoes that steal without affecting the click itself.
+	private static void ClickPreservingForegroundWindow(Action click)
+	{
+		IntPtr previousForeground = GetForegroundWindow();
+		click();
+		if (previousForeground != IntPtr.Zero)
+		{
+			SetForegroundWindow(previousForeground);
+		}
+	}
+
 	public void MoveAndRightClick(Point coordinates)
 	{
 		_inputUtils.SimulateMoveTo(coordinates.X, coordinates.Y);
 		Thread.Sleep(250);
-		_inputUtils.SimulateRightButtonClick(150);
+		ClickPreservingForegroundWindow(() => _inputUtils.SimulateRightButtonClick(150));
 		Thread.Sleep(250);
 		MoveSafeArea();
 	}
@@ -41,19 +64,19 @@ public class BaseActions
 
 	public void SimulateRightClick(int clickDelay = 150, int waitDelay = 250)
 	{
-		_inputUtils.SimulateRightButtonClick(clickDelay);
+		ClickPreservingForegroundWindow(() => _inputUtils.SimulateRightButtonClick(clickDelay));
 		Thread.Sleep(waitDelay);
 	}
 
 	public void SimulateRightClick(Point coordinates, int clickDelay = 150, int waitDelay = 250)
 	{
-		_inputUtils.SimulateRightButtonClick(clickDelay);
+		ClickPreservingForegroundWindow(() => _inputUtils.SimulateRightButtonClick(clickDelay));
 		Thread.Sleep(waitDelay);
 	}
 
 	public void SimulateLeftClick(int clickDelay = 150, int waitDelay = 250)
 	{
-		_inputUtils.SimulateLeftButtonClick(clickDelay);
+		ClickPreservingForegroundWindow(() => _inputUtils.SimulateLeftButtonClick(clickDelay));
 		Thread.Sleep(waitDelay);
 	}
 
