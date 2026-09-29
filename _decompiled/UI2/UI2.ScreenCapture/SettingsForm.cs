@@ -42,6 +42,10 @@ public class SettingsForm : Form, ISettingsForm
 
 	private Button buttonGenieStatus;
 
+	private Label labelPressOk;
+
+	private Button buttonPressOk;
+
 	private Button buttonMagicBag;
 
 	private Label labelBuffLine;
@@ -265,6 +269,8 @@ public class SettingsForm : Form, ISettingsForm
 		// Where the "Genie is active" status icon shows up - separate from the "Genie" area above
 		// (that one is the start button, which sits somewhere else on screen).
 		_areaDefinitions.Add(new AreaDefinition("GenieStatus", buttonGenieStatus, labelGenieStatus, "Genie Aktif İkonu"));
+		// The center-screen "Press OK" death-confirmation dialog.
+		_areaDefinitions.Add(new AreaDefinition("PressOk", buttonPressOk, labelPressOk, "Ölüm Onayı (Press OK)"));
 	}
 
 	private void WireUpAllEvents()
@@ -461,6 +467,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelInventory = new System.Windows.Forms.Label();
 		this.labelWeaponInventory = new System.Windows.Forms.Label();
 		this.labelGenieStatus = new System.Windows.Forms.Label();
+		this.labelPressOk = new System.Windows.Forms.Label();
 		this.buttonMagicBag = new System.Windows.Forms.Button();
 		this.labelBuffLine = new System.Windows.Forms.Label();
 		this.labelStopMacrosWhenGenieStoppedCoordinates = new System.Windows.Forms.Label();
@@ -471,6 +478,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonInventory = new System.Windows.Forms.Button();
 		this.buttonWeaponInventory = new System.Windows.Forms.Button();
 		this.buttonGenieStatus = new System.Windows.Forms.Button();
+		this.buttonPressOk = new System.Windows.Forms.Button();
 		this.buttonChatWindowReSaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonAcceptPartySaveCoordinates = new System.Windows.Forms.Button();
 		this.buttonWeapons = new System.Windows.Forms.Button();
@@ -500,6 +508,8 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.Controls.Add(this.labelWeaponInventory);
 		this.pnlContainer.Controls.Add(this.labelGenieStatus);
 		this.pnlContainer.Controls.Add(this.buttonGenieStatus);
+		this.pnlContainer.Controls.Add(this.labelPressOk);
+		this.pnlContainer.Controls.Add(this.buttonPressOk);
 		this.pnlContainer.Controls.Add(this.buttonMagicBag);
 		this.pnlContainer.Controls.Add(this.labelBuffLine);
 		this.pnlContainer.Controls.Add(this.labelStopMacrosWhenGenieStoppedCoordinates);
@@ -518,7 +528,7 @@ public class SettingsForm : Form, ISettingsForm
 		this.pnlContainer.Location = new System.Drawing.Point(0, 40);
 		this.pnlContainer.Name = "pnlContainer";
 		this.pnlContainer.Padding = new System.Windows.Forms.Padding(20);
-		this.pnlContainer.Size = new System.Drawing.Size(650, 390);
+		this.pnlContainer.Size = new System.Drawing.Size(650, 419);
 		this.pnlContainer.TabIndex = 1;
 		this.labelLeftBotMenu.AutoSize = true;
 		this.labelLeftBotMenu.Font = new System.Drawing.Font("Segoe UI", 9.75f);
@@ -608,6 +618,14 @@ public class SettingsForm : Form, ISettingsForm
 		this.labelGenieStatus.Size = new System.Drawing.Size(147, 17);
 		this.labelGenieStatus.TabIndex = 22;
 		this.labelGenieStatus.Text = "(0000,0000)-(0000,0000)";
+		this.labelPressOk.AutoSize = true;
+		this.labelPressOk.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.labelPressOk.ForeColor = System.Drawing.Color.White;
+		this.labelPressOk.Location = new System.Drawing.Point(220, 394);
+		this.labelPressOk.Name = "labelPressOk";
+		this.labelPressOk.Size = new System.Drawing.Size(147, 17);
+		this.labelPressOk.TabIndex = 24;
+		this.labelPressOk.Text = "(0000,0000)-(0000,0000)";
 		this.buttonMagicBag.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonMagicBag.Location = new System.Drawing.Point(20, 128);
 		this.buttonMagicBag.Name = "buttonMagicBag";
@@ -683,6 +701,13 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonGenieStatus.TabIndex = 23;
 		this.buttonGenieStatus.Text = "Genie Aktif İkonu";
 		this.buttonGenieStatus.UseVisualStyleBackColor = true;
+		this.buttonPressOk.Font = new System.Drawing.Font("Segoe UI", 9.75f);
+		this.buttonPressOk.Location = new System.Drawing.Point(20, 390);
+		this.buttonPressOk.Name = "buttonPressOk";
+		this.buttonPressOk.Size = new System.Drawing.Size(180, 28);
+		this.buttonPressOk.TabIndex = 25;
+		this.buttonPressOk.Text = "Ölüm Onayı (Press OK)";
+		this.buttonPressOk.UseVisualStyleBackColor = true;
 		this.buttonInventory.UseVisualStyleBackColor = true;
 		this.buttonInventory.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonChatWindowReSaveCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);
@@ -741,7 +766,7 @@ public class SettingsForm : Form, ISettingsForm
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 17f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(28, 32, 43);
-		base.ClientSize = new System.Drawing.Size(650, 430);
+		base.ClientSize = new System.Drawing.Size(650, 459);
 		base.Controls.Add(this.btnHide);
 		base.Controls.Add(this.pnlContainer);
 		base.Controls.Add(this.lblTitle);

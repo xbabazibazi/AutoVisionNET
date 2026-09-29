@@ -40,6 +40,21 @@ public class PartyTasks : ITaskCategory
 		});
 		Tasks.Add(new SearchTask
 		{
+			TaskId = "PressOk",
+			Config = new SearchConfig
+			{
+				TemplatePath = TemplateResolver.Resolve("PressOk", "Images/PressOk.jpg"),
+				SearchArea = Settings.Instance.ScreenCapture.RectanglesSettings.PressOk.GetRectangle(),
+				Threshold = 0.9,
+				IntervalMs = 3000,
+				UseColor = false,
+				OnMatchFound = _actionCenter._partyActions.OnPressOkFound,
+				OnMatchNotFound = null
+			},
+			Mode = SearchMode.Continuous
+		});
+		Tasks.Add(new SearchTask
+		{
 			TaskId = "PartyHeader",
 			Config = new SearchConfig
 			{

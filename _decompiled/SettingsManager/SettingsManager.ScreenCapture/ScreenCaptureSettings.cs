@@ -12,6 +12,8 @@ public class ScreenCaptureSettings(DbManager dbManager)
 
 	public PartyMemberCount PartyMemberCount { get; set; } = new PartyMemberCount(dbManager);
 
+	public PressOk PressOk { get; set; } = new PressOk(dbManager);
+
 	public RepairArmors RepairArmors { get; set; } = new RepairArmors(dbManager);
 
 	public RepairWeapons RepairWeapons { get; set; } = new RepairWeapons(dbManager);

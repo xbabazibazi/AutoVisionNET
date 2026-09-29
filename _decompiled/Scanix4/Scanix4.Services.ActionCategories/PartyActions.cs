@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using InputInterceptorNS;
 using InputManager;
+using Scanix4;
 using Scanix4.Services.BaseClasses;
 using SettingsManager;
 using SettingsManager.ScreenCapture;
@@ -21,6 +22,16 @@ public class PartyActions(Alarm alarm, Logger logger, InputUtils inputUtils) : B
 	private readonly ScreenCaptureSettings _settings = Settings.Instance.ScreenCapture;
 
 	private string? _nextTaskId;
+
+	public void OnPressOkFound(Point coordinates)
+	{
+		_logger.LogInformation("PressOk (ölüm onayı) ekranı algılandı");
+		if (_settings.PressOk.Alarm)
+		{
+			_alarm.StartAlarm();
+		}
+		_ = TelegramNotifier.SendAsync("Karakterin öldü (Press OK ekranı algılandı). Kontrol etmen gerekiyor.");
+	}
 
 	public void OnHandlePartyMemberDeath(Point coordinates)
 	{

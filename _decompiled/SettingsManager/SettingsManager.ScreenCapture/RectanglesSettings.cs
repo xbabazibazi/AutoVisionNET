@@ -6,10 +6,11 @@ namespace SettingsManager.ScreenCapture;
 
 public class RectanglesSettings
 {
-	private static readonly string[] AreaNames = new string[13]
+	private static readonly string[] AreaNames = new string[14]
 	{
 		"AcceptParty", "Genie", "ChatWindow", "BuffLine", "Weapons", "Inventory",
-		"MagicBag", "Town", "Party", "Info", "LeftBotMenu", "WeaponInventory", "GenieStatus"
+		"MagicBag", "Town", "Party", "Info", "LeftBotMenu", "WeaponInventory", "GenieStatus",
+		"PressOk"
 	};
 
 	private readonly DbManager _dbManager;
@@ -69,6 +70,23 @@ public class RectanglesSettings
 		set
 		{
 			Set(value, "GenieStatus");
+		}
+	}
+
+	/// <summary>
+	/// Where the center-screen "Press OK" death-confirmation dialog appears - a big, clear system
+	/// message rather than a small icon, so it is a more reliable trigger than
+	/// <see cref="Party"/>'s own death detection.
+	/// </summary>
+	public RectangleSettings PressOk
+	{
+		get
+		{
+			return Get("PressOk");
+		}
+		set
+		{
+			Set(value, "PressOk");
 		}
 	}
 

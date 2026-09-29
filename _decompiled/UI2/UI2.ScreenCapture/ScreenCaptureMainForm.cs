@@ -98,6 +98,12 @@ public class ScreenCaptureMainForm : Form
 			},
 			new
 			{
+				Type = typeof(PressOk),
+				DisplayName = "Ölüm Onayı (Press OK)",
+				ServiceName = "PressOk"
+			},
+			new
+			{
 				Type = typeof(PartyMemberCount),
 				DisplayName = "Parti Kişi Sayısı Kontrolü",
 				ServiceName = "PartyMemberCount"
