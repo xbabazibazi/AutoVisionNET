@@ -1,6 +1,7 @@
 using System;
 using InputManager;
 using Scanix4.Services.BaseClasses;
+using Scanix4;
 using SettingsManager;
 using SettingsManager.ScreenCapture;
 using SimpleLogger;
@@ -130,5 +131,7 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 		{
 			_logger.LogWarning("Envanter uyarısı sunucuya gönderilemedi (alarm sesi panelde çalar, bu yüzden panele bağlı olmanız gerekir): " + ex.Message);
 		}
+
+		_ = TelegramNotifier.SendAsync("Envanter doldu, kontrol etmen gerekiyor.");
 	}
 }

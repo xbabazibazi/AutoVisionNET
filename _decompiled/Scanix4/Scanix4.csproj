@@ -24,6 +24,7 @@
     <Compile Remove="Scanix4.Services.ActionCategories\PartyFormationActions.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FluxDB\EVOX.Data.csproj" />

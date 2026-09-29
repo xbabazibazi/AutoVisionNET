@@ -33,6 +33,8 @@ public class Macro2 : Form, IMacroForm
 
 	private readonly General _general;
 
+	private readonly UI2.Macro.UserControls.Telegram _telegram;
+
 	private readonly Color _backgroundColor = Color.FromArgb(38, 38, 45);
 
 	private readonly Color _surfaceColor = Color.FromArgb(48, 48, 55);
@@ -63,6 +65,7 @@ public class Macro2 : Form, IMacroForm
 		_undyAc = new UndyAc();
 		_escape = new Escape(inputUtils);
 		_general = new General();
+		_telegram = new UI2.Macro.UserControls.Telegram();
 		_macroControls = InitializeSettingControls();
 		LoadSettings();
 		SetupEventHandlers();
@@ -118,7 +121,8 @@ public class Macro2 : Form, IMacroForm
 			{ "Tp Party", _tpParty },
 			{ "Undy AC", _undyAc },
 			{ "Escape", _escape },
-			{ "Genel", _general }
+			{ "Genel", _general },
+			{ "Telegram", _telegram }
 		};
 		try
 		{
@@ -158,6 +162,7 @@ public class Macro2 : Form, IMacroForm
 			_undyAc.SaveSettings();
 			_escape.SaveSettings();
 			_general.SaveSettings();
+			_telegram.SaveSettings();
 			FormSettings formSettings = _settings.GeneralSettings.FormSettings;
 			formSettings.FormLocationX = base.Location.X;
 			formSettings.FormLocationY = base.Location.Y;

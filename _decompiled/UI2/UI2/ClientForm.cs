@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Scanix4;
 using Scanix4.Core;
 using SettingsManager;
 using SettingsManager.ClientSettings;
@@ -200,6 +201,7 @@ public class ClientForm : Form
 				UpdateStatus("● BAĞLANTI KOPTU", _disconnectedColor);
 				AddLog("Sunucu bağlantısı kesildi!");
 				ConnectionStatusChanged?.Invoke(obj: false);
+				_ = TelegramNotifier.SendAsync("Sunucu bağlantısı kesildi.");
 				Form1.Instance?.InvokeIfRequired(delegate
 				{
 					Form1.Instance.ToolStripButtonClient.BackColor = _errorColor;
