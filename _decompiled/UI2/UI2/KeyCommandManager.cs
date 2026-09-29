@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InputInterceptorNS;
 using InputManager;
+using Scanix4.Services;
 using SettingsManager;
+using SimpleLogger;
 using UI2.ScreenCapture;
 using UI2.Services;
 
@@ -63,6 +65,14 @@ public class KeyCommandManager
 		Register(KeyCode.W, control: true, delegate
 		{
 			_screenCaptureMainForm.Alarm.StopAlarm();
+			return Task.CompletedTask;
+		});
+		Register(KeyCode.I, control: true, delegate
+		{
+			bool suppressed = InventoryScanSuppressor.ToggleManual();
+			Logger.Instance.LogInformation(suppressed
+				? "Envanter alarmı manuel olarak durduruldu (tamir/diyalog vb. için). Bitince Ctrl+I ile tekrar aç."
+				: "Envanter alarmı tekrar aktif.");
 			return Task.CompletedTask;
 		});
 	}

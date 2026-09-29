@@ -24,7 +24,20 @@ public static class InventoryScanSuppressor
 
 	private static long _suppressedUntilTicks;
 
-	public static bool IsSuppressed => DateTime.UtcNow.Ticks < Interlocked.Read(ref _suppressedUntilTicks);
+	// Covers manual interactions the bot has no visual hook for (walking to an NPC and repairing
+	// by hand, trading, anything else that puts a window over the inventory) - a timed window
+	// can't be sized correctly for these since their duration is whatever the operator takes, so
+	// this is an explicit on/off the operator flips with a hotkey instead.
+	private static bool _manuallySuppressed;
+
+	public static bool IsSuppressed => _manuallySuppressed || DateTime.UtcNow.Ticks < Interlocked.Read(ref _suppressedUntilTicks);
+
+	/// <summary>Flips manual suppression and returns the new state, for the caller to report to the operator.</summary>
+	public static bool ToggleManual()
+	{
+		_manuallySuppressed = !_manuallySuppressed;
+		return _manuallySuppressed;
+	}
 
 	public static void Suppress()
 	{
@@ -55,5 +68,6 @@ public static class InventoryScanSuppressor
 	public static void Reset()
 	{
 		Interlocked.Exchange(ref _suppressedUntilTicks, 0L);
+		_manuallySuppressed = false;
 	}
 }
