@@ -40,10 +40,10 @@ public class RequestTasks : ITaskCategory
 		});
 		Tasks.Add(new SearchTask
 		{
-			TaskId = "katadora",
+			TaskId = "EVOX",
 			Config = new SearchConfig
 			{
-				TemplatePath = TemplateResolver.Resolve("katadora", "Images/katadora.jpg"),
+				TemplatePath = TemplateResolver.Resolve("EVOX", "Images/katadora.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 2000,

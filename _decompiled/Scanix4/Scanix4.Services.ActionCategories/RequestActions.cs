@@ -21,7 +21,7 @@ public class RequestActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 	private readonly ScreenCaptureSettings _settings = Settings.Instance.ScreenCapture;
 
 	// Belt-and-braces on top of RequestPartyWorkflow's own state machine: that workflow already
-	// steps away from "RequestParty" after a match, but if the precursor cue ("katadora") is still
+	// steps away from "RequestParty" after a match, but if the precursor cue ("EVOX") is still
 	// visible right after the click (dialog not fully closed yet, or a lingering UI element), the
 	// workflow bounces straight back into "RequestParty" and re-clicks the same still-open dialog.
 	// A live log showed this firing ~13 times in 15s at the exact same coordinates. This cooldown

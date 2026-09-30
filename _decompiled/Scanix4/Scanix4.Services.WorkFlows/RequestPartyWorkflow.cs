@@ -20,20 +20,20 @@ public class RequestPartyWorkflow : IWorkflow
 
 	private void DefineSteps()
 	{
-		Steps["katadora"] = new WorkflowTransition("katadora")
+		Steps["EVOX"] = new WorkflowTransition("EVOX")
 		{
 			NextStepOnMatch = "RequestParty",
-			NextStepOnNotMatch = "katadora"
+			NextStepOnNotMatch = "EVOX"
 		};
-		// After a successful click, drop back to "katadora" instead of immediately
+		// After a successful click, drop back to "EVOX" instead of immediately
 		// re-scanning "RequestParty" - the accept dialog can take longer than the
 		// workflow's 300ms post-match delay to actually close (client animation /
 		// server round-trip), and looping back onto itself was re-clicking the same
 		// still-visible dialog over and over instead of registering the invite as handled.
 		Steps["RequestParty"] = new WorkflowTransition("RequestParty")
 		{
-			NextStepOnMatch = "katadora",
-			NextStepOnNotMatch = "katadora"
+			NextStepOnMatch = "EVOX",
+			NextStepOnNotMatch = "EVOX"
 		};
 	}
 
