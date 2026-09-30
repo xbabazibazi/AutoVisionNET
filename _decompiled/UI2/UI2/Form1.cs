@@ -120,6 +120,7 @@ public class Form1 : Form
 		_macroForm = new Macro2(_inputUtils);
 		_settingsForm = new SettingsForm();
 		_screenCaptureMainForm = new ScreenCaptureMainForm(_inputUtils, _logsForm, _attackService, _macroForm, this);
+		_settingsForm.WorkflowEngine = _screenCaptureMainForm.WorkflowEngine;
 		_statusDashboardForm = new StatusDashboardForm(_screenCaptureMainForm);
 		_formManager.RegisterForm("Macro", _macroForm.GetForm());
 		_formManager.RegisterForm("ScreenCapture", _screenCaptureMainForm);

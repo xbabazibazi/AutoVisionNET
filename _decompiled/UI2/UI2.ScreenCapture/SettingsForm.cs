@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using EVOX.Data.Models;
+using Scanix4;
 using SettingsManager;
 using SettingsManager.ScreenCapture;
 using UI2.Interfaces;
@@ -13,6 +14,12 @@ namespace UI2.ScreenCapture;
 public class SettingsForm : Form, ISettingsForm
 {
 	private readonly RectanglesSettings _settings = Settings.Instance.ScreenCapture.RectanglesSettings;
+
+	/// <summary>
+	/// Set by Form1 right after ScreenCaptureMainForm exists (this form is constructed first), so
+	/// "Değişiklikleri Uygula" can rebuild the running task graph without restarting the app.
+	/// </summary>
+	public WorkflowEngine? WorkflowEngine { get; set; }
 
 	private readonly List<AreaDefinition> _areaDefinitions = new List<AreaDefinition>();
 
@@ -116,7 +123,7 @@ public class SettingsForm : Form, ISettingsForm
 		Panel pnlProfile = new Panel
 		{
 			Dock = DockStyle.Bottom,
-			Height = 46,
+			Height = 82,
 			BorderStyle = BorderStyle.FixedSingle,
 			BackColor = Color.FromArgb(28, 32, 43)
 		};
@@ -178,14 +185,29 @@ public class SettingsForm : Form, ISettingsForm
 		};
 		btnDelete.FlatAppearance.BorderSize = 0;
 		btnDelete.Click += BtnDeleteProfile_Click;
+		Button btnReload = new Button
+		{
+			Text = "Değişiklikleri Uygula",
+			Location = new Point(8, 44),
+			Size = new Size(220, 30),
+			ForeColor = Color.White,
+			BackColor = Color.FromArgb(50, 90, 70),
+			FlatStyle = FlatStyle.Flat,
+			UseVisualStyleBackColor = false,
+			AutoEllipsis = true,
+			TextAlign = ContentAlignment.MiddleCenter
+		};
+		btnReload.FlatAppearance.BorderSize = 0;
+		btnReload.Click += BtnReloadTasks_Click;
 		pnlProfile.Controls.Add(lbl);
 		pnlProfile.Controls.Add(cmbResolutionProfile);
 		pnlProfile.Controls.Add(btnLoad);
 		pnlProfile.Controls.Add(btnSave);
 		pnlProfile.Controls.Add(btnDelete);
+		pnlProfile.Controls.Add(btnReload);
 		Controls.Add(pnlProfile);
 		pnlProfile.BringToFront();
-		base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + 46);
+		base.ClientSize = new Size(base.ClientSize.Width, base.ClientSize.Height + 82);
 		pnlContainer.PerformLayout();
 		PerformLayout();
 		RefreshProfileList();
@@ -247,6 +269,33 @@ public class SettingsForm : Form, ISettingsForm
 		{
 			_settings.DeleteProfile(profileName);
 			RefreshProfileList();
+		}
+	}
+
+	private async void BtnReloadTasks_Click(object sender, EventArgs e)
+	{
+		if (WorkflowEngine == null)
+		{
+			MessageBox.Show(this, "Servis motoru henüz hazır değil.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			return;
+		}
+		Button button = (Button)sender;
+		button.Enabled = false;
+		string originalText = button.Text;
+		button.Text = "Uygulanıyor...";
+		try
+		{
+			await WorkflowEngine.ReloadTasksAsync();
+			MessageBox.Show(this, "Değişiklikler uygulandı.", "Tamam", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show(this, "Değişiklikler uygulanırken hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		}
+		finally
+		{
+			button.Enabled = true;
+			button.Text = originalText;
 		}
 	}
 
@@ -545,7 +594,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonLeftBotMenu.TabIndex = 24;
 		this.buttonLeftBotMenu.Text = "Left Bot Menu";
 		this.buttonLeftBotMenu.UseVisualStyleBackColor = true;
-		this.buttonLeftBotMenu.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.labelParty.AutoSize = true;
 		this.labelParty.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.labelParty.ForeColor = System.Drawing.Color.White;
@@ -577,7 +625,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonParty.TabIndex = 9;
 		this.buttonParty.Text = "Party";
 		this.buttonParty.UseVisualStyleBackColor = true;
-		this.buttonParty.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonTown.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonTown.Location = new System.Drawing.Point(20, 215);
 		this.buttonTown.Name = "buttonTown";
@@ -585,7 +632,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonTown.TabIndex = 10;
 		this.buttonTown.Text = "Town";
 		this.buttonTown.UseVisualStyleBackColor = true;
-		this.buttonTown.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.labelAcceptPartyCoordinates.AutoSize = true;
 		this.labelAcceptPartyCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.labelAcceptPartyCoordinates.ForeColor = System.Drawing.Color.White;
@@ -633,7 +679,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonMagicBag.TabIndex = 12;
 		this.buttonMagicBag.Text = "Magic Bag";
 		this.buttonMagicBag.UseVisualStyleBackColor = true;
-		this.buttonMagicBag.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.labelBuffLine.AutoSize = true;
 		this.labelBuffLine.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.labelBuffLine.ForeColor = System.Drawing.Color.White;
@@ -665,7 +710,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonBuffLine.TabIndex = 14;
 		this.buttonBuffLine.Text = "Buff Line";
 		this.buttonBuffLine.UseVisualStyleBackColor = true;
-		this.buttonBuffLine.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.labelWeapons.AutoSize = true;
 		this.labelWeapons.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.labelWeapons.ForeColor = System.Drawing.Color.White;
@@ -681,7 +725,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonStopMacrosWhenGenieStopped.TabIndex = 11;
 		this.buttonStopMacrosWhenGenieStopped.Text = "Genie";
 		this.buttonStopMacrosWhenGenieStopped.UseVisualStyleBackColor = true;
-		this.buttonStopMacrosWhenGenieStopped.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonInventory.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonInventory.Location = new System.Drawing.Point(20, 99);
 		this.buttonInventory.Name = "buttonInventory";
@@ -709,7 +752,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonPressOk.Text = "Ölüm Onayı (Press OK)";
 		this.buttonPressOk.UseVisualStyleBackColor = true;
 		this.buttonInventory.UseVisualStyleBackColor = true;
-		this.buttonInventory.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonChatWindowReSaveCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonChatWindowReSaveCoordinates.Location = new System.Drawing.Point(20, 157);
 		this.buttonChatWindowReSaveCoordinates.Name = "buttonChatWindowReSaveCoordinates";
@@ -717,7 +759,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonChatWindowReSaveCoordinates.TabIndex = 7;
 		this.buttonChatWindowReSaveCoordinates.Text = "Chat Penceresi";
 		this.buttonChatWindowReSaveCoordinates.UseVisualStyleBackColor = true;
-		this.buttonChatWindowReSaveCoordinates.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonAcceptPartySaveCoordinates.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonAcceptPartySaveCoordinates.Location = new System.Drawing.Point(20, 41);
 		this.buttonAcceptPartySaveCoordinates.Name = "buttonAcceptPartySaveCoordinates";
@@ -725,7 +766,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonAcceptPartySaveCoordinates.TabIndex = 13;
 		this.buttonAcceptPartySaveCoordinates.Text = "Party Confirm";
 		this.buttonAcceptPartySaveCoordinates.UseVisualStyleBackColor = true;
-		this.buttonAcceptPartySaveCoordinates.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonWeapons.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonWeapons.Location = new System.Drawing.Point(20, 70);
 		this.buttonWeapons.Name = "buttonWeapons";
@@ -733,7 +773,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonWeapons.TabIndex = 6;
 		this.buttonWeapons.Text = "Silah ve Armor";
 		this.buttonWeapons.UseVisualStyleBackColor = true;
-		this.buttonWeapons.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.buttonInfo.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.buttonInfo.Location = new System.Drawing.Point(20, 273);
 		this.buttonInfo.Name = "buttonInfo";
@@ -741,7 +780,6 @@ public class SettingsForm : Form, ISettingsForm
 		this.buttonInfo.TabIndex = 9;
 		this.buttonInfo.Text = "Info";
 		this.buttonInfo.UseVisualStyleBackColor = true;
-		this.buttonInfo.Click += new System.EventHandler(SaveCoordinates_Click);
 		this.labelInfo.AutoSize = true;
 		this.labelInfo.Font = new System.Drawing.Font("Segoe UI", 9.75f);
 		this.labelInfo.ForeColor = System.Drawing.Color.White;
