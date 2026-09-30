@@ -326,7 +326,7 @@ public sealed class Server : IDisposable
 			}
 			if (withDelay && i < clientsToSend.Count - 1)
 			{
-				await Task.Delay(2000);
+				await Task.Delay(1000);
 			}
 		}
 	}
@@ -365,7 +365,7 @@ public sealed class Server : IDisposable
 			}
 			if (withDelay && i < clientsToSend.Count - 1)
 			{
-				await Task.Delay(2000);
+				await Task.Delay(1000);
 			}
 		}
 	}

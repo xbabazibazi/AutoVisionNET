@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Scanix4.Interfaces;
 using Scanix4.Models;
+using Scanix4.Services;
 using SettingsManager;
 
 namespace Scanix4.Services.TaskCategories;
@@ -99,6 +100,7 @@ public class GenieTasks : ITaskCategory
 		_consecutiveMatches++;
 		if (_consecutiveMatches >= RequiredMatchReadings)
 		{
+			GenieStatusTracker.SetActive(isActive: true);
 			_onMatchFoundAction?.Invoke(coordinates);
 		}
 	}
@@ -109,6 +111,7 @@ public class GenieTasks : ITaskCategory
 		_consecutiveMisses++;
 		if (_consecutiveMisses >= RequiredMissReadings)
 		{
+			GenieStatusTracker.SetActive(isActive: false);
 			_onMatchNotFoundAction?.Invoke();
 		}
 	}
