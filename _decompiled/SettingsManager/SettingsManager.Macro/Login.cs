@@ -9,7 +9,7 @@ public class Login : MacroSettingsBase
 {
 	private const string EncryptedPrefix = "ENC1:";
 
-	protected override string[] Keys => new string[2] { "UserID", "UserPassword" };
+	protected override string[] Keys => new string[3] { "UserID", "UserPassword", "TurkishKeyboard" };
 
 	public string UserID
 	{
@@ -32,6 +32,25 @@ public class Login : MacroSettingsBase
 		set
 		{
 			SetSetting("UserPassword", Encrypt(value));
+		}
+	}
+
+	/// <summary>
+	/// The bot types the login via a low-level driver that presses physical keys, and Windows
+	/// turns those into characters using whatever keyboard layout is actually active - the
+	/// character map this relies on assumes an English layout. Under a real Turkish (Q) layout
+	/// the physical key for lowercase 'i' produces dotless 'ı' instead, silently corrupting any
+	/// credential containing a lowercase i. Enable this on machines set to Turkish.
+	/// </summary>
+	public bool TurkishKeyboard
+	{
+		get
+		{
+			return GetSetting<bool>("TurkishKeyboard");
+		}
+		set
+		{
+			SetSetting("TurkishKeyboard", value);
 		}
 	}
 
@@ -88,17 +107,17 @@ public class Login : MacroSettingsBase
 		{
 		}
 		string result;
-		if (!(key == "UserID"))
+		if (key == "UserID" || key == "UserPassword")
 		{
-			if (!(key == "UserPassword"))
-			{
-				throw new ArgumentException("Bilinmeyen ayar: " + key);
-			}
 			result = "";
 		}
 		else
 		{
-			result = "";
+			if (!(key == "TurkishKeyboard"))
+			{
+				throw new ArgumentException("Bilinmeyen ayar: " + key);
+			}
+			return false;
 		}
 		if (1 == 0)
 		{

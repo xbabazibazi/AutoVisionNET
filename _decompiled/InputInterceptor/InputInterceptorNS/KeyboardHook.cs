@@ -16,6 +16,16 @@ public class KeyboardHook : Hook<KeyStroke>
 
 	private static readonly KeyData QuestionMark;
 
+	// KeyDictionary['i'] presses the physical "I" key, which types ASCII lowercase 'i' only under
+	// an English layout - under a real Turkish (Q) layout that same physical key produces dotless
+	// 'ı' instead. On Turkish Q, dotted lowercase 'i' actually sits on the physical key English
+	// calls apostrophe ('). Only lowercase differs: dotless uppercase 'I' is the same character in
+	// both layouts, so nothing else in SimulateInput needs a Turkish-specific override.
+	private static readonly KeyData TurkishLowercaseI = new KeyData
+	{
+		Code = KeyCode.Apostrophe
+	};
+
 	static KeyboardHook()
 	{
 		KeyDictionary = new Dictionary<char, KeyData>();
@@ -505,12 +515,17 @@ public class KeyboardHook : Hook<KeyStroke>
 		return false;
 	}
 
-	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75)
+	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75, bool turkishKeyboard = false)
 	{
 		bool flag = false;
 		foreach (char key in text)
 		{
-			if (!KeyDictionary.TryGetValue(key, out var value))
+			KeyData value;
+			if (turkishKeyboard && key == 'i')
+			{
+				value = TurkishLowercaseI;
+			}
+			else if (!KeyDictionary.TryGetValue(key, out value))
 			{
 				value = QuestionMark;
 			}

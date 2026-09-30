@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using InputManager;
+using Scanix4;
 using SettingsManager;
 using SettingsManager.GeneralSettingss;
 using SimpleLogger;
@@ -34,6 +35,15 @@ public class Macro2 : Form, IMacroForm
 	private readonly General _general;
 
 	private readonly UI2.Macro.UserControls.Telegram _telegram;
+
+	/// <summary>Forwarded to General so "Start Genie After Teleport" can toggle live. See its own doc comment.</summary>
+	public WorkflowEngine? WorkflowEngine
+	{
+		set
+		{
+			_general.WorkflowEngine = value;
+		}
+	}
 
 	private readonly Color _backgroundColor = Color.FromArgb(38, 38, 45);
 

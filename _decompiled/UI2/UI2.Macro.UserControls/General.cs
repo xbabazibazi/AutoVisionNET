@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Scanix4;
 using SettingsManager;
 using SettingsManager.Macro;
 using SimpleLogger;
@@ -11,6 +13,13 @@ namespace UI2.Macro.UserControls;
 public class General : UserControl
 {
 	private readonly SettingsManager.Macro.General _settings = Settings.Instance.Macro.General;
+
+	/// <summary>
+	/// Set by Form1 right after ScreenCaptureMainForm exists (this control is constructed first),
+	/// so the checkbox below can start/stop the workflow immediately instead of only taking effect
+	/// the next time the whole app is relaunched.
+	/// </summary>
+	public WorkflowEngine? WorkflowEngine { get; set; }
 
 	private readonly Logger _logger = Logger.Instance;
 
@@ -89,12 +98,20 @@ public class General : UserControl
 		}
 	}
 
-	private void checkBoxStartGenieAfterTp_CheckedChanged(object sender, EventArgs e)
+	private async void checkBoxStartGenieAfterTp_CheckedChanged(object sender, EventArgs e)
 	{
 		try
 		{
 			_settings.StartGenieOnTp = checkBoxStartGenieAfterTp.Checked;
 			_logger.LogDebug("StartGenieAfterTp setting changed");
+			if (checkBoxStartGenieAfterTp.Checked)
+			{
+				await (WorkflowEngine?.StartAsync("StartGenieAfterTp") ?? Task.CompletedTask);
+			}
+			else
+			{
+				await (WorkflowEngine?.StopAsync("StartGenieAfterTp") ?? Task.CompletedTask);
+			}
 		}
 		catch (Exception ex)
 		{
