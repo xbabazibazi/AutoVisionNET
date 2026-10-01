@@ -132,22 +132,28 @@ public class WorkflowEngine
 		}
 	}
 
-	public async Task StartAsync(string workflowId)
+	// Deliberately not async: manager.RunAsync() returns a Task that only completes once the
+	// workflow is stopped (its loop runs until cancelled), so a caller awaiting this method used
+	// to hang until the workflow stopped - which meant a caller starting several workflows in a
+	// row (ReloadTasksAsync, StartServiceFirstTime) only ever got past the first one, silently
+	// never starting the rest. This now only awaits the work of REGISTERING and LAUNCHING the
+	// workflow, and lets it keep running in the background; cleanup of _running happens via the
+	// continuation once the workflow eventually does stop.
+	public Task StartAsync(string workflowId)
 	{
-		WorkflowManager manager;
 		lock (_lock)
 		{
-			if (!_managers.TryGetValue(workflowId, out manager))
+			if (!_managers.TryGetValue(workflowId, out WorkflowManager manager))
 			{
 				if (!_workflowTypes.TryGetValue(workflowId, out Type workflowType))
 				{
-					return;
+					return Task.CompletedTask;
 				}
 				IWorkflow workflow = (IWorkflow)Activator.CreateInstance(workflowType);
 				if (!workflow.IsActive)
 				{
 					Logger.Instance.LogWarning("Workflow " + workflowId + " aktif değil ve başlatılmayacak.");
-					return;
+					return Task.CompletedTask;
 				}
 				RegisterWorkflow(workflow);
 				_managers.TryGetValue(workflowId, out manager);
@@ -155,37 +161,23 @@ public class WorkflowEngine
 			else if (!manager.Workflow.IsActive)
 			{
 				Logger.Instance.LogWarning("Workflow " + workflowId + " aktif değil ve başlatılmayacak.");
-				return;
+				return Task.CompletedTask;
 			}
-			if (_running.ContainsKey(workflowId))
+			if (_running.ContainsKey(workflowId) || manager == null)
 			{
-				return;
+				return Task.CompletedTask;
 			}
-			_running[workflowId] = null;
-		}
-		try
-		{
-			if (manager != null)
+			Task task = manager.RunAsync();
+			_running[workflowId] = task;
+			task.ContinueWith(delegate
 			{
-				Task task = manager.RunAsync();
 				lock (_lock)
 				{
-					_running[workflowId] = task;
+					_running.Remove(workflowId);
 				}
-				await task;
-			}
+			}, TaskScheduler.Default);
 		}
-		catch (OperationCanceledException)
-		{
-			manager.Stop();
-		}
-		finally
-		{
-			lock (_lock)
-			{
-				_running.Remove(workflowId);
-			}
-		}
+		return Task.CompletedTask;
 	}
 
 	public async Task StopAsync(string workflowId)
