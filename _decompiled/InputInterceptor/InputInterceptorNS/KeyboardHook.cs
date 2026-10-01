@@ -26,12 +26,12 @@ public class KeyboardHook : Hook<KeyStroke>
 	//
 	// AltGr (Right Alt) characters are supported via the AltGr field below - SimulateInput holds
 	// the driver's E0 "extended key" flag on the Alt scan code to tell Windows this is Right Alt,
-	// not Left Alt, which is how it picks the AltGr column of the active layout. Only '@' is
-	// mapped so far since that's the one actually needed; add more the same way if needed.
+	// not Left Alt, which is how it picks the AltGr column of the active layout. @ # $ are mapped
+	// (the ones actually needed); add more AltGr characters the same way if needed.
 	//
 	// A handful of EN-layout symbols still have no safe Turkish Q equivalent and are deliberately
 	// left out (they fall through to QuestionMark instead of risking the wrong character):
-	//   # $ £ € ₺   - also AltGr, just not mapped yet (no reported need for them).
+	//   £ € ₺       - also AltGr, just not mapped yet (no reported need for them).
 	//   ^ ~ ` ´ ¨    - Turkish Q puts these on dead keys that wait for and merge with the next
 	//                  keystroke (e.g. to compose â, ê); sending one blind would silently corrupt
 	//                  whatever character follows it, which is worse than typing nothing.
@@ -235,11 +235,22 @@ public class KeyboardHook : Hook<KeyStroke>
 			Code = KeyCode.One,
 			Shift = true
 		});
-		// Turkish Q: '@' is not a Shift combination at all - it needs AltGr (Right Alt) held down
-		// over the Q key. SimulateInput presses AltGr itself when it sees this.
+		// Turkish Q: '@', '#' and '$' are not Shift combinations at all - each needs AltGr (Right
+		// Alt) held down over a different key. SimulateInput presses AltGr itself when it sees
+		// one of these.
 		KeyDictionary.Add('@', new KeyData
 		{
 			Code = KeyCode.Q,
+			AltGr = true
+		});
+		KeyDictionary.Add('#', new KeyData
+		{
+			Code = KeyCode.Three,
+			AltGr = true
+		});
+		KeyDictionary.Add('$', new KeyData
+		{
+			Code = KeyCode.Four,
 			AltGr = true
 		});
 		KeyDictionary.Add('%', new KeyData
