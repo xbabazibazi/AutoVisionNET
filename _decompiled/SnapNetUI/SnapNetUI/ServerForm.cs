@@ -578,7 +578,11 @@ public class ServerForm : Form
 				VerificationTime = c.lastVerificationTime,
 				EmptySlots = c.emptySlots,
 				EmptySlotsTime = c.emptySlotsTime,
-				InventoryClosed = c.inventoryClosed
+				InventoryClosed = c.inventoryClosed,
+				GenieActive = c.genieActive,
+				MacroActive = c.macroActive,
+				RepairOk = c.repairOk,
+				PingRttMs = c.pingRttMs
 			}).ToArray();
 		string breakdown = string.Join("   ", clientList
 			.GroupBy((c) => c.job)
@@ -613,6 +617,14 @@ public class ServerForm : Form
 		public DateTime? EmptySlotsTime { get; set; }
 
 		public bool InventoryClosed { get; set; }
+
+		public bool? GenieActive { get; set; }
+
+		public bool? MacroActive { get; set; }
+
+		public bool? RepairOk { get; set; }
+
+		public int? PingRttMs { get; set; }
 	}
 
 	private void LstClients_DrawItem(object sender, DrawItemEventArgs e)
@@ -681,6 +693,38 @@ public class ServerForm : Form
 		using (Font slotFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
 		{
 			e.Graphics.DrawString(slotText, slotFont, slotBrush, e.Bounds.Left + 4, e.Bounds.Top + 34);
+		}
+		(string Text, Color Color)[] segments = new (string Text, Color Color)[4]
+		{
+			(!item.GenieActive.HasValue
+				? "Genie: veri yok"
+				: (item.GenieActive.Value ? "Genie: Açık" : "Genie: Kapalı"),
+			!item.GenieActive.HasValue
+				? Color.FromArgb(110, 115, 130)
+				: (item.GenieActive.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(110, 115, 130))),
+			(!item.MacroActive.HasValue
+				? "Makro: veri yok"
+				: (item.MacroActive.Value ? "Makro: Çalışıyor" : "Makro: Durdu"),
+			!item.MacroActive.HasValue
+				? Color.FromArgb(110, 115, 130)
+				: (item.MacroActive.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 160, 90))),
+			(!item.RepairOk.HasValue
+				? "Tamir: —"
+				: (item.RepairOk.Value ? "Tamir: OK" : "Tamir: BAŞARISIZ"),
+			!item.RepairOk.HasValue
+				? Color.FromArgb(110, 115, 130)
+				: (item.RepairOk.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 100, 100))),
+			("Ping: " + (item.PingRttMs.HasValue ? $"{item.PingRttMs.Value}ms" : "—"), Color.FromArgb(150, 155, 168))
+		};
+		using (Font lineFont = new Font(e.Font.FontFamily, 7.5f))
+		{
+			float x = e.Bounds.Left + 4;
+			foreach (var (text, color) in segments)
+			{
+				using SolidBrush brush = new SolidBrush(color);
+				e.Graphics.DrawString(text, lineFont, brush, x, e.Bounds.Top + 49);
+				x += e.Graphics.MeasureString(text, lineFont).Width + 14;
+			}
 		}
 		e.DrawFocusRectangle();
 	}
@@ -1032,7 +1076,7 @@ public class ServerForm : Form
 		this.lstClients.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstClients.FormattingEnabled = true;
-		this.lstClients.ItemHeight = 52;
+		this.lstClients.ItemHeight = 66;
 		this.lstClients.Location = new System.Drawing.Point(0, 25);
 		this.lstClients.Name = "lstClients";
 		this.lstClients.Size = new System.Drawing.Size(345, 335);

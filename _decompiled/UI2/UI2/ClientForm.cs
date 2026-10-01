@@ -10,12 +10,17 @@ using Scanix4.Core;
 using SettingsManager;
 using SettingsManager.ClientSettings;
 using SnapNetClient;
+using UI2.Services;
 
 namespace UI2;
 
 public class ClientForm : Form
 {
 	private const int MAX_LOG_ITEMS = 1000;
+
+	/// <summary>Set by Form1 right after AttackService exists (this form is constructed first),
+	/// so the periodic status report below can include whether the attack macro is running.</summary>
+	public AttackService? AttackService { get; set; }
 
 	private readonly StringBuilder _logBuffer = new StringBuilder();
 
@@ -290,6 +295,19 @@ public class ClientForm : Form
 				if (Scanix4.Services.InventorySlotMonitor.TryGetLastReading(out int emptySlots, out bool suppressed, out bool looksClosed, out var _) && !suppressed)
 				{
 					await AppClient.SendCommandAsync(looksClosed ? "SLOTS:CLOSED" : "SLOTS:" + emptySlots);
+				}
+				// Genie on/off, straight from the same tracker GenieActions.OnStartGenie already
+				// gates its click on - no separate "is it really on" question to answer here.
+				await AppClient.SendCommandAsync(Scanix4.Services.GenieStatusTracker.IsActive ? "GENIE:ON" : "GENIE:OFF");
+				if (AttackService != null)
+				{
+					await AppClient.SendCommandAsync(AttackService.IsAttackActive ? "MACRO:ON" : "MACRO:OFF");
+				}
+				// Only report once there has actually been a repair attempt this session - no
+				// attempt yet is not the same as "last attempt succeeded".
+				if (Scanix4.Services.RepairStatusTracker.LastOutcomeOk.HasValue)
+				{
+					await AppClient.SendCommandAsync(Scanix4.Services.RepairStatusTracker.LastOutcomeOk.Value ? "REPAIR:OK" : "REPAIR:FAIL");
 				}
 			}
 			catch

@@ -31,6 +31,7 @@ public class WeaponsTasks : ITaskCategory
 				TemplatePath = TemplateResolver.Resolve("RepairArmors", "Images/BrokenFullPlateArmorPauldron.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._weaponsActions.OnMatchFoundBrokenFullPlateArmorPauldron,
+				OnMatchNotFound = _actionCenter._weaponsActions.OnRepairResolved,
 				Threshold = 0.983,
 				IntervalMs = 2000
 			},
@@ -44,6 +45,7 @@ public class WeaponsTasks : ITaskCategory
 				TemplatePath = TemplateResolver.Resolve("RepairWeapons", "Images/BrokenTomahawk.jpg"),
 				SearchArea = DefaultSearchArea,
 				OnMatchFound = _actionCenter._weaponsActions.OnMatchFoundRepairTomahawk,
+				OnMatchNotFound = _actionCenter._weaponsActions.OnRepairResolved,
 				Threshold = 0.99,
 				IntervalMs = 1000,
 				UseColor = true

@@ -42,6 +42,22 @@ public sealed class Server : IDisposable
 		/// isn't open right now, as opposed to genuinely full.</summary>
 		public bool InventoryClosed { get; set; }
 
+		/// <summary>Whether this character's Genie is currently on, per its own GenieStatusTracker.</summary>
+		public bool? GenieActive { get; set; }
+
+		/// <summary>Whether the Attack macro is currently toggled on for this character.</summary>
+		public bool? MacroActive { get; set; }
+
+		/// <summary>Outcome of the most recent repair attempt this character made - null until the
+		/// first attempt, then sticky until the next attempt contradicts it.</summary>
+		public bool? RepairOk { get; set; }
+
+		/// <summary>When the server last sent this client a "PING" - used to time the matching PONG.</summary>
+		public DateTime? LastPingSentUtc { get; set; }
+
+		/// <summary>Round-trip time of the most recent PING/PONG, in milliseconds.</summary>
+		public int? LastPingRttMs { get; set; }
+
 		public NetworkStream Stream { get; }
 
 		// Guards writes to Stream: the 5s server-wide ping timer and this client's own PING/PONG
@@ -122,6 +138,7 @@ public sealed class Server : IDisposable
 			{
 				if (client.Client.Connected)
 				{
+					client.LastPingSentUtc = DateTime.UtcNow;
 					tasks.Add(SendMessageAsync(client, "PING"));
 				}
 			}
@@ -221,6 +238,11 @@ public sealed class Server : IDisposable
 					{
 						if (message == "PONG")
 						{
+							if (clientInfo.LastPingSentUtc.HasValue)
+							{
+								clientInfo.LastPingRttMs = (int)(DateTime.UtcNow - clientInfo.LastPingSentUtc.Value).TotalMilliseconds;
+								ClientStatusUpdated?.Invoke();
+							}
 							continue;
 						}
 						if (message.Contains('|'))
@@ -267,6 +289,24 @@ public sealed class Server : IDisposable
 											clientInfo.EmptySlotsTime = DateTime.UtcNow;
 											ClientStatusUpdated?.Invoke();
 										}
+										continue;
+									}
+									if (commandStr == "GENIE:ON" || commandStr == "GENIE:OFF")
+									{
+										clientInfo.GenieActive = commandStr == "GENIE:ON";
+										ClientStatusUpdated?.Invoke();
+										continue;
+									}
+									if (commandStr == "MACRO:ON" || commandStr == "MACRO:OFF")
+									{
+										clientInfo.MacroActive = commandStr == "MACRO:ON";
+										ClientStatusUpdated?.Invoke();
+										continue;
+									}
+									if (commandStr == "REPAIR:OK" || commandStr == "REPAIR:FAIL")
+									{
+										clientInfo.RepairOk = commandStr == "REPAIR:OK";
+										ClientStatusUpdated?.Invoke();
 										continue;
 									}
 									if (_commandHandlers.TryGetValue(commandStr, out Action<string> handler))
@@ -479,7 +519,7 @@ public sealed class Server : IDisposable
 		StopAsync().Wait();
 	}
 
-	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime, int? emptySlots, DateTime? emptySlotsTime, bool inventoryClosed)> GetClientList()
+	public IEnumerable<(string nickname, string job, string endpoint, bool? lastVerificationOk, DateTime? lastVerificationTime, int? emptySlots, DateTime? emptySlotsTime, bool inventoryClosed, bool? genieActive, bool? macroActive, bool? repairOk, int? pingRttMs)> GetClientList()
 	{
 		return _clients.Select((KeyValuePair<string, ClientInfo> c) => (
 			c.Key,
@@ -489,7 +529,11 @@ public sealed class Server : IDisposable
 			c.Value.LastVerificationTime,
 			c.Value.EmptySlots,
 			c.Value.EmptySlotsTime,
-			c.Value.InventoryClosed));
+			c.Value.InventoryClosed,
+			c.Value.GenieActive,
+			c.Value.MacroActive,
+			c.Value.RepairOk,
+			c.Value.LastPingRttMs));
 	}
 
 	public async Task StopAsync()

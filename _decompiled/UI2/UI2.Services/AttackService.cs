@@ -39,6 +39,9 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 
 	private bool IsAttackStarted { get; set; }
 
+	/// <summary>Whether the attack macro is currently toggled on - for reporting status to the server.</summary>
+	public bool IsAttackActive => IsAttackStarted;
+
 	private void StartAttack()
 	{
 		if (!LicenseCore.LicenseGate.IsCurrentlyValid())

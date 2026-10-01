@@ -117,6 +117,7 @@ public class Form1 : Form
 		_clientForm = new ClientForm();
 		_inputUtils = new InputUtils(ShowMessage, OnKeyPress, OnMouseAction);
 		_attackService = new AttackService(_inputUtils, _logsForm.GetLogInstance());
+		_clientForm.AttackService = _attackService;
 		_macroForm = new Macro2(_inputUtils);
 		_settingsForm = new SettingsForm();
 		_screenCaptureMainForm = new ScreenCaptureMainForm(_inputUtils, _logsForm, _attackService, _macroForm, this);

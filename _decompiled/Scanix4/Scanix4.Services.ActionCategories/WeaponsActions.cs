@@ -35,6 +35,7 @@ public class WeaponsActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 		// The repair dialog is about to cover the inventory region; tell the inventory alert to
 		// ignore its readings until it is gone, otherwise it counts the dialog and false-alarms.
 		InventoryScanSuppressor.Suppress();
+		RepairStatusTracker.ReportAttempt();
 		inputUtils.SimulateKeyPress(KeyCode.Seven, 50);
 		Thread.Sleep(200);
 	}
@@ -43,7 +44,16 @@ public class WeaponsActions(Alarm alarm, Logger logger, InputUtils inputUtils) :
 	{
 		Logger.LogInformation("RepairWeapons OnMatchFoundRepairTomahawk");
 		InventoryScanSuppressor.Suppress();
+		RepairStatusTracker.ReportAttempt();
 		inputUtils.SimulateKeyPress(KeyCode.Seven, 50);
 		Thread.Sleep(200);
+	}
+
+	/// <summary>Wired as OnMatchNotFound for the repair tasks - runs on every reading where the
+	/// broken icon isn't there, which is most of the time; RepairStatusTracker itself is a cheap
+	/// no-op unless a repair attempt is actually in flight.</summary>
+	public void OnRepairResolved()
+	{
+		RepairStatusTracker.ReportResolved();
 	}
 }
