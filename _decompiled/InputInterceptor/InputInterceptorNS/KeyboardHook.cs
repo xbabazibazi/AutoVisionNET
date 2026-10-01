@@ -16,14 +16,20 @@ public class KeyboardHook : Hook<KeyStroke>
 
 	private static readonly KeyData QuestionMark;
 
-	// KeyDictionary['i'] presses the physical "I" key, which types ASCII lowercase 'i' only under
-	// an English layout - under a real Turkish (Q) layout that same physical key produces dotless
-	// 'ı' instead. On Turkish Q, dotted lowercase 'i' actually sits on the physical key English
-	// calls apostrophe ('). Only lowercase differs: dotless uppercase 'I' is the same character in
-	// both layouts, so nothing else in SimulateInput needs a Turkish-specific override.
-	private static readonly KeyData TurkishLowercaseI = new KeyData
+	// Characters whose physical key differs between the Turkish (Q) and English layouts
+	// KeyDictionary otherwise assumes. Only characters actually confirmed to differ belong here -
+	// guessing at the rest of the Turkish layout's symbol row risks swapping one wrong character
+	// for another just-as-wrong one, so anything not listed here still falls through to
+	// KeyDictionary unchanged.
+	//   'i' -> dotted lowercase i sits on the physical key English calls apostrophe ('); the
+	//          physical "I" key types dotless 'ı' instead on Turkish. Dotless uppercase 'I' is the
+	//          same character in both layouts, so uppercase needs no override.
+	//   '*' -> sits unshifted on the physical key English calls dash/minus (-); Shift+8 (what
+	//          KeyDictionary sends) types '(' on Turkish instead.
+	private static readonly Dictionary<char, KeyData> TurkishOverrides = new Dictionary<char, KeyData>
 	{
-		Code = KeyCode.Apostrophe
+		['i'] = new KeyData { Code = KeyCode.Apostrophe },
+		['*'] = new KeyData { Code = KeyCode.Dash }
 	};
 
 	static KeyboardHook()
@@ -515,15 +521,28 @@ public class KeyboardHook : Hook<KeyStroke>
 		return false;
 	}
 
+	/// <summary>
+	/// Whether SimulateInput knows a real key for this character (as opposed to silently falling
+	/// back to typing '?') under the given keyboard layout. Lets a caller warn the operator about
+	/// an unsupported character before it reaches the game as the wrong text, instead of after.
+	/// </summary>
+	public static bool IsCharacterSupported(char key, bool turkishKeyboard)
+	{
+		if (turkishKeyboard && TurkishOverrides.ContainsKey(key))
+		{
+			return true;
+		}
+		return KeyDictionary.ContainsKey(key);
+	}
+
 	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75, bool turkishKeyboard = false)
 	{
 		bool flag = false;
 		foreach (char key in text)
 		{
 			KeyData value;
-			if (turkishKeyboard && key == 'i')
+			if (turkishKeyboard && TurkishOverrides.TryGetValue(key, out value))
 			{
-				value = TurkishLowercaseI;
 			}
 			else if (!KeyDictionary.TryGetValue(key, out value))
 			{

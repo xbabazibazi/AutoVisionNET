@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using InputInterceptorNS;
 using SettingsManager;
 using SettingsManager.Macro;
 using SimpleLogger;
@@ -41,6 +43,8 @@ public class Login : UserControl
 	private Label labelID;
 
 	private CheckBox checkBoxTurkishKeyboard;
+
+	private Label labelUnsupportedChars;
 
 	private ToolTip toolTip;
 
@@ -115,6 +119,24 @@ public class Login : UserControl
 		{
 			_logger.LogError("Error loading Login settings: " + ex.Message);
 		}
+		UpdateUnsupportedCharsWarning();
+	}
+
+	/// <summary>
+	/// Flags characters SimulateInput has no real key for (it would silently type '?' instead),
+	/// so a typo-prone or layout-specific character shows up here instead of as a failed login
+	/// with no clue why.
+	/// </summary>
+	private void UpdateUnsupportedCharsWarning()
+	{
+		bool turkish = checkBoxTurkishKeyboard.Checked;
+		string unsupported = new string((textBoxID.Text + textBoxPass.Text)
+			.Where(c => !KeyboardHook.IsCharacterSupported(c, turkish))
+			.Distinct()
+			.ToArray());
+		labelUnsupportedChars.Text = (unsupported.Length == 0)
+			? ""
+			: "Uyarı: bu karakter(ler) yazılamıyor, yanlış gönderilecek: " + unsupported;
 	}
 
 	private void checkBoxTurkishKeyboard_CheckedChanged(object sender, EventArgs e)
@@ -128,6 +150,7 @@ public class Login : UserControl
 		{
 			_logger.LogError("Error changing TurkishKeyboard: " + ex.Message);
 		}
+		UpdateUnsupportedCharsWarning();
 	}
 
 	private void textBoxID_TextChanged(object sender, EventArgs e)
@@ -141,6 +164,7 @@ public class Login : UserControl
 		{
 			_logger.LogError("Error changing UserID: " + ex.Message);
 		}
+		UpdateUnsupportedCharsWarning();
 	}
 
 	private void textBoxPass_TextChanged(object sender, EventArgs e)
@@ -154,6 +178,7 @@ public class Login : UserControl
 		{
 			_logger.LogError("Error changing UserPassword: " + ex.Message);
 		}
+		UpdateUnsupportedCharsWarning();
 	}
 
 	protected override void Dispose(bool disposing)
@@ -176,6 +201,7 @@ public class Login : UserControl
 		this.textBoxID = new System.Windows.Forms.TextBox();
 		this.labelID = new System.Windows.Forms.Label();
 		this.checkBoxTurkishKeyboard = new System.Windows.Forms.CheckBox();
+		this.labelUnsupportedChars = new System.Windows.Forms.Label();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 		this.groupBoxLogin.SuspendLayout();
 		base.SuspendLayout();
@@ -205,6 +231,7 @@ public class Login : UserControl
 		this.groupBoxLogin.Controls.Add(this.textBoxID);
 		this.groupBoxLogin.Controls.Add(this.labelID);
 		this.groupBoxLogin.Controls.Add(this.checkBoxTurkishKeyboard);
+		this.groupBoxLogin.Controls.Add(this.labelUnsupportedChars);
 		this.groupBoxLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.groupBoxLogin.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxLogin.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -270,6 +297,13 @@ public class Login : UserControl
 		this.toolTip.SetToolTip(this.checkBoxTurkishKeyboard, "Bu PC'nin Windows klavye dili Türkçe ise işaretle - aksi halde 'i' harfi yanlış yazılabilir");
 		this.checkBoxTurkishKeyboard.UseVisualStyleBackColor = false;
 		this.checkBoxTurkishKeyboard.CheckedChanged += new System.EventHandler(checkBoxTurkishKeyboard_CheckedChanged);
+		this.labelUnsupportedChars.AutoSize = true;
+		this.labelUnsupportedChars.Font = new System.Drawing.Font("Segoe UI", 8f);
+		this.labelUnsupportedChars.ForeColor = System.Drawing.Color.FromArgb(220, 90, 90);
+		this.labelUnsupportedChars.Location = new System.Drawing.Point(20, 148);
+		this.labelUnsupportedChars.Name = "labelUnsupportedChars";
+		this.labelUnsupportedChars.Size = new System.Drawing.Size(0, 15);
+		this.labelUnsupportedChars.TabIndex = 5;
 		this.toolTip.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.toolTip.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 16f);
