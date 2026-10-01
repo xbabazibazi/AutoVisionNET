@@ -10,6 +10,8 @@ public class KeyboardHook : Hook<KeyStroke>
 		public KeyCode Code;
 
 		public bool Shift;
+
+		public bool AltGr;
 	}
 
 	private static readonly Dictionary<char, KeyData> KeyDictionary;
@@ -22,9 +24,14 @@ public class KeyboardHook : Hook<KeyStroke>
 	// physical key produces depends entirely on the OS's active layout, not on this process, so
 	// this table is only correct when that layout really is Turkish Q.
 	//
-	// A handful of EN-layout symbols have no safe Turkish Q equivalent and are deliberately left
-	// out (they fall through to QuestionMark instead of risking the wrong character):
-	//   @ # $ £ € ₺  - require AltGr, which SimulateInput has no way to hold down.
+	// AltGr (Right Alt) characters are supported via the AltGr field below - SimulateInput holds
+	// the driver's E0 "extended key" flag on the Alt scan code to tell Windows this is Right Alt,
+	// not Left Alt, which is how it picks the AltGr column of the active layout. Only '@' is
+	// mapped so far since that's the one actually needed; add more the same way if needed.
+	//
+	// A handful of EN-layout symbols still have no safe Turkish Q equivalent and are deliberately
+	// left out (they fall through to QuestionMark instead of risking the wrong character):
+	//   # $ £ € ₺   - also AltGr, just not mapped yet (no reported need for them).
 	//   ^ ~ ` ´ ¨    - Turkish Q puts these on dead keys that wait for and merge with the next
 	//                  keystroke (e.g. to compose â, ê); sending one blind would silently corrupt
 	//                  whatever character follows it, which is worse than typing nothing.
@@ -227,6 +234,13 @@ public class KeyboardHook : Hook<KeyStroke>
 		{
 			Code = KeyCode.One,
 			Shift = true
+		});
+		// Turkish Q: '@' is not a Shift combination at all - it needs AltGr (Right Alt) held down
+		// over the Q key. SimulateInput presses AltGr itself when it sees this.
+		KeyDictionary.Add('@', new KeyData
+		{
+			Code = KeyCode.Q,
+			AltGr = true
 		});
 		KeyDictionary.Add('%', new KeyData
 		{
@@ -489,27 +503,31 @@ public class KeyboardHook : Hook<KeyStroke>
 
 	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75)
 	{
-		bool flag = false;
+		bool shiftDown = false;
+		bool altGrDown = false;
 		foreach (char key in text)
 		{
 			if (!KeyDictionary.TryGetValue(key, out var value))
 			{
 				value = QuestionMark;
 			}
-			if (value.Shift != flag)
+			if (value.Shift != shiftDown)
 			{
-				if (value.Shift)
-				{
-					if (!SetKeyState(KeyCode.LeftShift, KeyState.Down))
-					{
-						return false;
-					}
-				}
-				else if (!SetKeyState(KeyCode.LeftShift, KeyState.Up))
+				if (!SetKeyState(KeyCode.LeftShift, value.Shift ? KeyState.Down : KeyState.Up))
 				{
 					return false;
 				}
-				flag = value.Shift;
+				shiftDown = value.Shift;
+			}
+			// AltGr is the physical Right Alt key, which the driver distinguishes from the plain
+			// (left) Alt it shares a scan code with via the E0 "extended key" flag.
+			if (value.AltGr != altGrDown)
+			{
+				if (!SetKeyState(KeyCode.Alt, (value.AltGr ? KeyState.Down : KeyState.Up) | KeyState.E0))
+				{
+					return false;
+				}
+				altGrDown = value.AltGr;
 			}
 			if (!SimulateKeyPress(value.Code, releaseDelay))
 			{
@@ -517,7 +535,11 @@ public class KeyboardHook : Hook<KeyStroke>
 			}
 			Thread.Sleep(delayBetweenKeyPresses);
 		}
-		if (flag && !SetKeyState(KeyCode.LeftShift, KeyState.Up))
+		if (shiftDown && !SetKeyState(KeyCode.LeftShift, KeyState.Up))
+		{
+			return false;
+		}
+		if (altGrDown && !SetKeyState(KeyCode.Alt, KeyState.Up | KeyState.E0))
 		{
 			return false;
 		}
