@@ -42,8 +42,6 @@ public class Login : UserControl
 
 	private Label labelID;
 
-	private CheckBox checkBoxTurkishKeyboard;
-
 	private Label labelUnsupportedChars;
 
 	private ToolTip toolTip;
@@ -73,22 +71,6 @@ public class Login : UserControl
 		{
 			textBoxPass.BackColor = Color.FromArgb(60, 60, 65);
 		};
-		checkBoxTurkishKeyboard.MouseEnter += delegate
-		{
-			UpdateButtonHover(checkBoxTurkishKeyboard, isHover: true);
-		};
-		checkBoxTurkishKeyboard.MouseLeave += delegate
-		{
-			UpdateButtonHover(checkBoxTurkishKeyboard, isHover: false);
-		};
-	}
-
-	private void UpdateButtonHover(CheckBox button, bool isHover)
-	{
-		if (!button.Checked)
-		{
-			button.BackColor = (isHover ? Color.FromArgb(70, 70, 75) : Color.FromArgb(60, 60, 65));
-		}
 	}
 
 	public void SaveSettings()
@@ -97,7 +79,6 @@ public class Login : UserControl
 		{
 			_settings.UserID = textBoxID.Text;
 			_settings.UserPassword = textBoxPass.Text;
-			_settings.TurkishKeyboard = checkBoxTurkishKeyboard.Checked;
 			_logger.LogDebug("Login settings saved");
 		}
 		catch (Exception ex)
@@ -112,7 +93,6 @@ public class Login : UserControl
 		{
 			textBoxID.Text = _settings.UserID;
 			textBoxPass.Text = _settings.UserPassword;
-			checkBoxTurkishKeyboard.Checked = _settings.TurkishKeyboard;
 			_logger.LogDebug("Login settings loaded");
 		}
 		catch (Exception ex)
@@ -123,34 +103,19 @@ public class Login : UserControl
 	}
 
 	/// <summary>
-	/// Flags characters SimulateInput has no real key for (it would silently type '?' instead),
-	/// so a typo-prone or layout-specific character shows up here instead of as a failed login
-	/// with no clue why.
+	/// Flags characters SimulateInput has no real key for under the Turkish Q layout it assumes
+	/// (it would silently type '?' instead), so a problem character shows up here instead of as a
+	/// failed login with no clue why.
 	/// </summary>
 	private void UpdateUnsupportedCharsWarning()
 	{
-		bool turkish = checkBoxTurkishKeyboard.Checked;
 		string unsupported = new string((textBoxID.Text + textBoxPass.Text)
-			.Where(c => !KeyboardHook.IsCharacterSupported(c, turkish))
+			.Where(c => !KeyboardHook.IsCharacterSupported(c))
 			.Distinct()
 			.ToArray());
 		labelUnsupportedChars.Text = (unsupported.Length == 0)
 			? ""
 			: "Uyarı: bu karakter(ler) yazılamıyor, yanlış gönderilecek: " + unsupported;
-	}
-
-	private void checkBoxTurkishKeyboard_CheckedChanged(object sender, EventArgs e)
-	{
-		try
-		{
-			_settings.TurkishKeyboard = checkBoxTurkishKeyboard.Checked;
-			_logger.LogDebug("TurkishKeyboard setting changed");
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError("Error changing TurkishKeyboard: " + ex.Message);
-		}
-		UpdateUnsupportedCharsWarning();
 	}
 
 	private void textBoxID_TextChanged(object sender, EventArgs e)
@@ -200,7 +165,6 @@ public class Login : UserControl
 		this.labelPass = new System.Windows.Forms.Label();
 		this.textBoxID = new System.Windows.Forms.TextBox();
 		this.labelID = new System.Windows.Forms.Label();
-		this.checkBoxTurkishKeyboard = new System.Windows.Forms.CheckBox();
 		this.labelUnsupportedChars = new System.Windows.Forms.Label();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 		this.groupBoxLogin.SuspendLayout();
@@ -230,14 +194,13 @@ public class Login : UserControl
 		this.groupBoxLogin.Controls.Add(this.labelPass);
 		this.groupBoxLogin.Controls.Add(this.textBoxID);
 		this.groupBoxLogin.Controls.Add(this.labelID);
-		this.groupBoxLogin.Controls.Add(this.checkBoxTurkishKeyboard);
 		this.groupBoxLogin.Controls.Add(this.labelUnsupportedChars);
 		this.groupBoxLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.groupBoxLogin.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxLogin.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.groupBoxLogin.Location = new System.Drawing.Point(15, 50);
 		this.groupBoxLogin.Name = "groupBoxLogin";
-		this.groupBoxLogin.Size = new System.Drawing.Size(540, 165);
+		this.groupBoxLogin.Size = new System.Drawing.Size(540, 130);
 		this.groupBoxLogin.TabIndex = 2;
 		this.groupBoxLogin.TabStop = false;
 		this.groupBoxLogin.Text = "Login Information";
@@ -281,29 +244,13 @@ public class Login : UserControl
 		this.labelID.Size = new System.Drawing.Size(47, 15);
 		this.labelID.TabIndex = 0;
 		this.labelID.Text = "User ID:";
-		this.checkBoxTurkishKeyboard.Appearance = System.Windows.Forms.Appearance.Button;
-		this.checkBoxTurkishKeyboard.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
-		this.checkBoxTurkishKeyboard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.checkBoxTurkishKeyboard.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(55, 78, 92);
-		this.checkBoxTurkishKeyboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.checkBoxTurkishKeyboard.Font = new System.Drawing.Font("Segoe UI", 8f);
-		this.checkBoxTurkishKeyboard.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.checkBoxTurkishKeyboard.Location = new System.Drawing.Point(20, 115);
-		this.checkBoxTurkishKeyboard.Name = "checkBoxTurkishKeyboard";
-		this.checkBoxTurkishKeyboard.Size = new System.Drawing.Size(220, 30);
-		this.checkBoxTurkishKeyboard.TabIndex = 4;
-		this.checkBoxTurkishKeyboard.Text = "Türkçe Klavye (TR-Q)";
-		this.checkBoxTurkishKeyboard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-		this.toolTip.SetToolTip(this.checkBoxTurkishKeyboard, "Bu PC'nin Windows klavye dili Türkçe ise işaretle - aksi halde 'i' harfi yanlış yazılabilir");
-		this.checkBoxTurkishKeyboard.UseVisualStyleBackColor = false;
-		this.checkBoxTurkishKeyboard.CheckedChanged += new System.EventHandler(checkBoxTurkishKeyboard_CheckedChanged);
 		this.labelUnsupportedChars.AutoSize = true;
 		this.labelUnsupportedChars.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.labelUnsupportedChars.ForeColor = System.Drawing.Color.FromArgb(220, 90, 90);
-		this.labelUnsupportedChars.Location = new System.Drawing.Point(20, 148);
+		this.labelUnsupportedChars.Location = new System.Drawing.Point(20, 113);
 		this.labelUnsupportedChars.Name = "labelUnsupportedChars";
 		this.labelUnsupportedChars.Size = new System.Drawing.Size(0, 15);
-		this.labelUnsupportedChars.TabIndex = 5;
+		this.labelUnsupportedChars.TabIndex = 4;
 		this.toolTip.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.toolTip.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 16f);

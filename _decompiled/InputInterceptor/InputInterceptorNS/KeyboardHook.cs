@@ -16,29 +16,23 @@ public class KeyboardHook : Hook<KeyStroke>
 
 	private static readonly KeyData QuestionMark;
 
-	// Characters whose physical key differs between the Turkish (Q) and English layouts
-	// KeyDictionary otherwise assumes. Only characters actually confirmed to differ belong here -
-	// guessing at the rest of the Turkish layout's symbol row risks swapping one wrong character
-	// for another just-as-wrong one, so anything not listed here still falls through to
-	// KeyDictionary unchanged.
-	//   'i' -> dotted lowercase i sits on the physical key English calls apostrophe ('); the
-	//          physical "I" key types dotless 'ı' instead on Turkish. Dotless uppercase 'I' is the
-	//          same character in both layouts, so uppercase needs no override.
-	//   '*' -> sits unshifted on the physical key English calls dash/minus (-); Shift+8 (what
-	//          KeyDictionary sends) types '(' on Turkish instead.
-	private static readonly Dictionary<char, KeyData> TurkishOverrides = new Dictionary<char, KeyData>
-	{
-		['i'] = new KeyData { Code = KeyCode.Apostrophe },
-		['*'] = new KeyData { Code = KeyCode.Dash }
-	};
-
+	// This table assumes the target machine's active Windows keyboard layout is Turkish Q (the
+	// standard "TR" layout) - confirmed character-by-character against Microsoft's official
+	// Turkish Q layout reference. Scan codes are physical key positions; what character a given
+	// physical key produces depends entirely on the OS's active layout, not on this process, so
+	// this table is only correct when that layout really is Turkish Q.
+	//
+	// A handful of EN-layout symbols have no safe Turkish Q equivalent and are deliberately left
+	// out (they fall through to QuestionMark instead of risking the wrong character):
+	//   @ # $ £ € ₺  - require AltGr, which SimulateInput has no way to hold down.
+	//   ^ ~ ` ´ ¨    - Turkish Q puts these on dead keys that wait for and merge with the next
+	//                  keystroke (e.g. to compose â, ê); sending one blind would silently corrupt
+	//                  whatever character follows it, which is worse than typing nothing.
+	//   < > [ ] { } \ | - sit on the extra ISO key or behind AltGr that this scan-code table has
+	//                  no entry for at all.
 	static KeyboardHook()
 	{
 		KeyDictionary = new Dictionary<char, KeyData>();
-		KeyDictionary.Add('`', new KeyData
-		{
-			Code = KeyCode.Tilde
-		});
 		KeyDictionary.Add('1', new KeyData
 		{
 			Code = KeyCode.One
@@ -79,13 +73,15 @@ public class KeyboardHook : Hook<KeyStroke>
 		{
 			Code = KeyCode.Zero
 		});
+		// Turkish Q: the Dash key unshifted is '*', not '-'; the Equals key unshifted is '-', not
+		// '='. The two are effectively swapped relative to English.
 		KeyDictionary.Add('-', new KeyData
 		{
-			Code = KeyCode.Dash
-		});
-		KeyDictionary.Add('=', new KeyData
-		{
 			Code = KeyCode.Equals
+		});
+		KeyDictionary.Add('*', new KeyData
+		{
+			Code = KeyCode.Dash
 		});
 		KeyDictionary.Add('q', new KeyData
 		{
@@ -115,9 +111,11 @@ public class KeyboardHook : Hook<KeyStroke>
 		{
 			Code = KeyCode.U
 		});
+		// Turkish Q: the physical "I" key types dotless 'ı' unshifted - dotted lowercase 'i' sits
+		// on the physical key English calls apostrophe (').
 		KeyDictionary.Add('i', new KeyData
 		{
-			Code = KeyCode.I
+			Code = KeyCode.Apostrophe
 		});
 		KeyDictionary.Add('o', new KeyData
 		{
@@ -126,14 +124,6 @@ public class KeyboardHook : Hook<KeyStroke>
 		KeyDictionary.Add('p', new KeyData
 		{
 			Code = KeyCode.P
-		});
-		KeyDictionary.Add('[', new KeyData
-		{
-			Code = KeyCode.OpenBracketBrace
-		});
-		KeyDictionary.Add(']', new KeyData
-		{
-			Code = KeyCode.CloseBracketBrace
 		});
 		KeyDictionary.Add('a', new KeyData
 		{
@@ -171,17 +161,19 @@ public class KeyboardHook : Hook<KeyStroke>
 		{
 			Code = KeyCode.L
 		});
+		// Turkish Q: the Semicolon key unshifted is 'ş'; literal ';' lives on the ISO extra key
+		// (the enum calls it Backslash - on Turkish ISO hardware it sits after L, not after ]),
+		// shifted. The Apostrophe key unshifted is dotted 'i' (see above); literal "'" lives on
+		// the Two key, shifted.
 		KeyDictionary.Add(';', new KeyData
 		{
-			Code = KeyCode.Semicolon
+			Code = KeyCode.Backslash,
+			Shift = true
 		});
 		KeyDictionary.Add('\'', new KeyData
 		{
-			Code = KeyCode.Apostrophe
-		});
-		KeyDictionary.Add('\\', new KeyData
-		{
-			Code = KeyCode.Backslash
+			Code = KeyCode.Two,
+			Shift = true
 		});
 		KeyDictionary.Add('z', new KeyData
 		{
@@ -211,45 +203,29 @@ public class KeyboardHook : Hook<KeyStroke>
 		{
 			Code = KeyCode.M
 		});
+		// Turkish Q: the Comma key unshifted is 'ö', the Dot key unshifted is 'ç'. Literal ',' and
+		// '.' live on the ISO extra key (unshifted) and the Slash key (unshifted) respectively.
 		KeyDictionary.Add(',', new KeyData
 		{
-			Code = KeyCode.Comma
+			Code = KeyCode.Backslash
 		});
 		KeyDictionary.Add('.', new KeyData
 		{
-			Code = KeyCode.Dot
+			Code = KeyCode.Slash
 		});
+		// Literal '/' moved to the Seven key, shifted (Seven unshifted is still '7').
 		KeyDictionary.Add('/', new KeyData
 		{
-			Code = KeyCode.Slash
+			Code = KeyCode.Seven,
+			Shift = true
 		});
 		KeyDictionary.Add(' ', new KeyData
 		{
 			Code = KeyCode.Space
 		});
-		KeyDictionary.Add('~', new KeyData
-		{
-			Code = KeyCode.Tilde,
-			Shift = true
-		});
 		KeyDictionary.Add('!', new KeyData
 		{
 			Code = KeyCode.One,
-			Shift = true
-		});
-		KeyDictionary.Add('@', new KeyData
-		{
-			Code = KeyCode.Two,
-			Shift = true
-		});
-		KeyDictionary.Add('#', new KeyData
-		{
-			Code = KeyCode.Three,
-			Shift = true
-		});
-		KeyDictionary.Add('$', new KeyData
-		{
-			Code = KeyCode.Four,
 			Shift = true
 		});
 		KeyDictionary.Add('%', new KeyData
@@ -257,29 +233,21 @@ public class KeyboardHook : Hook<KeyStroke>
 			Code = KeyCode.Five,
 			Shift = true
 		});
-		KeyDictionary.Add('^', new KeyData
+		// Turkish Q: Seven unshifted was already claimed by '/' above, '&' moves to Six shifted
+		// (Six unshifted is still '6').
+		KeyDictionary.Add('&', new KeyData
 		{
 			Code = KeyCode.Six,
 			Shift = true
 		});
-		KeyDictionary.Add('&', new KeyData
-		{
-			Code = KeyCode.Seven,
-			Shift = true
-		});
-		KeyDictionary.Add('*', new KeyData
+		KeyDictionary.Add('(', new KeyData
 		{
 			Code = KeyCode.Eight,
 			Shift = true
 		});
-		KeyDictionary.Add('(', new KeyData
-		{
-			Code = KeyCode.Nine,
-			Shift = true
-		});
 		KeyDictionary.Add(')', new KeyData
 		{
-			Code = KeyCode.Zero,
+			Code = KeyCode.Nine,
 			Shift = true
 		});
 		KeyDictionary.Add('_', new KeyData
@@ -288,6 +256,20 @@ public class KeyboardHook : Hook<KeyStroke>
 			Shift = true
 		});
 		KeyDictionary.Add('+', new KeyData
+		{
+			Code = KeyCode.Four,
+			Shift = true
+		});
+		// Turkish Q: '=' moves to the Zero key, shifted (Equals key itself unshifted is now '-',
+		// see above).
+		KeyDictionary.Add('=', new KeyData
+		{
+			Code = KeyCode.Zero,
+			Shift = true
+		});
+		// Turkish Q: '?' moves to the Equals key, shifted (Slash key's shifted state is ':', see
+		// below) - also doubles as the fallback for any character this table doesn't cover.
+		KeyDictionary.Add('?', new KeyData
 		{
 			Code = KeyCode.Equals,
 			Shift = true
@@ -342,16 +324,6 @@ public class KeyboardHook : Hook<KeyStroke>
 			Code = KeyCode.P,
 			Shift = true
 		});
-		KeyDictionary.Add('{', new KeyData
-		{
-			Code = KeyCode.OpenBracketBrace,
-			Shift = true
-		});
-		KeyDictionary.Add('}', new KeyData
-		{
-			Code = KeyCode.CloseBracketBrace,
-			Shift = true
-		});
 		KeyDictionary.Add('A', new KeyData
 		{
 			Code = KeyCode.A,
@@ -397,20 +369,16 @@ public class KeyboardHook : Hook<KeyStroke>
 			Code = KeyCode.L,
 			Shift = true
 		});
+		// Turkish Q: literal ':' lives on the Slash key, shifted; literal '"' lives on the Tilde
+		// key (the key left of 1), unshifted - that key has no safe English equivalent anyway.
 		KeyDictionary.Add(':', new KeyData
 		{
-			Code = KeyCode.Semicolon,
+			Code = KeyCode.Slash,
 			Shift = true
 		});
 		KeyDictionary.Add('"', new KeyData
 		{
-			Code = KeyCode.Apostrophe,
-			Shift = true
-		});
-		KeyDictionary.Add('|', new KeyData
-		{
-			Code = KeyCode.Backslash,
-			Shift = true
+			Code = KeyCode.Tilde
 		});
 		KeyDictionary.Add('Z', new KeyData
 		{
@@ -447,24 +415,12 @@ public class KeyboardHook : Hook<KeyStroke>
 			Code = KeyCode.M,
 			Shift = true
 		});
-		KeyDictionary.Add('<', new KeyData
-		{
-			Code = KeyCode.Comma,
-			Shift = true
-		});
-		KeyDictionary.Add('>', new KeyData
-		{
-			Code = KeyCode.Dot,
-			Shift = true
-		});
-		KeyDictionary.Add('?', new KeyData
-		{
-			Code = KeyCode.Slash,
-			Shift = true
-		});
+		// Used when a character has no entry above (would otherwise throw) - same key as the
+		// literal '?' mapped earlier, so an unsupported character visibly becomes a question mark
+		// rather than silently vanishing or typing something misleading.
 		QuestionMark = new KeyData
 		{
-			Code = KeyCode.Slash,
+			Code = KeyCode.Equals,
 			Shift = true
 		};
 	}
@@ -523,28 +479,20 @@ public class KeyboardHook : Hook<KeyStroke>
 
 	/// <summary>
 	/// Whether SimulateInput knows a real key for this character (as opposed to silently falling
-	/// back to typing '?') under the given keyboard layout. Lets a caller warn the operator about
-	/// an unsupported character before it reaches the game as the wrong text, instead of after.
+	/// back to typing '?'). Lets a caller warn the operator about an unsupported character before
+	/// it reaches the game as the wrong text, instead of after.
 	/// </summary>
-	public static bool IsCharacterSupported(char key, bool turkishKeyboard)
+	public static bool IsCharacterSupported(char key)
 	{
-		if (turkishKeyboard && TurkishOverrides.ContainsKey(key))
-		{
-			return true;
-		}
 		return KeyDictionary.ContainsKey(key);
 	}
 
-	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75, bool turkishKeyboard = false)
+	public bool SimulateInput(string text, int delayBetweenKeyPresses = 50, int releaseDelay = 75)
 	{
 		bool flag = false;
 		foreach (char key in text)
 		{
-			KeyData value;
-			if (turkishKeyboard && TurkishOverrides.TryGetValue(key, out value))
-			{
-			}
-			else if (!KeyDictionary.TryGetValue(key, out value))
+			if (!KeyDictionary.TryGetValue(key, out var value))
 			{
 				value = QuestionMark;
 			}

@@ -54,12 +54,11 @@ public class InputUtils(Action<string> showMessage, Action<KeyStroke>? keyPressA
 
 	private async Task Login(string username, string password)
 	{
-		bool turkishKeyboard = settings.Login.TurkishKeyboard;
-		base.KeyboardHook?.SimulateInput(username, 10, 10, turkishKeyboard);
+		base.KeyboardHook?.SimulateInput(username, 10, 10);
 		await Task.Delay(200);
 		SimulateKeyPress(KeyCode.Tab, 100);
 		await Task.Delay(200);
-		base.KeyboardHook?.SimulateInput(password, 10, 10, turkishKeyboard);
+		base.KeyboardHook?.SimulateInput(password, 10, 10);
 		await Task.Delay(200);
 		SimulateKeyPress(KeyCode.Enter);
 	}
