@@ -166,5 +166,29 @@ public class MagicBagTasks : ITaskCategory
 			},
 			Mode = SearchMode.Single
 		});
+		Tasks.Add(new SearchTask
+		{
+			TaskId = "OpenThirdMagicBag",
+			Config = new SearchConfig
+			{
+				TemplatePath = TemplateResolver.Resolve("OpenThirdMagicBag", "Images/ThirdMagicBag.jpg"),
+				SearchArea = DefaultSearchArea,
+				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
+				OnMatchNotFound = null
+			},
+			Mode = SearchMode.Single
+		});
+		Tasks.Add(new SearchTask
+		{
+			TaskId = "OpenThirdMagicBag2",
+			Config = new SearchConfig
+			{
+				TemplatePath = TemplateResolver.Resolve("OpenThirdMagicBag2", "Images/ThirdMagicBag.jpg"),
+				SearchArea = DefaultSearchArea,
+				OnMatchFound = _actionCenter._magicBagActions.MoveAndLeftClick,
+				OnMatchNotFound = null
+			},
+			Mode = SearchMode.Single
+		});
 	}
 }
