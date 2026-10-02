@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Scanix4;
 using SettingsManager;
+using SimpleLogger;
 
 namespace UI2.ScreenCapture;
 
@@ -439,6 +441,7 @@ public class TemplateManagerForm : Form
 			TemplateResolver.SetOverride(slot.TaskId, newPath);
 		}
 		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(newPath);
+		ApplyToRunningBot();
 	}
 
 	private void Grid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -457,6 +460,34 @@ public class TemplateManagerForm : Form
 		}
 		_grid.Rows[e.RowIndex].Cells["File"].Value = group.DefaultPath;
 		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(group.DefaultPath);
+		ApplyToRunningBot();
+	}
+
+	/// <summary>
+	/// Set by Form1 once ScreenCaptureMainForm exists (this form is constructed first).
+	/// </summary>
+	public WorkflowEngine? WorkflowEngine { get; set; }
+
+	/// <summary>
+	/// Pushes a template change straight into the running bot. Each task reads its template path
+	/// once, when its search service is built, so without this a newly assigned image did nothing
+	/// until EVOX.Console was closed and reopened - and nothing on screen said so.
+	/// </summary>
+	private async void ApplyToRunningBot()
+	{
+		try
+		{
+			WorkflowEngine engine = WorkflowEngine;
+			if (engine != null)
+			{
+				await engine.ReloadTasksAsync();
+				Logger.Instance.LogInformation("Şablon değişikliği çalışan bota uygulandı.");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Instance.LogWarning("Şablon değişikliği uygulanamadı: " + ex.Message);
+		}
 	}
 
 	private void BtnUpload_Click(object sender, EventArgs e)

@@ -70,6 +70,10 @@ public class Form1 : Form
 
 	private ToolStripButton toolStripButtonClose;
 
+	private ToolStripButton toolStripButtonApply;
+
+	private ToolStripSeparator toolStripSeparatorApply;
+
 	private ToolStripSeparator toolStripSeparator1;
 
 	private ToolStripSeparator toolStripSeparator2;
@@ -123,6 +127,7 @@ public class Form1 : Form
 		_screenCaptureMainForm = new ScreenCaptureMainForm(_inputUtils, _logsForm, _attackService, _macroForm, this);
 		_settingsForm.WorkflowEngine = _screenCaptureMainForm.WorkflowEngine;
 		_macroForm.WorkflowEngine = _screenCaptureMainForm.WorkflowEngine;
+		_templateManagerForm.WorkflowEngine = _screenCaptureMainForm.WorkflowEngine;
 		_statusDashboardForm = new StatusDashboardForm(_screenCaptureMainForm);
 		_formManager.RegisterForm("Macro", _macroForm.GetForm());
 		_formManager.RegisterForm("ScreenCapture", _screenCaptureMainForm);
@@ -273,6 +278,33 @@ public class Form1 : Form
 		else if (keyStroke.Code == KeyCode.Control)
 		{
 			_isControlKeyPressed = false;
+		}
+	}
+
+	/// <summary>
+	/// Rebuilds the running task graph from current settings. Every task reads its search area
+	/// and template path once, when it is built, so a redrawn region or a newly assigned image
+	/// used to need the whole app closed and reopened before it took effect. This is on the main
+	/// toolbar so it is reachable from wherever the change was just made.
+	/// </summary>
+	private async void toolStripButtonApply_Click(object sender, EventArgs e)
+	{
+		string originalText = toolStripButtonApply.Text;
+		toolStripButtonApply.Enabled = false;
+		toolStripButtonApply.Text = "Uygulanıyor...";
+		try
+		{
+			await (_screenCaptureMainForm?.WorkflowEngine?.ReloadTasksAsync() ?? Task.CompletedTask);
+			_logger.LogInformation("Değişiklikler çalışan bota uygulandı.");
+		}
+		catch (Exception ex)
+		{
+			ShowError("Değişiklikler uygulanırken hata oluştu: " + ex.Message);
+		}
+		finally
+		{
+			toolStripButtonApply.Enabled = true;
+			toolStripButtonApply.Text = originalText;
 		}
 	}
 
@@ -620,7 +652,15 @@ public class Form1 : Form
 		this.toolStrip1.Font = new System.Drawing.Font("Segoe UI", 8f);
 		this.toolStrip1.ForeColor = System.Drawing.Color.FromArgb(200, 200, 200);
 		this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[6] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools });
+		this.toolStripButtonApply = new System.Windows.Forms.ToolStripButton();
+		this.toolStripSeparatorApply = new System.Windows.Forms.ToolStripSeparator();
+		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[8] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools, this.toolStripSeparatorApply, this.toolStripButtonApply });
+		this.toolStripButtonApply.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+		this.toolStripButtonApply.ForeColor = System.Drawing.Color.FromArgb(140, 225, 180);
+		this.toolStripButtonApply.Name = "toolStripButtonApply";
+		this.toolStripButtonApply.Text = "↻ Uygula";
+		this.toolStripButtonApply.ToolTipText = "Çizilen bölgeleri ve yüklenen şablonları çalışan bota uygula (uygulamayı kapatmaya gerek yok)";
+		this.toolStripButtonApply.Click += new System.EventHandler(toolStripButtonApply_Click);
 		this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 		this.toolStrip1.Name = "toolStrip1";
 		this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;

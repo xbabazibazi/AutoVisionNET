@@ -167,7 +167,12 @@ public class WorkflowEngine
 			{
 				return Task.CompletedTask;
 			}
-			Task task = manager.RunAsync();
+			// Task.Run, not a bare RunAsync(): the loop inside runs a blocking image search before
+			// it reaches its first await, so calling it directly would stall whoever started the
+			// workflow - the keyboard hook thread for a hotkey, or the TCP receive loop for a
+			// remote command from the service, which would hold up every command behind it.
+			WorkflowManager started = manager;
+			Task task = Task.Run(() => started.RunAsync());
 			_running[workflowId] = task;
 			task.ContinueWith(delegate
 			{
