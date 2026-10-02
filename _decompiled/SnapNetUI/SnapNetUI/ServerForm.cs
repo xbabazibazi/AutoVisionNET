@@ -60,6 +60,8 @@ public class ServerForm : Form
 
 	private Button btnClearLogs;
 
+	private Panel clientsHeader;
+
 	private Panel commandPanel;
 
 
@@ -643,6 +645,8 @@ public class ServerForm : Form
 			select new ClientListItem
 			{
 				Text = $"{c.nickname} | {c.job} | {c.endpoint}",
+				Nickname = c.nickname,
+				Job = c.job,
 				VerificationOk = c.lastVerificationOk,
 				VerificationTime = c.lastVerificationTime,
 				EmptySlots = c.emptySlots,
@@ -673,9 +677,28 @@ public class ServerForm : Form
 		});
 	}
 
+	// Column layout for the connected-devices table, shared by the header strip and every row so
+	// the two can never drift apart. X is the left edge inside the list; Width is what the text
+	// or pill is allowed to occupy.
+	private static readonly (string Title, int X, int Width)[] ClientColumns = new (string, int, int)[8]
+	{
+		("", 12, 12),
+		("NICKNAME", 32, 180),
+		("JOB", 218, 80),
+		("GENIE", 304, 90),
+		("ENVANTER", 400, 95),
+		("MAKRO", 501, 100),
+		("TAMIR", 607, 90),
+		("PING", 703, 70)
+	};
+
 	private class ClientListItem
 	{
 		public string Text { get; set; }
+
+		public string Nickname { get; set; }
+
+		public string Job { get; set; }
 
 		public bool? VerificationOk { get; set; }
 
@@ -707,95 +730,156 @@ public class ServerForm : Form
 		{
 			return;
 		}
-		using (SolidBrush textBrush = new SolidBrush(Color.FromArgb(235, 235, 240)))
+		e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+		// Hairline between rows, so the columns read as a table rather than a run-together list.
+		using (Pen separator = new Pen(Color.FromArgb(52, 52, 60)))
 		{
-			e.Graphics.DrawString(item.Text, e.Font, textBrush, e.Bounds.Left + 4, e.Bounds.Top + 2);
+			e.Graphics.DrawLine(separator, e.Bounds.Left, e.Bounds.Bottom - 1, e.Bounds.Right, e.Bounds.Bottom - 1);
 		}
-		string statusText;
-		Color statusColor;
-		if (!item.VerificationOk.HasValue)
+		int centreY = e.Bounds.Top + e.Bounds.Height / 2;
+		// Connection dot: green when the last visual verification passed, amber when it failed,
+		// grey while the client has not reported one yet.
+		Color dotColor = !item.VerificationOk.HasValue
+			? Color.FromArgb(108, 108, 118)
+			: (item.VerificationOk.Value ? Color.FromArgb(46, 153, 102) : Color.FromArgb(212, 163, 57));
+		using (SolidBrush dotBrush = new SolidBrush(dotColor))
 		{
-			statusText = "● Görsel doğrulama: veri yok";
-			statusColor = Color.FromArgb(110, 115, 130);
+			e.Graphics.FillEllipse(dotBrush, ColumnLeft(e, 0), centreY - 4, 8, 8);
 		}
-		else if (item.VerificationOk.Value)
+		using (Font rowFont = new Font(e.Font.FontFamily, 8.5f))
+		using (Font nameFont = new Font(e.Font.FontFamily, 8.5f, FontStyle.Bold))
 		{
-			statusText = "● Görsel doğrulama OK (" + item.VerificationTime.Value.ToLocalTime().ToString("HH:mm:ss") + ")";
-			statusColor = Color.FromArgb(110, 200, 110);
-		}
-		else
-		{
-			statusText = "● Görsel doğrulama BAŞARISIZ (" + item.VerificationTime.Value.ToLocalTime().ToString("HH:mm:ss") + ")";
-			statusColor = Color.FromArgb(210, 100, 100);
-		}
-		using (SolidBrush statusBrush = new SolidBrush(statusColor))
-		using (Font statusFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
-		{
-			e.Graphics.DrawString(statusText, statusFont, statusBrush, e.Bounds.Left + 4, e.Bounds.Top + 19);
-		}
-		string slotText;
-		Color slotColor;
-		if (item.InventoryClosed)
-		{
-			string reportedAt = item.EmptySlotsTime.HasValue
-				? item.EmptySlotsTime.Value.ToLocalTime().ToString("HH:mm:ss")
-				: "-";
-			slotText = $"● Envanter kapalı  ({reportedAt})";
-			slotColor = Color.FromArgb(110, 115, 130);
-		}
-		else if (!item.EmptySlots.HasValue)
-		{
-			slotText = "● Boş envanter slotu: veri yok";
-			slotColor = Color.FromArgb(110, 115, 130);
-		}
-		else
-		{
-			string reportedAt = item.EmptySlotsTime.HasValue
-				? item.EmptySlotsTime.Value.ToLocalTime().ToString("HH:mm:ss")
-				: "-";
-			slotText = $"● Boş envanter slotu: {item.EmptySlots.Value}  ({reportedAt})";
-			slotColor = (item.EmptySlots.Value == 0)
-				? Color.FromArgb(210, 100, 100)
-				: ((item.EmptySlots.Value <= 5) ? Color.FromArgb(230, 160, 90) : Color.FromArgb(110, 200, 110));
-		}
-		using (SolidBrush slotBrush = new SolidBrush(slotColor))
-		using (Font slotFont = new Font(e.Font.FontFamily, 8f, FontStyle.Bold))
-		{
-			e.Graphics.DrawString(slotText, slotFont, slotBrush, e.Bounds.Left + 4, e.Bounds.Top + 34);
-		}
-		(string Text, Color Color)[] segments = new (string Text, Color Color)[4]
-		{
-			(!item.GenieActive.HasValue
-				? "Genie: veri yok"
-				: (item.GenieActive.Value ? "Genie: Açık" : "Genie: Kapalı"),
-			!item.GenieActive.HasValue
-				? Color.FromArgb(110, 115, 130)
-				: (item.GenieActive.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(110, 115, 130))),
-			(!item.MacroActive.HasValue
-				? "Makro: veri yok"
-				: (item.MacroActive.Value ? "Makro: Çalışıyor" : "Makro: Durdu"),
-			!item.MacroActive.HasValue
-				? Color.FromArgb(110, 115, 130)
-				: (item.MacroActive.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 160, 90))),
-			(!item.RepairOk.HasValue
-				? "Tamir: —"
-				: (item.RepairOk.Value ? "Tamir: OK" : "Tamir: BAŞARISIZ"),
-			!item.RepairOk.HasValue
-				? Color.FromArgb(110, 115, 130)
-				: (item.RepairOk.Value ? Color.FromArgb(110, 200, 110) : Color.FromArgb(210, 100, 100))),
-			("Ping: " + (item.PingRttMs.HasValue ? $"{item.PingRttMs.Value}ms" : "—"), Color.FromArgb(150, 155, 168))
-		};
-		using (Font lineFont = new Font(e.Font.FontFamily, 7.5f))
-		{
-			float x = e.Bounds.Left + 4;
-			foreach (var (text, color) in segments)
-			{
-				using SolidBrush brush = new SolidBrush(color);
-				e.Graphics.DrawString(text, lineFont, brush, x, e.Bounds.Top + 49);
-				x += e.Graphics.MeasureString(text, lineFont).Width + 14;
-			}
+			DrawColumnText(e, 1, item.Nickname ?? item.Text, nameFont, Color.FromArgb(145, 198, 220), centreY);
+			DrawColumnText(e, 2, item.Job ?? string.Empty, rowFont, Color.FromArgb(214, 214, 222), centreY);
+
+			(string Text, PillTone Tone) genie = !item.GenieActive.HasValue
+				? ("—", PillTone.Idle)
+				: (item.GenieActive.Value ? ("Açık", PillTone.Good) : ("Kapalı", PillTone.Warn));
+			DrawPill(e, 3, genie.Text, genie.Tone, rowFont, centreY);
+
+			(string Text, PillTone Tone) inventory = DescribeInventory(item);
+			DrawPill(e, 4, inventory.Text, inventory.Tone, rowFont, centreY);
+
+			(string Text, PillTone Tone) macro = !item.MacroActive.HasValue
+				? ("—", PillTone.Idle)
+				: (item.MacroActive.Value ? ("Çalışıyor", PillTone.Good) : ("Durdu", PillTone.Warn));
+			DrawPill(e, 5, macro.Text, macro.Tone, rowFont, centreY);
+
+			(string Text, PillTone Tone) repair = !item.RepairOk.HasValue
+				? ("—", PillTone.Idle)
+				: (item.RepairOk.Value ? ("OK", PillTone.Good) : ("HATA", PillTone.Bad));
+			DrawPill(e, 6, repair.Text, repair.Tone, rowFont, centreY);
+
+			DrawColumnText(e, 7, item.PingRttMs.HasValue ? item.PingRttMs.Value + "ms" : "—", rowFont, Color.FromArgb(150, 155, 168), centreY);
 		}
 		e.DrawFocusRectangle();
+	}
+
+	private static (string Text, PillTone Tone) DescribeInventory(ClientListItem item)
+	{
+		if (item.InventoryClosed)
+		{
+			return ("Kapalı", PillTone.Idle);
+		}
+		if (!item.EmptySlots.HasValue)
+		{
+			return ("—", PillTone.Idle);
+		}
+		int slots = item.EmptySlots.Value;
+		PillTone tone = (slots == 0) ? PillTone.Bad : ((slots <= 5) ? PillTone.Warn : PillTone.Good);
+		return (slots + " boş", tone);
+	}
+
+	private enum PillTone
+	{
+		Idle,
+		Good,
+		Warn,
+		Bad
+	}
+
+	private static int ColumnLeft(DrawItemEventArgs e, int column)
+	{
+		return e.Bounds.Left + ClientColumns[column].X;
+	}
+
+	private static void DrawColumnText(DrawItemEventArgs e, int column, string text, Font font, Color color, int centreY)
+	{
+		using SolidBrush brush = new SolidBrush(color);
+		using StringFormat format = new StringFormat
+		{
+			Trimming = StringTrimming.EllipsisCharacter,
+			FormatFlags = StringFormatFlags.NoWrap,
+			LineAlignment = StringAlignment.Center
+		};
+		Rectangle cell = new Rectangle(ColumnLeft(e, column), centreY - 9, ClientColumns[column].Width, 18);
+		e.Graphics.DrawString(text, font, brush, cell, format);
+	}
+
+	/// <summary>Draws a status value as a tinted rounded chip, so a glance down the column shows
+	/// which characters need attention without having to read any of the text.</summary>
+	private static void DrawPill(DrawItemEventArgs e, int column, string text, PillTone tone, Font font, int centreY)
+	{
+		(Color Background, Color Foreground) colors = tone switch
+		{
+			PillTone.Good => (Color.FromArgb(28, 62, 48), Color.FromArgb(127, 217, 168)),
+			PillTone.Warn => (Color.FromArgb(68, 55, 28), Color.FromArgb(232, 193, 100)),
+			PillTone.Bad => (Color.FromArgb(74, 34, 34), Color.FromArgb(232, 130, 130)),
+			_ => (Color.FromArgb(50, 50, 58), Color.FromArgb(130, 130, 142)),
+		};
+		Rectangle pill = new Rectangle(ColumnLeft(e, column), centreY - 9, ClientColumns[column].Width - 6, 18);
+		using (SolidBrush background = new SolidBrush(colors.Background))
+		using (System.Drawing.Drawing2D.GraphicsPath path = RoundedRectangle(pill, 9))
+		{
+			e.Graphics.FillPath(background, path);
+		}
+		using SolidBrush foreground = new SolidBrush(colors.Foreground);
+		using StringFormat format = new StringFormat
+		{
+			Alignment = StringAlignment.Center,
+			LineAlignment = StringAlignment.Center,
+			Trimming = StringTrimming.EllipsisCharacter,
+			FormatFlags = StringFormatFlags.NoWrap
+		};
+		e.Graphics.DrawString(text, font, foreground, pill, format);
+	}
+
+	private static System.Drawing.Drawing2D.GraphicsPath RoundedRectangle(Rectangle bounds, int radius)
+	{
+		int diameter = radius * 2;
+		System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+		path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180f, 90f);
+		path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270f, 90f);
+		path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0f, 90f);
+		path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90f, 90f);
+		path.CloseFigure();
+		return path;
+	}
+
+	/// <summary>Paints the column titles above the list from the same offsets the rows use, so a
+	/// header can never end up sitting over the wrong column.</summary>
+	private void ClientsHeader_Paint(object sender, PaintEventArgs e)
+	{
+		Panel panel = (Panel)sender;
+		using (Pen underline = new Pen(Color.FromArgb(58, 58, 66)))
+		{
+			e.Graphics.DrawLine(underline, 0, panel.Height - 1, panel.Width, panel.Height - 1);
+		}
+		using Font font = new Font("Segoe UI", 7f, FontStyle.Bold);
+		using SolidBrush brush = new SolidBrush(Color.FromArgb(118, 118, 130));
+		using StringFormat format = new StringFormat
+		{
+			LineAlignment = StringAlignment.Center,
+			FormatFlags = StringFormatFlags.NoWrap
+		};
+		foreach (var (title, x, width) in ClientColumns)
+		{
+			if (title.Length == 0)
+			{
+				continue;
+			}
+			e.Graphics.DrawString(title, font, brush, new Rectangle(x, 0, width, panel.Height), format);
+		}
 	}
 
 	private void BtnSilentMode_Click(object sender, EventArgs e)
@@ -1086,20 +1170,34 @@ public class ServerForm : Form
 			Font = new System.Drawing.Font("Segoe UI", 10f),
 			BackColor = System.Drawing.Color.FromArgb(33, 33, 40)
 		};
+		this.clientsHeader = new System.Windows.Forms.Panel
+		{
+			Dock = System.Windows.Forms.DockStyle.Top,
+			Height = 22,
+			BackColor = System.Drawing.Color.FromArgb(44, 44, 52)
+		};
+		this.clientsHeader.Paint += new System.Windows.Forms.PaintEventHandler(ClientsHeader_Paint);
+		// Add order sets z-order, and docking runs from the highest index down: lblClients takes
+		// the top strip, then this header sits directly under it, then the list fills the rest.
 		this.mainSplitContainer.Panel1.Controls.Add(this.lblClientsEmpty);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lstClients);
+		this.mainSplitContainer.Panel1.Controls.Add(this.clientsHeader);
 		this.mainSplitContainer.Panel1.Controls.Add(this.lblClients);
 		this.lblClientsEmpty.BringToFront();
-		this.mainSplitContainer.Panel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+		this.mainSplitContainer.Panel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
 		this.mainSplitContainer.Panel2.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.mainSplitContainer.Panel2.Controls.Add(this.lstLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.lblLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.btnCopyLogs);
 		this.mainSplitContainer.Panel2.Controls.Add(this.btnClearLogs);
-		this.mainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+		this.mainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
 		this.mainSplitContainer.Size = new System.Drawing.Size(980, 322);
-		this.mainSplitContainer.SplitterDistance = 350;
-		this.mainSplitContainer.SplitterWidth = 10;
+		// Stacked rather than side by side: the device table is the thing being watched and now
+		// gets the full width for its columns, while the log - a "what just happened" summary,
+		// with the full history living in its own window - is a short strip underneath.
+		this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+		this.mainSplitContainer.SplitterDistance = 208;
+		this.mainSplitContainer.SplitterWidth = 8;
 		this.mainSplitContainer.TabIndex = 8;
 		this.lstClients.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
 		this.lstClients.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1108,7 +1206,7 @@ public class ServerForm : Form
 		this.lstClients.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.lstClients.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.lstClients.FormattingEnabled = true;
-		this.lstClients.ItemHeight = 66;
+		this.lstClients.ItemHeight = 30;
 		this.lstClients.Location = new System.Drawing.Point(0, 25);
 		this.lstClients.Name = "lstClients";
 		this.lstClients.Size = new System.Drawing.Size(345, 335);
