@@ -43,7 +43,7 @@ public class RequestTasks : ITaskCategory
 			TaskId = "EVOX",
 			Config = new SearchConfig
 			{
-				TemplatePath = TemplateResolver.Resolve("EVOX", "Images/katadora.jpg"),
+				TemplatePath = TemplateResolver.Resolve("EVOX", "Images/AcceptanceParty.jpg"),
 				SearchArea = DefaultSearchArea,
 				Threshold = 0.8,
 				IntervalMs = 2000,

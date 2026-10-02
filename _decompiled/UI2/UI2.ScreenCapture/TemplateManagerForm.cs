@@ -54,7 +54,7 @@ public class TemplateManagerForm : Form
 		["Images/RequestParty.jpg"] = "Parti Daveti Penceresi",
 		// The operator uploads a capture of the inviting character's own name here - whoever is
 		// sending the party invites gets their name put in this slot.
-		["Images/katadora.jpg"] = "Parti Kabul",
+		["Images/AcceptanceParty.jpg"] = "Parti Kabul",
 		["Images/RequestPartyMenuItem.jpg"] = "Sağ Tık → Parti Davet Et",
 		["Images/WhellOfFunButton.jpg"] = "Çark Butonu",
 		["Images/WhellOfFunPushButton.jpg"] = "Çark Çevir Butonu",
@@ -117,7 +117,7 @@ public class TemplateManagerForm : Form
 		("Party", "Town", "Images/Town.jpg"),
 		("Party", "PartyMemberCount", "Images/PartyCount.jpg"),
 		("Request", "RequestParty", "Images/RequestParty.jpg"),
-		("Request", "EVOX", "Images/katadora.jpg"),
+		("Request", "EVOX", "Images/AcceptanceParty.jpg"),
 		("Request", "SendPartyInviteMenuItem", "Images/RequestPartyMenuItem.jpg"),
 		("Request", "CheckParty", "Images/RequestParty.jpg"),
 		("Request", "WhellOfFunButton", "Images/WhellOfFunButton.jpg"),
