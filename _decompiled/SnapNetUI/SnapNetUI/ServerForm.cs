@@ -179,7 +179,9 @@ public class ServerForm : Form
 			titlePanel.Controls.Add(iconBox);
 			iconBox.BringToFront();
 			lblTitle.Location = new Point(60, lblTitle.Location.Y);
-			lblSubtitle.Location = new Point(60, lblSubtitle.Location.Y);
+			// Two px further in than the wordmark so the letter-spaced subtitle reads as aligned
+			// with it rather than sitting a hair to its left.
+			lblSubtitle.Location = new Point(62, lblSubtitle.Location.Y);
 		}
 		catch
 		{
@@ -1441,22 +1443,25 @@ public class ServerForm : Form
 		// Hidden for now - not an active feature yet. Logic (this button, BtnPartyForm_Click,
 		// PartyForm.cs) is left in place untouched so it can come back with a one-line change.
 		this.btnPartyForm.Visible = false;
+		// Wordmark treatment: "EVOX" alone, with "SERVİS" set small and letter-spaced beneath it.
+		// The spacing is written into the string because WinForms labels have no tracking of
+		// their own, and a plain tight "SERVİS" under a 22pt wordmark reads as cramped.
 		this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
-		this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
-		this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(200, 200, 205);
-		this.lblSubtitle.Location = new System.Drawing.Point(20, 25);
+		this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+		this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(132, 140, 156);
+		this.lblSubtitle.Location = new System.Drawing.Point(22, 29);
 		this.lblSubtitle.Name = "lblSubtitle";
-		this.lblSubtitle.Size = new System.Drawing.Size(200, 20);
+		this.lblSubtitle.Size = new System.Drawing.Size(160, 16);
 		this.lblSubtitle.TabIndex = 1;
-		this.lblSubtitle.Text = "Sunucu · Servis Paneli";
+		this.lblSubtitle.Text = "S E R V İ S";
 		this.lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Left;
-		this.lblTitle.Font = AppFonts.Header(20f);
+		this.lblTitle.Font = AppFonts.Header(22f, System.Drawing.FontStyle.Regular);
 		this.lblTitle.ForeColor = System.Drawing.Color.White;
-		this.lblTitle.Location = new System.Drawing.Point(20, 0);
+		this.lblTitle.Location = new System.Drawing.Point(20, 2);
 		this.lblTitle.Name = "lblTitle";
-		this.lblTitle.Size = new System.Drawing.Size(300, 30);
+		this.lblTitle.Size = new System.Drawing.Size(160, 30);
 		this.lblTitle.TabIndex = 0;
-		this.lblTitle.Text = "EVOX.SERVICE";
+		this.lblTitle.Text = "EVOX";
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 15f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		this.BackColor = System.Drawing.Color.FromArgb(28, 28, 33);
