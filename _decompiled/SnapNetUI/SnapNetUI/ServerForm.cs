@@ -62,9 +62,7 @@ public class ServerForm : Form
 
 	private Panel commandPanel;
 
-	private ListBox lstCommands;
 
-	private Button btnSendCommand;
 
 	private SplitContainer mainSplitContainer;
 
@@ -315,26 +313,94 @@ public class ServerForm : Form
 		BackColor = Color.FromArgb(28, 28, 33);
 		btnStart.FlatStyle = FlatStyle.Flat;
 		btnStop.FlatStyle = FlatStyle.Flat;
-		btnSendCommand.FlatStyle = FlatStyle.Flat;
 		btnStopAlarm.FlatStyle = FlatStyle.Flat;
 		btnClearLogs.FlatStyle = FlatStyle.Flat;
 		btnCopyLogs.FlatStyle = FlatStyle.Flat;
 		btnSilentMode.FlatStyle = FlatStyle.Flat;
+		// Both sit inside the logs header band, which is a Dock=Top label added BEFORE them -
+		// in WinForms that puts the label in front and hides them entirely.
+		btnCopyLogs.BringToFront();
+		btnClearLogs.BringToFront();
 		mainContainer.Paint += delegate(object? s, PaintEventArgs e)
 		{
 			ControlPaint.DrawBorder(e.Graphics, mainContainer.ClientRectangle, Color.FromArgb(70, 80, 100), ButtonBorderStyle.Solid);
 		};
 	}
 
+	// Each command is its own button now: the old list + "Seçili Komutları Gönder" meant two
+	// interactions (select, then send) for something that is always a single action, and the
+	// list hid everything past the first few rows behind a scrollbar.
+	private static readonly (string Label, string Code)[] CommandButtons = new (string, string)[7]
+	{
+		("Warrior Genie Aç", "WARRIOR_GENIE"),
+		("Priest Genie Aç", "PRIEST_GENIE"),
+		("ReReRe", "201"),
+		("Çark Çevir", "501"),
+		("Tüm Alarmları Durdur", "101"),
+		("Güncellemeleri Yap", "301"),
+		("Özel Komut (log'a yazar)", "999")
+	};
+
 	private void InitializeCommands()
 	{
-		lstCommands.Items.Add("501 - Çark Çevir");
-		lstCommands.Items.Add("201 - ReReRe");
-		lstCommands.Items.Add("Warrior Genie Aç");
-		lstCommands.Items.Add("Priest Genie Aç");
-		lstCommands.Items.Add("101 - Tüm alarmları durdur");
-		lstCommands.Items.Add("301 - Güncellemeleri yap");
-		lstCommands.Items.Add("999 - Özel komut (log'a yazar)");
+		const int columns = 4;
+		const int gapX = 8;
+		const int gapY = 8;
+		const int buttonHeight = 38;
+		int buttonWidth = (commandPanel.Width - (columns - 1) * gapX) / columns;
+		for (int i = 0; i < CommandButtons.Length; i++)
+		{
+			var (label, code) = CommandButtons[i];
+			Button button = new Button
+			{
+				Text = label,
+				Tag = code,
+				Location = new Point(i % columns * (buttonWidth + gapX), i / columns * (buttonHeight + gapY)),
+				Size = new Size(buttonWidth, buttonHeight),
+				BackColor = Color.FromArgb(55, 60, 72),
+				ForeColor = Color.White,
+				FlatStyle = FlatStyle.Flat,
+				Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+				TextAlign = ContentAlignment.MiddleCenter,
+				UseVisualStyleBackColor = false,
+				AutoEllipsis = true
+			};
+			button.FlatAppearance.BorderSize = 0;
+			button.FlatAppearance.MouseOverBackColor = Color.FromArgb(75, 98, 112);
+			button.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 60, 72);
+			button.Click += CommandButton_Click;
+			commandPanel.Controls.Add(button);
+		}
+	}
+
+	private async void CommandButton_Click(object sender, EventArgs e)
+	{
+		if (sender is not Button { Tag: string code })
+		{
+			return;
+		}
+		try
+		{
+			switch (code)
+			{
+				case "WARRIOR_GENIE":
+					await _server.SendCommandToSpecificJobAsync("401", Server.JobType.Warrior);
+					_logQueue.Enqueue("401 komutu sadece Warrior'lara gönderildi");
+					break;
+				case "PRIEST_GENIE":
+					await _server.SendCommandToSpecificJobAsync("401", Server.JobType.Priest);
+					_logQueue.Enqueue("401 komutu sadece Priest'lere gönderildi");
+					break;
+				default:
+					await _server.SendCommandToAllClientsAsync(code, withDelay: false);
+					_logQueue.Enqueue("KOMUT_GONDERILDI:" + code);
+					break;
+			}
+		}
+		catch (Exception ex)
+		{
+			HandleError("Komut gönderim hatası: " + ex.Message);
+		}
 	}
 
 	private void InitializeServerEvents()
@@ -729,44 +795,6 @@ public class ServerForm : Form
 		e.DrawFocusRectangle();
 	}
 
-	private async void BtnSendCommand_Click(object sender, EventArgs e)
-	{
-		try
-		{
-			string[] selectedCommands = (from string c in lstCommands.SelectedItems
-				select c.Split('-')[0].Trim()).ToArray();
-			if (!selectedCommands.Any())
-			{
-				return;
-			}
-			string[] array = selectedCommands;
-			foreach (string command in array)
-			{
-				if (command == "Warrior Genie Aç")
-				{
-					await _server.SendCommandToSpecificJobAsync("401", Server.JobType.Warrior);
-					_logQueue.Enqueue("401 komutu sadece Warrior'lara gönderildi");
-				}
-				else if (command == "Priest Genie Aç")
-				{
-					await _server.SendCommandToSpecificJobAsync("401", Server.JobType.Priest);
-					_logQueue.Enqueue("401 komutu sadece Priest'lere gönderildi");
-				}
-				else
-				{
-					string cmdCode = command.Split(' ')[0];
-					await _server.SendCommandToAllClientsAsync(cmdCode, withDelay: false);
-					_logQueue.Enqueue("KOMUT_GONDERILDI:" + cmdCode);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-			HandleError("Komut gönderim hatası: " + ex2.Message);
-		}
-	}
-
 	private void BtnSilentMode_Click(object sender, EventArgs e)
 	{
 		_isSilentMode = !_isSilentMode;
@@ -936,8 +964,6 @@ public class ServerForm : Form
 		this.lblLogs = new System.Windows.Forms.Label();
 		this.btnCopyLogs = new System.Windows.Forms.Button();
 		this.commandPanel = new System.Windows.Forms.Panel();
-		this.btnSendCommand = new System.Windows.Forms.Button();
-		this.lstCommands = new System.Windows.Forms.ListBox();
 		this.controlPanel = new System.Windows.Forms.Panel();
 		this.btnSilentMode = new System.Windows.Forms.Button();
 		this.btnStopAlarm = new System.Windows.Forms.Button();
@@ -993,14 +1019,14 @@ public class ServerForm : Form
 		this.lblServerStatus.ForeColor = System.Drawing.Color.FromArgb(200, 80, 80);
 		this.lblServerStatus.Location = new System.Drawing.Point(12, 18);
 		this.lblServerStatus.Name = "lblServerStatus";
-		this.lblServerStatus.Size = new System.Drawing.Size(80, 24);
+		this.lblServerStatus.Size = new System.Drawing.Size(100, 24);
 		this.lblServerStatus.TabIndex = 6;
 		this.lblServerStatus.Text = "DURDURULDU";
 		this.lblServerStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 		this.cardStatus.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
 		this.cardStatus.Location = new System.Drawing.Point(150, 0);
 		this.cardStatus.Name = "cardStatus";
-		this.cardStatus.Size = new System.Drawing.Size(100, 45);
+		this.cardStatus.Size = new System.Drawing.Size(120, 45);
 		this.cardStatus.TabIndex = 20;
 		this.cardStatus.Controls.Add(this.lblServerStatus);
 		this.cardStatus.Controls.Add(new System.Windows.Forms.Label
@@ -1013,7 +1039,7 @@ public class ServerForm : Form
 		});
 		this.cardStatus.Paint += DrawCardBorder;
 		this.cardClients.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.cardClients.Location = new System.Drawing.Point(260, 0);
+		this.cardClients.Location = new System.Drawing.Point(280, 0);
 		this.cardClients.Name = "cardClients";
 		this.cardClients.Size = new System.Drawing.Size(150, 45);
 		this.cardClients.TabIndex = 21;
@@ -1028,7 +1054,7 @@ public class ServerForm : Form
 		});
 		this.cardClients.Paint += DrawCardBorder;
 		this.cardUptime.BackColor = System.Drawing.Color.FromArgb(38, 38, 45);
-		this.cardUptime.Location = new System.Drawing.Point(420, 0);
+		this.cardUptime.Location = new System.Drawing.Point(440, 0);
 		this.cardUptime.Name = "cardUptime";
 		this.cardUptime.Size = new System.Drawing.Size(190, 45);
 		this.cardUptime.TabIndex = 22;
@@ -1124,7 +1150,7 @@ public class ServerForm : Form
 		this.btnCopyLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnCopyLogs.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 		this.btnCopyLogs.ForeColor = System.Drawing.Color.White;
-		this.btnCopyLogs.Location = new System.Drawing.Point(490, 0);
+		this.btnCopyLogs.Location = new System.Drawing.Point(485, 0);
 		this.btnCopyLogs.Name = "btnCopyLogs";
 		this.btnCopyLogs.Size = new System.Drawing.Size(130, 25);
 		this.btnCopyLogs.TabIndex = 6;
@@ -1133,39 +1159,10 @@ public class ServerForm : Form
 		this.btnCopyLogs.Click += new System.EventHandler(BtnCopyLogs_Click);
 		this.commandPanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.commandPanel.BackColor = System.Drawing.Color.Transparent;
-		this.commandPanel.Controls.Add(this.btnSendCommand);
-		this.commandPanel.Controls.Add(this.lstCommands);
 		this.commandPanel.Location = new System.Drawing.Point(10, 180);
 		this.commandPanel.Name = "commandPanel";
 		this.commandPanel.Size = new System.Drawing.Size(980, 90);
 		this.commandPanel.TabIndex = 7;
-		this.btnSendCommand.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnSendCommand.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
-		this.btnSendCommand.FlatAppearance.BorderSize = 0;
-		this.btnSendCommand.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
-		this.btnSendCommand.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
-		this.btnSendCommand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnSendCommand.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.btnSendCommand.ForeColor = System.Drawing.Color.White;
-		this.btnSendCommand.Location = new System.Drawing.Point(800, 20);
-		this.btnSendCommand.Name = "btnSendCommand";
-		this.btnSendCommand.Size = new System.Drawing.Size(170, 50);
-		this.btnSendCommand.TabIndex = 2;
-		this.btnSendCommand.Text = "SEÇİLİ KOMUTLARI GÖNDER";
-		this.btnSendCommand.UseVisualStyleBackColor = false;
-		this.btnSendCommand.Click += new System.EventHandler(BtnSendCommand_Click);
-		this.lstCommands.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-		this.lstCommands.BackColor = System.Drawing.Color.FromArgb(33, 33, 40);
-		this.lstCommands.BorderStyle = System.Windows.Forms.BorderStyle.None;
-		this.lstCommands.Font = new System.Drawing.Font("Segoe UI", 9.75f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-		this.lstCommands.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
-		this.lstCommands.FormattingEnabled = true;
-		this.lstCommands.ItemHeight = 17;
-		this.lstCommands.Location = new System.Drawing.Point(0, 0);
-		this.lstCommands.Name = "lstCommands";
-		this.lstCommands.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-		this.lstCommands.Size = new System.Drawing.Size(780, 85);
-		this.lstCommands.TabIndex = 1;
 		this.controlPanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.controlPanel.BackColor = System.Drawing.Color.Transparent;
 		this.controlPanel.Controls.Add(this.btnSilentMode);
@@ -1219,7 +1216,7 @@ public class ServerForm : Form
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnClearLogs.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 		this.btnClearLogs.ForeColor = System.Drawing.Color.White;
-		this.btnClearLogs.Location = new System.Drawing.Point(455, 0);
+		this.btnClearLogs.Location = new System.Drawing.Point(450, 0);
 		this.btnClearLogs.Name = "btnClearLogs";
 		this.btnClearLogs.Size = new System.Drawing.Size(30, 25);
 		this.btnClearLogs.TabIndex = 4;
