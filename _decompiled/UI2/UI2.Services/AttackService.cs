@@ -23,6 +23,8 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 
 	private int RDelay { get; set; }
 
+	private int RRepeatCount { get; set; } = 1;
+
 	private bool AttackHasSkill { get; set; }
 
 	private bool AttackHasR { get; set; }
@@ -92,11 +94,22 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 		int delay = 50;
 		while (!token.IsCancellationRequested)
 		{
-			if (settings.Macro.Attack.IsRandomDelay)
+			// A burst of RRepeatCount presses, then the usual wait - so "RRR, pause, RRR" rather
+			// than one R per interval. At the default of 1 this is the original behaviour.
+			for (int press = 0; press < RRepeatCount && !token.IsCancellationRequested; press++)
 			{
-				delay = Random.Next(50, 101);
+				if (settings.Macro.Attack.IsRandomDelay)
+				{
+					delay = Random.Next(50, 101);
+				}
+				inputUtils.SimulateKeyPress(KeyCode.R, delay);
+				if (press < RRepeatCount - 1)
+				{
+					// Breathing room between presses in a burst; without it the game can drop
+					// keystrokes that arrive back to back with no gap at all.
+					await Task.Delay(delay, token);
+				}
 			}
-			inputUtils.SimulateKeyPress(KeyCode.R, delay);
 			await Task.Delay(RDelay, token);
 		}
 	}
@@ -277,5 +290,6 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 		AttackHasNine = settings.Macro.Attack.HasNine;
 		SkillDelay = (int)settings.Macro.Attack.Delay;
 		RDelay = (int)settings.Macro.Attack.RDelay;
+		RRepeatCount = settings.Macro.Attack.RRepeatCount;
 	}
 }

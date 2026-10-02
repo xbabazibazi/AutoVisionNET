@@ -4,7 +4,7 @@ namespace SettingsManager.Macro;
 
 public class Attack : MacroSettingsBase
 {
-	protected override string[] Keys => new string[9] { "Delay", "StartAttackOnGenieStart", "HasSkill", "HasZ", "HasR", "HasEight", "HasNine", "RDelay", "IsRandomDelay" };
+	protected override string[] Keys => new string[10] { "Delay", "StartAttackOnGenieStart", "HasSkill", "HasZ", "HasR", "HasEight", "HasNine", "RDelay", "IsRandomDelay", "RRepeatCount" };
 
 	public decimal Delay
 	{
@@ -114,6 +114,24 @@ public class Attack : MacroSettingsBase
 		}
 	}
 
+	/// <summary>
+	/// How many times R is pressed back to back each cycle, before waiting out
+	/// <see cref="RDelay"/> again - so a value of 3 produces "RRR ... RRR ..." rather than a
+	/// single R per interval. 1 keeps the original one-press-per-cycle behaviour.
+	/// </summary>
+	public int RRepeatCount
+	{
+		get
+		{
+			int count = GetSetting<int>("RRepeatCount");
+			return (count < 1) ? 1 : count;
+		}
+		set
+		{
+			SetSetting("RRepeatCount", value);
+		}
+	}
+
 	public Attack(DbManager dbManager)
 		: base(dbManager, "Attack")
 	{
@@ -121,13 +139,12 @@ public class Attack : MacroSettingsBase
 
 	protected override object GetDefaultValue(string key)
 	{
-		if (1 == 0)
+		return key switch
 		{
-		}
-		object result = ((key == "Delay") ? ((object)800m) : ((!(key == "RDelay")) ? ((object)false) : ((object)800m)));
-		if (1 == 0)
-		{
-		}
-		return result;
+			"Delay" => 800m,
+			"RDelay" => 800m,
+			"RRepeatCount" => 1,
+			_ => false,
+		};
 	}
 }

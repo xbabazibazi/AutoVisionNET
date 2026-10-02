@@ -44,6 +44,10 @@ public class Attack : UserControl
 
 	private Label labelRDelay;
 
+	private NumericUpDown numericUpDownRRepeat;
+
+	private Label labelRRepeat;
+
 	private NumericUpDown numericUpDownSkillDelay;
 
 	private Label labelSkillDelay;
@@ -137,6 +141,7 @@ public class Attack : UserControl
 		{
 			_settings.Delay = numericUpDownSkillDelay.Value;
 			_settings.RDelay = numericUpDownRDelay.Value;
+			_settings.RRepeatCount = (int)numericUpDownRRepeat.Value;
 			_settings.HasSkill = checkBoxSkill.Checked;
 			_settings.HasR = checkBoxR.Checked;
 			_settings.HasZ = checkBoxZ.Checked;
@@ -158,6 +163,7 @@ public class Attack : UserControl
 		{
 			numericUpDownSkillDelay.Value = _settings.Delay;
 			numericUpDownRDelay.Value = _settings.RDelay;
+			numericUpDownRRepeat.Value = _settings.RRepeatCount;
 			checkBoxSkill.Checked = _settings.HasSkill;
 			checkBoxR.Checked = _settings.HasR;
 			checkBoxZ.Checked = _settings.HasZ;
@@ -257,6 +263,18 @@ public class Attack : UserControl
 		}
 	}
 
+	private void numericUpDownRRepeat_ValueChanged(object sender, EventArgs e)
+	{
+		try
+		{
+			_settings.RRepeatCount = (int)numericUpDownRRepeat.Value;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError("Error changing RRepeatCount: " + ex.Message);
+		}
+	}
+
 	private void checkBoxGenie_CheckedChanged(object sender, EventArgs e)
 	{
 		try
@@ -304,6 +322,8 @@ public class Attack : UserControl
 		this.groupBoxDelays = new System.Windows.Forms.GroupBox();
 		this.numericUpDownRDelay = new System.Windows.Forms.NumericUpDown();
 		this.labelRDelay = new System.Windows.Forms.Label();
+		this.numericUpDownRRepeat = new System.Windows.Forms.NumericUpDown();
+		this.labelRRepeat = new System.Windows.Forms.Label();
 		this.numericUpDownSkillDelay = new System.Windows.Forms.NumericUpDown();
 		this.labelSkillDelay = new System.Windows.Forms.Label();
 		this.groupBoxFeatures = new System.Windows.Forms.GroupBox();
@@ -313,6 +333,7 @@ public class Attack : UserControl
 		this.groupBoxAttackKeys.SuspendLayout();
 		this.groupBoxDelays.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)this.numericUpDownRDelay).BeginInit();
+		((System.ComponentModel.ISupportInitialize)this.numericUpDownRRepeat).BeginInit();
 		((System.ComponentModel.ISupportInitialize)this.numericUpDownSkillDelay).BeginInit();
 		this.groupBoxFeatures.SuspendLayout();
 		base.SuspendLayout();
@@ -436,6 +457,8 @@ public class Attack : UserControl
 		this.groupBoxDelays.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxDelays.Controls.Add(this.numericUpDownRDelay);
 		this.groupBoxDelays.Controls.Add(this.labelRDelay);
+		this.groupBoxDelays.Controls.Add(this.numericUpDownRRepeat);
+		this.groupBoxDelays.Controls.Add(this.labelRRepeat);
 		this.groupBoxDelays.Controls.Add(this.numericUpDownSkillDelay);
 		this.groupBoxDelays.Controls.Add(this.labelSkillDelay);
 		this.groupBoxDelays.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -464,6 +487,26 @@ public class Attack : UserControl
 		this.labelRDelay.Size = new System.Drawing.Size(72, 13);
 		this.labelRDelay.TabIndex = 2;
 		this.labelRDelay.Text = "R Delay (ms):";
+		// Left half of this group box was empty; the R burst count belongs next to the R delay.
+		this.labelRRepeat.AutoSize = true;
+		this.labelRRepeat.Font = new System.Drawing.Font("Segoe UI", 8f);
+		this.labelRRepeat.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.labelRRepeat.Location = new System.Drawing.Point(20, 43);
+		this.labelRRepeat.Name = "labelRRepeat";
+		this.labelRRepeat.Size = new System.Drawing.Size(100, 13);
+		this.labelRRepeat.TabIndex = 4;
+		this.labelRRepeat.Text = "R Tekrar Sayısı:";
+		this.numericUpDownRRepeat.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
+		this.numericUpDownRRepeat.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.numericUpDownRRepeat.Location = new System.Drawing.Point(130, 40);
+		this.numericUpDownRRepeat.Minimum = new decimal(new int[4] { 1, 0, 0, 0 });
+		this.numericUpDownRRepeat.Maximum = new decimal(new int[4] { 20, 0, 0, 0 });
+		this.numericUpDownRRepeat.Value = new decimal(new int[4] { 1, 0, 0, 0 });
+		this.numericUpDownRRepeat.Name = "numericUpDownRRepeat";
+		this.numericUpDownRRepeat.Size = new System.Drawing.Size(80, 22);
+		this.numericUpDownRRepeat.TabIndex = 5;
+		this.toolTip.SetToolTip(this.numericUpDownRRepeat, "Her turda R'ye arka arkaya kaç kez basılacağı. 3 yazarsan \"RRR - bekle - RRR\" şeklinde çalışır. 1 = eski davranış.");
+		this.numericUpDownRRepeat.ValueChanged += new System.EventHandler(numericUpDownRRepeat_ValueChanged);
 		this.numericUpDownSkillDelay.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
 		this.numericUpDownSkillDelay.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		this.numericUpDownSkillDelay.Location = new System.Drawing.Point(350, 15);
@@ -543,6 +586,7 @@ public class Attack : UserControl
 		this.groupBoxDelays.ResumeLayout(false);
 		this.groupBoxDelays.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)this.numericUpDownRDelay).EndInit();
+		((System.ComponentModel.ISupportInitialize)this.numericUpDownRRepeat).EndInit();
 		((System.ComponentModel.ISupportInitialize)this.numericUpDownSkillDelay).EndInit();
 		this.groupBoxFeatures.ResumeLayout(false);
 		base.ResumeLayout(false);
