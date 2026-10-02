@@ -32,6 +32,12 @@ public class InputCore : IDisposable
 		MouseHook = new MouseHook(MouseCallback);
 	}
 
+	/// <summary>Surfaces a message to the operator through whatever channel the host wired up.</summary>
+	protected void ShowMessage(string message)
+	{
+		_showMessage(message);
+	}
+
 	public void Dispose()
 	{
 		Dispose(disposing: true);

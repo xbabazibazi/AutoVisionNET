@@ -19,7 +19,18 @@ public class InputUtils(Action<string> showMessage, Action<KeyStroke>? keyPressA
 
 	public async Task StartLoginAsync()
 	{
-		await Login(settings.Login.UserID, settings.Login.UserPassword);
+		string userId = settings.Login.UserID;
+		string password = settings.Login.UserPassword;
+		// Without this, empty credentials make NumLock look completely dead: it types nothing and
+		// says nothing, with no way to tell that apart from the driver or the hotkey being broken.
+		// The password is encrypted per Windows user, so it also reads back empty if the settings
+		// database was copied over from another machine or account.
+		if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
+		{
+			ShowMessage("Login bilgisi boş: Makro > Login ekranından ID ve şifreyi girin. (Şifre bu Windows kullanıcısına özel şifrelenir - ayar dosyası başka bir PC'den kopyalandıysa yeniden girilmesi gerekir.)");
+			return;
+		}
+		await Login(userId, password);
 	}
 
 	public async Task UndyAc()
