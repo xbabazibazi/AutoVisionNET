@@ -426,9 +426,11 @@ public class Attack : UserControl
 		this.checkBoxSkill.Name = "checkBoxSkill";
 		this.checkBoxSkill.Size = new System.Drawing.Size(90, 30);
 		this.checkBoxSkill.TabIndex = 0;
-		this.checkBoxSkill.Text = "SKILL";
+		// Named after the key it actually presses: labelled just "SKILL" it was not obvious that
+		// leaving it on adds a 0 into the middle of, say, a 9-only rotation.
+		this.checkBoxSkill.Text = "0 (Skill)";
 		this.checkBoxSkill.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-		this.toolTip.SetToolTip(this.checkBoxSkill, "Enable skill use during attack");
+		this.toolTip.SetToolTip(this.checkBoxSkill, "Atak sırasında 0 tuşuna basar (skill). Kapalıyken 0'a hiç basılmaz.");
 		this.checkBoxSkill.UseVisualStyleBackColor = false;
 		this.checkBoxSkill.CheckedChanged += new System.EventHandler(checkBoxSkill_CheckedChanged);
 		this.groupBoxDelays.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
@@ -478,7 +480,9 @@ public class Attack : UserControl
 		this.labelSkillDelay.Name = "labelSkillDelay";
 		this.labelSkillDelay.Size = new System.Drawing.Size(82, 13);
 		this.labelSkillDelay.TabIndex = 0;
-		this.labelSkillDelay.Text = "Skill Delay (ms):";
+		// Kept short: the numeric box sits at x=350 and this label starts at 250, so a longer
+		// string would run underneath it.
+		this.labelSkillDelay.Text = "0 (Skill) ms:";
 		this.groupBoxFeatures.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.groupBoxFeatures.Controls.Add(this.checkBoxRandomDelay);
 		this.groupBoxFeatures.Controls.Add(this.checkBoxGenie);
