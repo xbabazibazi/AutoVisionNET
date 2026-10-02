@@ -108,15 +108,33 @@ public class WorkflowEngine
 	/// </summary>
 	public async Task ReloadTasksAsync()
 	{
-		List<string> activeWorkflows = GetRunningWorkflows().ToList();
+		// Everything currently running, plus every workflow its own settings say should be - a
+		// workflow whose region had not been drawn yet ends on its first pass, so restarting only
+		// what happens to be running would never bring those back. The ones named SnapNet* are
+		// left out on purpose: they are fired by remote commands, not run continuously.
+		HashSet<string> toRestart = new HashSet<string>(GetRunningWorkflows());
+		foreach (string workflowId in _workflowTypes.Keys)
+		{
+			if (!workflowId.Contains("SnapNet"))
+			{
+				toRestart.Add(workflowId);
+			}
+		}
 		await StopAllAsync();
 		lock (_lock)
 		{
+			foreach (WorkflowManager manager in _managers.Values)
+			{
+				// Each manager owns an ImageSearchService per step, holding native OpenCV and GDI
+				// capture resources; dropping them without disposing leaks on every reload.
+				manager.Dispose();
+			}
 			_managers.Clear();
 			_taskCenter = new TaskCenter(_alarm, _logger, _inputUtils, _onMatchFoundAction, _onMatchNotFoundAction);
 		}
-		foreach (string workflowId in activeWorkflows)
+		foreach (string workflowId in toRestart)
 		{
+			// StartAsync already skips anything its IsActive says is switched off.
 			await StartAsync(workflowId);
 		}
 	}

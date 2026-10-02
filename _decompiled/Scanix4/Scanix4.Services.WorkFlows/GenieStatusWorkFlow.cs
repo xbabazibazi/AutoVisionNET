@@ -9,7 +9,12 @@ public class GenieStatusWorkFlow : IWorkflow
 {
 	public string WorkflowId => "GenieStatus";
 
-	public bool IsActive => Settings.Instance.ScreenCapture.StopMacrosOnGenieStop.IsActive;
+	// This workflow only WATCHES whether Genie is on; the things that act on that - stopping the
+	// macros, auto-starting the attack, reporting GENIE:ON/OFF to the service - are each gated by
+	// their own setting where they happen. Gating the observer itself on "Genie Durunca Makroları
+	// Durdur" meant that with that one feature off, the panel reported every character's Genie as
+	// closed and the attack macro never auto-started, neither of which that setting is about.
+	public bool IsActive => true;
 
 	public Dictionary<string, WorkflowTransition> Steps { get; } = new Dictionary<string, WorkflowTransition>();
 
