@@ -668,8 +668,13 @@ public class Form1 : Form
 		this.toolStripSeparatorApply = new System.Windows.Forms.ToolStripSeparator();
 		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[8] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools, this.toolStripSeparatorApply, this.toolStripButtonApply });
 		this.toolStripButtonApply.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-		this.toolStripButtonApply.ForeColor = System.Drawing.Color.FromArgb(126, 222, 170);
+		// Explicit BackColor: left unset, a ToolStripButton falls back to the system Control
+		// colour, which is near-white here and left the light text unreadable.
+		this.toolStripButtonApply.BackColor = System.Drawing.Color.FromArgb(34, 94, 68);
+		this.toolStripButtonApply.ForeColor = System.Drawing.Color.FromArgb(236, 248, 241);
 		this.toolStripButtonApply.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
+		this.toolStripButtonApply.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+		this.toolStripButtonApply.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
 		this.toolStripButtonApply.Name = "toolStripButtonApply";
 		this.toolStripButtonApply.Text = "↻ Uygula";
 		this.toolStripButtonApply.ToolTipText = "Çizilen bölgeleri ve yüklenen şablonları çalışan bota uygula (uygulamayı kapatmaya gerek yok)";
