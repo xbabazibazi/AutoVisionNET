@@ -858,6 +858,10 @@ public class ClientForm : Form
 		this.commandPanel.Padding = new System.Windows.Forms.Padding(15);
 		this.commandPanel.Size = new System.Drawing.Size(500, 50);
 		this.commandPanel.TabIndex = 3;
+		// Raw-command box: only ever used to hand-test a command during debugging, never in
+		// normal operation. Hidden rather than deleted so it can come back with one line if a
+		// command ever needs testing by hand again.
+		this.commandPanel.Visible = false;
 		this.txtCommand.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.txtCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 		this.txtCommand.Dock = System.Windows.Forms.DockStyle.Fill;

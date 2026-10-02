@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SettingsManager;
 
@@ -216,7 +217,7 @@ public class TemplateManagerForm : Form
 
 		Button btnUpload = new Button
 		{
-			Text = "Toplu Görsel Yükle...",
+			Text = "📁  Görsel Yükle...",
 			Size = new Size(160, 22),
 			Location = new Point(headerPanel.Width - 200, 4),
 			Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -338,6 +339,7 @@ public class TemplateManagerForm : Form
 		dataGridViewComboBoxColumn.Items.Clear();
 		dataGridViewComboBoxColumn.Items.AddRange(availableFiles.Cast<object>().ToArray());
 
+		List<(int RowIndex, string Path)> pendingThumbnails = new List<(int, string)>();
 		foreach (TemplateGroup group in BuildGroups())
 		{
 			string current = TemplateResolver.Resolve(group.Slots[0].TaskId, group.DefaultPath);
@@ -346,14 +348,38 @@ public class TemplateManagerForm : Form
 				availableFiles.Add(current);
 				dataGridViewComboBoxColumn.Items.Add(current);
 			}
-			int rowIndex = _grid.Rows.Add(group.DisplayName, current, LoadThumbnail(current), "Varsayılana Dön");
+			// Rows go in without their thumbnail: reading and decoding 25+ JPEGs from disk right
+			// here is what froze the form for a second or two every single time it was opened.
+			int rowIndex = _grid.Rows.Add(group.DisplayName, current, null, "Varsayılana Dön");
 			_grid.Rows[rowIndex].Tag = group;
 			if (group.Slots.Count > 1)
 			{
 				_grid.Rows[rowIndex].Cells["Name"].ToolTipText = "Etkilenen görevler: " + string.Join(", ", group.Slots.Select((TemplateSlot s) => s.TaskId));
 			}
+			pendingThumbnails.Add((rowIndex, current));
+		}
+		LoadThumbnailsInBackground(pendingThumbnails);
+	}
+
+	/// <summary>Fills in each row's thumbnail once it has been decoded off the UI thread, so the
+	/// grid is usable immediately and the images appear as they arrive.</summary>
+	private async void LoadThumbnailsInBackground(List<(int RowIndex, string Path)> rows)
+	{
+		int generation = ++_thumbnailGeneration;
+		foreach (var (rowIndex, path) in rows)
+		{
+			Image thumbnail = await Task.Run(() => LoadThumbnail(path));
+			// A reload (or a close) while this was running makes every remaining row index stale.
+			if (generation != _thumbnailGeneration || IsDisposed || _grid.IsDisposed || rowIndex >= _grid.Rows.Count)
+			{
+				thumbnail?.Dispose();
+				return;
+			}
+			_grid.Rows[rowIndex].Cells["Preview"].Value = thumbnail;
 		}
 	}
+
+	private int _thumbnailGeneration;
 
 	private static Image LoadThumbnail(string relativePath)
 	{

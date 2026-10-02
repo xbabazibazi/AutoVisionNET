@@ -23,6 +23,8 @@ public class SettingsForm : Form, ISettingsForm
 
 	private readonly List<AreaDefinition> _areaDefinitions = new List<AreaDefinition>();
 
+	private readonly ToolTip _toolTip = new ToolTip();
+
 	private IContainer components = null;
 
 	private Label lblTitle;
@@ -329,7 +331,62 @@ public class SettingsForm : Form, ISettingsForm
 			areaDefinition.Button.Tag = areaDefinition;
 			areaDefinition.Button.Click += SaveCoordinates_Click;
 			areaDefinition.Label.Click += ShowArea_Click;
+			AddClearButtonFor(areaDefinition);
 		}
+	}
+
+	/// <summary>
+	/// Adds the small "✕" next to an area's row. Built in code rather than the designer so every
+	/// area gets one automatically - including any added later - instead of needing a hand-placed
+	/// button each time. Until this existed the only way to change an area was to redraw it; there
+	/// was no way to empty one back out again.
+	/// </summary>
+	private void AddClearButtonFor(AreaDefinition area)
+	{
+		Button clearButton = new Button
+		{
+			Text = "✕",
+			Tag = area,
+			Location = new Point(400, area.Button.Top + 1),
+			Size = new Size(26, 26),
+			BackColor = Color.FromArgb(70, 55, 58),
+			ForeColor = Color.FromArgb(220, 190, 190),
+			FlatStyle = FlatStyle.Flat,
+			Font = new Font("Segoe UI", 8f, FontStyle.Bold),
+			TabStop = false,
+			UseVisualStyleBackColor = false
+		};
+		clearButton.FlatAppearance.BorderSize = 1;
+		clearButton.FlatAppearance.BorderColor = Color.FromArgb(95, 70, 72);
+		clearButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(120, 60, 60);
+		_toolTip.SetToolTip(clearButton, area.DisplayName + " koordinatını temizle");
+		clearButton.Click += ClearCoordinates_Click;
+		pnlContainer.Controls.Add(clearButton);
+		clearButton.BringToFront();
+	}
+
+	private void ClearCoordinates_Click(object sender, EventArgs e)
+	{
+		if (sender is not Button { Tag: AreaDefinition area })
+		{
+			return;
+		}
+		RectangleSettings settingsForArea = GetSettingsForArea(area);
+		if (settingsForArea == null)
+		{
+			return;
+		}
+		if (settingsForArea.Width == 0 && settingsForArea.Height == 0)
+		{
+			return;
+		}
+		if (MessageBox.Show(this, "'" + area.DisplayName + "' bölgesinin koordinatı temizlensin mi?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+		{
+			return;
+		}
+		UpdateSetting(settingsForArea, Rectangle.Empty);
+		UpdateLabel(area.Label, settingsForArea);
+		UpdateSettingsForArea(area, settingsForArea);
 	}
 
 	private void LoadAllSettings()

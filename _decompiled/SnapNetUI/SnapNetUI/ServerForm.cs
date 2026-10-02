@@ -332,13 +332,13 @@ public class ServerForm : Form
 	// list hid everything past the first few rows behind a scrollbar.
 	private static readonly (string Label, string Code)[] CommandButtons = new (string, string)[7]
 	{
-		("Warrior Genie Aç", "WARRIOR_GENIE"),
-		("Priest Genie Aç", "PRIEST_GENIE"),
-		("ReReRe", "201"),
-		("Çark Çevir", "501"),
-		("Tüm Alarmları Durdur", "101"),
-		("Güncellemeleri Yap", "301"),
-		("Özel Komut (log'a yazar)", "999")
+		("⚔   Warrior Genie Aç", "WARRIOR_GENIE"),
+		("✚   Priest Genie Aç", "PRIEST_GENIE"),
+		("🔁   ReReRe", "201"),
+		("🎡   Çark Çevir", "501"),
+		("🔕   Tüm Alarmları Durdur", "101"),
+		("⬇   Güncellemeleri Yap", "301"),
+		("🧪   Özel Komut", "999")
 	};
 
 	private void InitializeCommands()
@@ -357,16 +357,19 @@ public class ServerForm : Form
 				Tag = code,
 				Location = new Point(i % columns * (buttonWidth + gapX), i / columns * (buttonHeight + gapY)),
 				Size = new Size(buttonWidth, buttonHeight),
-				BackColor = Color.FromArgb(55, 60, 72),
-				ForeColor = Color.White,
+				BackColor = Color.FromArgb(56, 56, 63),
+				ForeColor = Color.FromArgb(235, 235, 240),
 				FlatStyle = FlatStyle.Flat,
-				Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
-				TextAlign = ContentAlignment.MiddleCenter,
+				Font = new Font("Segoe UI", 9f, FontStyle.Regular),
+				TextAlign = ContentAlignment.MiddleLeft,
+				Padding = new Padding(10, 0, 0, 0),
 				UseVisualStyleBackColor = false,
-				AutoEllipsis = true
+				AutoEllipsis = true,
+				Cursor = Cursors.Hand
 			};
-			button.FlatAppearance.BorderSize = 0;
-			button.FlatAppearance.MouseOverBackColor = Color.FromArgb(75, 98, 112);
+			button.FlatAppearance.BorderSize = 1;
+			button.FlatAppearance.BorderColor = Color.FromArgb(68, 68, 76);
+			button.FlatAppearance.MouseOverBackColor = Color.FromArgb(58, 94, 108);
 			button.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 60, 72);
 			button.Click += CommandButton_Click;
 			commandPanel.Controls.Add(button);
@@ -814,13 +817,15 @@ public class ServerForm : Form
 	{
 		if (_isSilentMode)
 		{
-			btnSilentMode.Text = "SESSİZ MOD: AÇIK";
-			btnSilentMode.BackColor = Color.FromArgb(80, 180, 80);
+			btnSilentMode.Text = "🔇  Sessiz Mod: AÇIK";
+			btnSilentMode.BackColor = Color.FromArgb(46, 120, 84);
+			btnSilentMode.FlatAppearance.BorderColor = Color.FromArgb(60, 150, 105);
 		}
 		else
 		{
-			btnSilentMode.Text = "SESSİZ MOD: KAPALI";
-			btnSilentMode.BackColor = Color.FromArgb(60, 65, 80);
+			btnSilentMode.Text = "🔇  Sessiz Mod";
+			btnSilentMode.BackColor = Color.FromArgb(56, 56, 63);
+			btnSilentMode.FlatAppearance.BorderColor = Color.FromArgb(68, 68, 76);
 		}
 	}
 
@@ -1143,18 +1148,20 @@ public class ServerForm : Form
 		this.lblLogs.Text = "SİSTEM LOGLARI";
 		this.lblLogs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 		this.btnCopyLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnCopyLogs.BackColor = System.Drawing.Color.FromArgb(55, 78, 92);
-		this.btnCopyLogs.FlatAppearance.BorderSize = 0;
-		this.btnCopyLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(75, 98, 112);
+		this.btnCopyLogs.BackColor = System.Drawing.Color.FromArgb(56, 56, 63);
+		this.btnCopyLogs.FlatAppearance.BorderSize = 1;
+		this.btnCopyLogs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(68, 68, 76);
+		this.btnCopyLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(58, 94, 108);
 		this.btnCopyLogs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
 		this.btnCopyLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnCopyLogs.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.btnCopyLogs.ForeColor = System.Drawing.Color.White;
+		this.btnCopyLogs.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+		this.btnCopyLogs.ForeColor = System.Drawing.Color.FromArgb(200, 200, 208);
+		this.btnCopyLogs.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btnCopyLogs.Location = new System.Drawing.Point(485, 0);
 		this.btnCopyLogs.Name = "btnCopyLogs";
 		this.btnCopyLogs.Size = new System.Drawing.Size(130, 25);
 		this.btnCopyLogs.TabIndex = 6;
-		this.btnCopyLogs.Text = "📋  LOGLARI KOPYALA";
+		this.btnCopyLogs.Text = "📋  Logları Kopyala";
 		this.btnCopyLogs.UseVisualStyleBackColor = false;
 		this.btnCopyLogs.Click += new System.EventHandler(BtnCopyLogs_Click);
 		this.commandPanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
@@ -1179,43 +1186,49 @@ public class ServerForm : Form
 		this.controlPanel.Size = new System.Drawing.Size(980, 100);
 		this.controlPanel.TabIndex = 6;
 		this.btnSilentMode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnSilentMode.BackColor = System.Drawing.Color.FromArgb(60, 65, 80);
-		this.btnSilentMode.FlatAppearance.BorderSize = 0;
-		this.btnSilentMode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 85, 100);
-		this.btnSilentMode.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(45, 50, 65);
+		this.btnSilentMode.BackColor = System.Drawing.Color.FromArgb(56, 56, 63);
+		this.btnSilentMode.FlatAppearance.BorderSize = 1;
+		this.btnSilentMode.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(68, 68, 76);
+		this.btnSilentMode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(58, 94, 108);
+		this.btnSilentMode.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(40, 60, 72);
 		this.btnSilentMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnSilentMode.Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.btnSilentMode.ForeColor = System.Drawing.Color.White;
-		this.btnSilentMode.Location = new System.Drawing.Point(735, 60);
+		this.btnSilentMode.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+		this.btnSilentMode.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.btnSilentMode.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btnSilentMode.Location = new System.Drawing.Point(720, 58);
 		this.btnSilentMode.Name = "btnSilentMode";
-		this.btnSilentMode.Size = new System.Drawing.Size(115, 24);
+		this.btnSilentMode.Size = new System.Drawing.Size(130, 26);
 		this.btnSilentMode.TabIndex = 8;
-		this.btnSilentMode.Text = "SESSİZ MOD: KAPALI";
+		this.btnSilentMode.Text = "🔇  Sessiz Mod";
 		this.btnSilentMode.UseVisualStyleBackColor = false;
 		this.btnSilentMode.Click += new System.EventHandler(BtnSilentMode_Click);
 		this.btnStopAlarm.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnStopAlarm.BackColor = System.Drawing.Color.FromArgb(200, 80, 80);
-		this.btnStopAlarm.FlatAppearance.BorderSize = 0;
-		this.btnStopAlarm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(220, 100, 100);
-		this.btnStopAlarm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(170, 60, 60);
+		this.btnStopAlarm.BackColor = System.Drawing.Color.FromArgb(143, 48, 48);
+		this.btnStopAlarm.FlatAppearance.BorderSize = 1;
+		this.btnStopAlarm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(178, 62, 62);
+		this.btnStopAlarm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(200, 70, 70);
+		this.btnStopAlarm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(120, 40, 40);
 		this.btnStopAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btnStopAlarm.Font = new System.Drawing.Font("Segoe UI", 7.5f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-		this.btnStopAlarm.ForeColor = System.Drawing.Color.White;
-		this.btnStopAlarm.Location = new System.Drawing.Point(860, 60);
+		this.btnStopAlarm.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+		this.btnStopAlarm.ForeColor = System.Drawing.Color.FromArgb(245, 230, 230);
+		this.btnStopAlarm.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btnStopAlarm.Location = new System.Drawing.Point(858, 58);
 		this.btnStopAlarm.Name = "btnStopAlarm";
-		this.btnStopAlarm.Size = new System.Drawing.Size(120, 24);
+		this.btnStopAlarm.Size = new System.Drawing.Size(122, 26);
 		this.btnStopAlarm.TabIndex = 7;
-		this.btnStopAlarm.Text = "ALARM DURDUR";
+		this.btnStopAlarm.Text = "🔔  Alarmı Durdur";
 		this.btnStopAlarm.UseVisualStyleBackColor = false;
 		this.btnStopAlarm.Click += new System.EventHandler(BtnStopAlarm_Click);
 		this.btnClearLogs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
-		this.btnClearLogs.FlatAppearance.BorderSize = 0;
-		this.btnClearLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 85);
-		this.btnClearLogs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(45, 45, 50);
+		this.btnClearLogs.BackColor = System.Drawing.Color.FromArgb(56, 56, 63);
+		this.btnClearLogs.FlatAppearance.BorderSize = 1;
+		this.btnClearLogs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(68, 68, 76);
+		this.btnClearLogs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(120, 60, 60);
+		this.btnClearLogs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(90, 45, 45);
 		this.btnClearLogs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btnClearLogs.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-		this.btnClearLogs.ForeColor = System.Drawing.Color.White;
+		this.btnClearLogs.ForeColor = System.Drawing.Color.FromArgb(200, 200, 208);
+		this.btnClearLogs.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btnClearLogs.Location = new System.Drawing.Point(450, 0);
 		this.btnClearLogs.Name = "btnClearLogs";
 		this.btnClearLogs.Size = new System.Drawing.Size(30, 25);
@@ -1254,7 +1267,8 @@ public class ServerForm : Form
 		this.btnStop.Name = "btnStop";
 		this.btnStop.Size = new System.Drawing.Size(140, 40);
 		this.btnStop.TabIndex = 1;
-		this.btnStop.Text = "DURDUR";
+		this.btnStop.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btnStop.Text = "⏹  DURDUR";
 		this.btnStop.UseVisualStyleBackColor = false;
 		this.btnStop.Click += new System.EventHandler(BtnStop_Click);
 		this.btnStart.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
@@ -1269,7 +1283,8 @@ public class ServerForm : Form
 		this.btnStart.Name = "btnStart";
 		this.btnStart.Size = new System.Drawing.Size(140, 40);
 		this.btnStart.TabIndex = 0;
-		this.btnStart.Text = "BAŞLAT";
+		this.btnStart.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btnStart.Text = "▶  BAŞLAT";
 		this.btnStart.UseVisualStyleBackColor = false;
 		this.btnStart.Click += new System.EventHandler(BtnStart_Click);
 		this.titlePanel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
