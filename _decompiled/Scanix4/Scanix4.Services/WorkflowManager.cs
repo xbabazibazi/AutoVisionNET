@@ -33,6 +33,10 @@ public class WorkflowManager
 
 	private readonly Dictionary<string, ImageSearchService> _searchServices;
 
+	// Steps already reported as unconfigured, so the warning appears once instead of on every
+	// pass of a loop that runs several times a second.
+	private readonly HashSet<string> _warnedUnusableSteps = new HashSet<string>();
+
 	public IWorkflow Workflow { get; }
 
 	public string WorkflowId => _workflowId;
@@ -104,13 +108,14 @@ public class WorkflowManager
 					Logger.Instance.LogInformation($"Mevcut görev: {current} | Mod: {task.Mode} | Eşleşme Modu: {task.Config.Mode}");
 				}
 				ImageSearchService service = _searchServices[current];
-				// A step with no usable region or template can never match, so the workflow just
-				// ends - which from the operator's side looks exactly like the command being
-				// ignored. Say which step and what it was missing.
-				if (!service.IsUsable && task.Mode != SearchMode.SnapNet)
+				// A step with no region drawn or template assigned can never match. Say so once -
+				// otherwise the whole workflow just quietly does nothing and looks like the
+				// command was ignored - but carry on down the not-found branch rather than
+				// stopping: most workflows chain through their steps on both outcomes, so one
+				// unconfigured step in the middle must not kill the ones after it.
+				if (!service.IsUsable && task.Mode != SearchMode.SnapNet && _warnedUnusableSteps.Add(current))
 				{
-					Logger.Instance.LogWarning($"'{_workflowId}' iş akışı '{current}' adımında durdu: bu adımın tarama bölgesi çizilmemiş veya şablonu atanmamış (şablon: {service.TemplatePath}, bölge: {service.SearchArea}).");
-					break;
+					Logger.Instance.LogWarning($"'{_workflowId}' iş akışının '{current}' adımı atlanıyor: tarama bölgesi çizilmemiş veya şablonu atanmamış (şablon: {service.TemplatePath}, bölge: {service.SearchArea}).");
 				}
 				int delayMs;
 				if (task.Mode == SearchMode.SnapNet)
