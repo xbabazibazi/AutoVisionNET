@@ -5,7 +5,7 @@ namespace SettingsManager.ScreenCapture;
 
 public class InventorySlotAlert : ScreenCaptureSettingsBase
 {
-	protected override string[] Keys => new string[2] { "IsActive", "LowSlotThreshold" };
+	protected override string[] Keys => new string[3] { "IsActive", "LowSlotThreshold", "OnlyWhenGenieActive" };
 
 	public bool IsActive
 	{
@@ -31,6 +31,24 @@ public class InventorySlotAlert : ScreenCaptureSettingsBase
 		}
 	}
 
+	/// <summary>
+	/// Only raise the inventory alarm while Genie is running. Repairing by hand moves the
+	/// inventory window, so the slot count read during a repair describes whatever is now in
+	/// that region rather than the bag - which set the alarm off every time. Genie running is a
+	/// good stand-in for "actually farming, so this reading means something".
+	/// </summary>
+	public bool OnlyWhenGenieActive
+	{
+		get
+		{
+			return GetSetting<bool>("OnlyWhenGenieActive");
+		}
+		set
+		{
+			SetSetting("OnlyWhenGenieActive", value);
+		}
+	}
+
 	public InventorySlotAlert(DbManager dbManager)
 		: base(dbManager, "InventorySlotAlert")
 	{
@@ -38,25 +56,12 @@ public class InventorySlotAlert : ScreenCaptureSettingsBase
 
 	protected override object GetDefaultValue(string key)
 	{
-		if (1 == 0)
+		return key switch
 		{
-		}
-		object result;
-		if (!(key == "IsActive"))
-		{
-			if (!(key == "LowSlotThreshold"))
-			{
-				throw new ArgumentException("Bilinmeyen ayar: " + key);
-			}
-			result = 5;
-		}
-		else
-		{
-			result = false;
-		}
-		if (1 == 0)
-		{
-		}
-		return result;
+			"IsActive" => false,
+			"LowSlotThreshold" => 5,
+			"OnlyWhenGenieActive" => true,
+			_ => throw new ArgumentException("Bilinmeyen ayar: " + key),
+		};
 	}
 }

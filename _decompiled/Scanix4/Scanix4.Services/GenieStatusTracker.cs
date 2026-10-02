@@ -12,8 +12,18 @@ public static class GenieStatusTracker
 {
 	public static bool IsActive { get; private set; }
 
+	/// <summary>
+	/// False until the Genie status scan has actually produced a reading. Anything gating its
+	/// own behaviour on <see cref="IsActive"/> must check this first: on a setup where the Genie
+	/// icon region was never drawn, the scan never runs and IsActive simply stays false forever,
+	/// which would otherwise read as a confident "Genie is off" and silently disable that gate's
+	/// feature.
+	/// </summary>
+	public static bool HasReading { get; private set; }
+
 	public static void SetActive(bool isActive)
 	{
 		IsActive = isActive;
+		HasReading = true;
 	}
 }

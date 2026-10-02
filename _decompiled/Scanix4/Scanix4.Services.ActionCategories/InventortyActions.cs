@@ -116,6 +116,18 @@ public class InventortyActions(Alarm alarm, Logger logger, InputUtils inputUtils
 			return;
 		}
 
+		// Repairing by hand drags the inventory window somewhere else, so the slot count read
+		// from the configured region during a repair describes whatever now sits there, not the
+		// bag - and that is what kept setting the alarm off mid-repair. Genie running stands in
+		// for "actually farming, so this reading means something". Only applied once the Genie
+		// scan has really reported: on a setup where that region was never drawn, IsActive stays
+		// false forever and this would silently switch the alarm off altogether.
+		if (_settings.OnlyWhenGenieActive && GenieStatusTracker.HasReading && !GenieStatusTracker.IsActive)
+		{
+			_logger.LogDebug("Envanter uyarısı atlandı: Genie kapalı (farm dışı okuma).");
+			return;
+		}
+
 		_logger.LogInformation((EmptySlot == 0)
 			? "Envanter tamamen dolu (0 boş slot) algılandı. Uyarı gönderiliyor."
 			: $"Envanterde boş slot sayısı {EmptySlot} olarak algılandı. Uyarı gönderiliyor.");

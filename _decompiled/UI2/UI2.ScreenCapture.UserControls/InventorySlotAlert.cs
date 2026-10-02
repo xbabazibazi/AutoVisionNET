@@ -45,6 +45,8 @@ public class InventorySlotAlert : UserControl, IServiceControl
 
 	private Label lblLiveCount;
 
+	private CheckBox checkOnlyWhenGenieActive;
+
 	private System.Windows.Forms.Timer _liveCountTimer;
 
 	public bool IsActive => checkActive.Checked;
@@ -106,6 +108,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		{
 			checkActive.Checked = _settings.IsActive;
 			numThreshold.Value = _settings.LowSlotThreshold;
+			checkOnlyWhenGenieActive.Checked = _settings.OnlyWhenGenieActive;
 			UpdateStatus();
 		}
 		catch (Exception ex)
@@ -158,11 +161,25 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		{
 			_settings.IsActive = checkActive.Checked;
 			_settings.LowSlotThreshold = (int)numThreshold.Value;
+			_settings.OnlyWhenGenieActive = checkOnlyWhenGenieActive.Checked;
 			_logger.LogDebug("InventorySlotAlert ayarları kaydedildi");
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError("Ayarlar kaydedilirken hata: " + ex.Message);
+		}
+	}
+
+	private void checkOnlyWhenGenieActive_CheckedChanged(object sender, EventArgs e)
+	{
+		try
+		{
+			_settings.OnlyWhenGenieActive = checkOnlyWhenGenieActive.Checked;
+			_logger.LogDebug($"Sadece Genie açıkken uyar: {checkOnlyWhenGenieActive.Checked}");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError("Ayar değiştirilirken hata: " + ex.Message);
 		}
 	}
 
@@ -235,6 +252,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.lblThreshold = new System.Windows.Forms.Label();
 		this.checkActive = new System.Windows.Forms.CheckBox();
 		this.lblLiveCount = new System.Windows.Forms.Label();
+		this.checkOnlyWhenGenieActive = new System.Windows.Forms.CheckBox();
 		this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 		this.groupBoxSettings.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)this.numThreshold).BeginInit();
@@ -264,6 +282,7 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.groupBoxSettings.Controls.Add(this.numThreshold);
 		this.groupBoxSettings.Controls.Add(this.lblThreshold);
 		this.groupBoxSettings.Controls.Add(this.checkActive);
+		this.groupBoxSettings.Controls.Add(this.checkOnlyWhenGenieActive);
 		this.groupBoxSettings.Dock = System.Windows.Forms.DockStyle.Fill;
 		this.groupBoxSettings.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.groupBoxSettings.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
@@ -315,6 +334,22 @@ public class InventorySlotAlert : UserControl, IServiceControl
 		this.toolTip.SetToolTip(this.checkActive, "Envanter yuvası izleme özelliğini etkinleştirir veya devre dışı bırakır");
 		this.checkActive.UseVisualStyleBackColor = false;
 		this.checkActive.CheckedChanged += new System.EventHandler(checkActive_CheckedChanged);
+		this.checkOnlyWhenGenieActive.Appearance = System.Windows.Forms.Appearance.Button;
+		this.checkOnlyWhenGenieActive.BackColor = System.Drawing.Color.FromArgb(60, 60, 65);
+		this.checkOnlyWhenGenieActive.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(80, 80, 85);
+		this.checkOnlyWhenGenieActive.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(0, 153, 102);
+		this.checkOnlyWhenGenieActive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.checkOnlyWhenGenieActive.Font = new System.Drawing.Font("Segoe UI", 8f);
+		this.checkOnlyWhenGenieActive.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.checkOnlyWhenGenieActive.Location = new System.Drawing.Point(230, 25);
+		this.checkOnlyWhenGenieActive.Name = "checkOnlyWhenGenieActive";
+		this.checkOnlyWhenGenieActive.Size = new System.Drawing.Size(130, 30);
+		this.checkOnlyWhenGenieActive.TabIndex = 4;
+		this.checkOnlyWhenGenieActive.Text = "Sadece Genie Açıkken";
+		this.checkOnlyWhenGenieActive.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+		this.toolTip.SetToolTip(this.checkOnlyWhenGenieActive, "Genie kapalıyken (elle tamir, şehir, takas) envanter okuması güvenilmez olduğu için alarm çalmaz. Genie Aktif İkonu bölgesi çizili değilse bu ayar yok sayılır.");
+		this.checkOnlyWhenGenieActive.UseVisualStyleBackColor = false;
+		this.checkOnlyWhenGenieActive.CheckedChanged += new System.EventHandler(checkOnlyWhenGenieActive_CheckedChanged);
 		this.toolTip.BackColor = System.Drawing.Color.FromArgb(48, 48, 55);
 		this.toolTip.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 16f);
