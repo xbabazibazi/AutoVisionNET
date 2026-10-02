@@ -516,44 +516,62 @@ public class KeyboardHook : Hook<KeyStroke>
 	{
 		bool shiftDown = false;
 		bool altGrDown = false;
-		foreach (char key in text)
+		try
 		{
-			if (!KeyDictionary.TryGetValue(key, out var value))
+			foreach (char key in text)
 			{
-				value = QuestionMark;
-			}
-			if (value.Shift != shiftDown)
-			{
-				if (!SetKeyState(KeyCode.LeftShift, value.Shift ? KeyState.Down : KeyState.Up))
+				if (!KeyDictionary.TryGetValue(key, out var value))
+				{
+					value = QuestionMark;
+				}
+				if (value.Shift != shiftDown)
+				{
+					if (!SetKeyState(KeyCode.LeftShift, value.Shift ? KeyState.Down : KeyState.Up))
+					{
+						return false;
+					}
+					shiftDown = value.Shift;
+				}
+				// AltGr is the physical Right Alt key, which the driver distinguishes from the
+				// plain (left) Alt it shares a scan code with via the E0 "extended key" flag.
+				// Held only for the single keystroke that needs it rather than across a run of
+				// them: a modifier left down any longer than necessary is the kind of thing that
+				// strands the whole keyboard if anything in between goes wrong.
+				if (value.AltGr && !altGrDown)
+				{
+					if (!SetKeyState(KeyCode.Alt, KeyState.Down | KeyState.E0))
+					{
+						return false;
+					}
+					altGrDown = true;
+				}
+				bool pressed = SimulateKeyPress(value.Code, releaseDelay);
+				if (altGrDown)
+				{
+					SetKeyState(KeyCode.Alt, KeyState.Up | KeyState.E0);
+					altGrDown = false;
+				}
+				if (!pressed)
 				{
 					return false;
 				}
-				shiftDown = value.Shift;
+				Thread.Sleep(delayBetweenKeyPresses);
 			}
-			// AltGr is the physical Right Alt key, which the driver distinguishes from the plain
-			// (left) Alt it shares a scan code with via the E0 "extended key" flag.
-			if (value.AltGr != altGrDown)
-			{
-				if (!SetKeyState(KeyCode.Alt, (value.AltGr ? KeyState.Down : KeyState.Up) | KeyState.E0))
-				{
-					return false;
-				}
-				altGrDown = value.AltGr;
-			}
-			if (!SimulateKeyPress(value.Code, releaseDelay))
-			{
-				return false;
-			}
-			Thread.Sleep(delayBetweenKeyPresses);
+			return true;
 		}
-		if (shiftDown && !SetKeyState(KeyCode.LeftShift, KeyState.Up))
+		finally
 		{
-			return false;
+			// Never leave a modifier latched. A stuck Shift or AltGr does not just break the rest
+			// of this string - it corrupts every keystroke the operator makes afterwards, in the
+			// game and everywhere else, with nothing on screen to explain why.
+			if (shiftDown)
+			{
+				SetKeyState(KeyCode.LeftShift, KeyState.Up);
+			}
+			if (altGrDown)
+			{
+				SetKeyState(KeyCode.Alt, KeyState.Up | KeyState.E0);
+			}
 		}
-		if (altGrDown && !SetKeyState(KeyCode.Alt, KeyState.Up | KeyState.E0))
-		{
-			return false;
-		}
-		return true;
 	}
 }

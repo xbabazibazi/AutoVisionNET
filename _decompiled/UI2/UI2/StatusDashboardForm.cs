@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Windows.Forms;
 using InputInterceptorNS;
+using Scanix4;
 using SettingsManager;
 using UI2.ScreenCapture;
 
@@ -87,16 +88,19 @@ public class StatusDashboardForm : Form
 
 		Button btnRefresh = new Button
 		{
-			Text = "Yenile",
+			Text = "↻  Değişiklikleri Uygula",
 			Dock = DockStyle.Bottom,
 			Height = 32,
 			FlatStyle = FlatStyle.Flat,
-			BackColor = Color.FromArgb(55, 78, 92),
+			BackColor = Color.FromArgb(46, 120, 84),
 			ForeColor = Color.White,
+			Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+			Cursor = Cursors.Hand,
 			UseVisualStyleBackColor = false
 		};
 		btnRefresh.FlatAppearance.BorderSize = 0;
-		btnRefresh.Click += (s, e) => RefreshStatus();
+		btnRefresh.FlatAppearance.MouseOverBackColor = Color.FromArgb(58, 145, 102);
+		btnRefresh.Click += ApplyChanges_Click;
 		bodyPanel.Controls.Add(btnRefresh);
 
 		Controls.Add(bodyPanel);
@@ -111,6 +115,38 @@ public class StatusDashboardForm : Form
 		{
 			_bodyPanel.AutoScrollPosition = new Point(0, 0);
 		};
+	}
+
+	/// <summary>
+	/// Rebuilds the running task graph from current Settings, then refreshes what's on screen.
+	/// Each task category reads its search area and template path once, in its constructor, so a
+	/// redrawn region or a re-uploaded template never reached an already-running bot - restarting
+	/// EVOX.Console was the only way to pick it up.
+	/// </summary>
+	private async void ApplyChanges_Click(object sender, EventArgs e)
+	{
+		Button button = (Button)sender;
+		string originalText = button.Text;
+		button.Enabled = false;
+		button.Text = "Uygulanıyor...";
+		try
+		{
+			WorkflowEngine engine = _screenCaptureMainForm?.WorkflowEngine;
+			if (engine != null)
+			{
+				await engine.ReloadTasksAsync();
+			}
+			RefreshStatus();
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show(this, "Değişiklikler uygulanırken hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		}
+		finally
+		{
+			button.Enabled = true;
+			button.Text = originalText;
+		}
 	}
 
 	private void AddRow(string label, string value, Color? valueColor = null)
