@@ -108,6 +108,9 @@ public class KeyCommandManager
 		{
 			return false;
 		}
+		// Logged so a hotkey that appears to do nothing can be told apart from one that never
+		// arrived - without this there is no way to see which of the two is happening.
+		Logger.Instance.LogInformation($"Kısayol çalıştırılıyor: {(control ? "Ctrl+" : "")}{key}");
 		var commandKey = (key, control);
 		lock (_running)
 		{

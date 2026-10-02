@@ -253,7 +253,13 @@ public class Form1 : Form
 
 	private async void OnKeyPress(KeyStroke keyStroke)
 	{
-		if (keyStroke.State == KeyState.Down)
+		// KeyState is a flags value: bit 0 is down(0)/up(1), while E0 and E1 are separate bits the
+		// driver sets for "extended" keys. Comparing the whole value against KeyState.Down meant
+		// any stroke carrying one of those bits was silently ignored - which is exactly what some
+		// keyboards and virtual machines do for NumLock, so the login hotkey did nothing at all
+		// there, with no message and nothing in the log to show a key had even been seen.
+		bool isKeyDown = (keyStroke.State & KeyState.Up) == 0;
+		if (isKeyDown)
 		{
 			if (keyStroke.Code == KeyCode.Control)
 			{
@@ -264,7 +270,7 @@ public class Form1 : Form
 				_keyManager.Execute(keyStroke.Code, _isControlKeyPressed);
 			}
 		}
-		else if (keyStroke.State == KeyState.Up && keyStroke.Code == KeyCode.Control)
+		else if (keyStroke.Code == KeyCode.Control)
 		{
 			_isControlKeyPressed = false;
 		}
