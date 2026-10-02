@@ -5,12 +5,12 @@ using System.Runtime.Versioning;
 
 [assembly: AssemblyCompany("EVOX Systems")]
 [assembly: AssemblyConfiguration("Debug")]
-[assembly: AssemblyFileVersion("1.1.16.0")]
-[assembly: AssemblyInformationalVersion("1.1.16")]
+[assembly: AssemblyFileVersion("1.1.17.0")]
+[assembly: AssemblyInformationalVersion("1.1.17")]
 [assembly: AssemblyProduct("EVOX.Service")]
 [assembly: AssemblyTitle("EVOX.Service")]
 #if !NET48
 [assembly: TargetPlatform("Windows7.0")]
 [assembly: SupportedOSPlatform("Windows7.0")]
 #endif
-[assembly: AssemblyVersion("1.1.16.0")]
+[assembly: AssemblyVersion("1.1.17.0")]
