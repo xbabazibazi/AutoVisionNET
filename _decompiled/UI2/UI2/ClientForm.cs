@@ -121,6 +121,19 @@ public class ClientForm : Form
 		btnConnect_Click(null, EventArgs.Empty);
 	}
 
+	/// <summary>
+	/// Connects if not already connected, exactly as pressing "Bağlan" would. Lets the toolbar's
+	/// Apply reattach a client that dropped, without the operator having to open this window and
+	/// find the button.
+	/// </summary>
+	public void ConnectIfNeeded()
+	{
+		if (!AppClient.IsConnected)
+		{
+			btnConnect_Click(null, EventArgs.Empty);
+		}
+	}
+
 	private void InitializeAdvancedComponents()
 	{
 		typeof(ListBox).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(lstLogs, true);

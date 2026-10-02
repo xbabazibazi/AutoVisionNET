@@ -287,14 +287,26 @@ public class Form1 : Form
 	/// used to need the whole app closed and reopened before it took effect. This is on the main
 	/// toolbar so it is reachable from wherever the change was just made.
 	/// </summary>
+	private bool _isApplyingChanges;
+
 	private async void toolStripButtonApply_Click(object sender, EventArgs e)
 	{
+		// Guarded with a flag rather than Enabled: a disabled ToolStripButton draws its text in
+		// the system's grey, which is unreadable on this dark toolbar - the button looked blank
+		// for the whole time it was working.
+		if (_isApplyingChanges)
+		{
+			return;
+		}
+		_isApplyingChanges = true;
 		string originalText = toolStripButtonApply.Text;
-		toolStripButtonApply.Enabled = false;
 		toolStripButtonApply.Text = "Uygulanıyor...";
 		try
 		{
 			await (_screenCaptureMainForm?.WorkflowEngine?.ReloadTasksAsync() ?? Task.CompletedTask);
+			// Reconnecting here too, since a dropped client is the other reason a change seems
+			// not to have taken: the regions reload fine but nothing reaches the service.
+			_clientForm?.ConnectIfNeeded();
 			_logger.LogInformation("Değişiklikler çalışan bota uygulandı.");
 		}
 		catch (Exception ex)
@@ -303,8 +315,8 @@ public class Form1 : Form
 		}
 		finally
 		{
-			toolStripButtonApply.Enabled = true;
 			toolStripButtonApply.Text = originalText;
+			_isApplyingChanges = false;
 		}
 	}
 
@@ -656,7 +668,8 @@ public class Form1 : Form
 		this.toolStripSeparatorApply = new System.Windows.Forms.ToolStripSeparator();
 		this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[8] { this.toolStripButtonDrag, this.toolStripButtonClose, this.toolStripSeparator1, this.toolStripDropDownButtonForms, this.toolStripSeparator2, this.toolStripDropDownButtonTools, this.toolStripSeparatorApply, this.toolStripButtonApply });
 		this.toolStripButtonApply.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-		this.toolStripButtonApply.ForeColor = System.Drawing.Color.FromArgb(140, 225, 180);
+		this.toolStripButtonApply.ForeColor = System.Drawing.Color.FromArgb(126, 222, 170);
+		this.toolStripButtonApply.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold);
 		this.toolStripButtonApply.Name = "toolStripButtonApply";
 		this.toolStripButtonApply.Text = "↻ Uygula";
 		this.toolStripButtonApply.ToolTipText = "Çizilen bölgeleri ve yüklenen şablonları çalışan bota uygula (uygulamayı kapatmaya gerek yok)";
