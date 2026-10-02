@@ -337,7 +337,7 @@ public class ServerForm : Form
 		("🔁   ReReRe", "201"),
 		("🎡   Çark Çevir", "501"),
 		("🔕   Tüm Alarmları Durdur", "101"),
-		("⬇   Güncellemeleri Yap", "301"),
+		("⬇   Konsolları Güncelle", "301"),
 		("🧪   Özel Komut", "999")
 	};
 
