@@ -339,39 +339,58 @@ public class ClientForm : Form
 	{
 		AppClient.RegisterCommand("101", delegate
 		{
+			AddLog("Komut alındı: 101 (alarmı durdur)");
 			Form1.Instance?._screenCaptureMainForm?.Alarm?.StopAlarm();
 		});
 		AppClient.RegisterCommand("201", async delegate
 		{
-			Settings settings = Settings.Instance;
-			if (settings != null && settings.ScreenCapture?.ReReRe?.IsActive == true)
+			if (!IsServiceEnabled("201 (ReReRe)", "EVOX ReReRe", Settings.Instance?.ScreenCapture?.ReReRe?.IsActive))
 			{
-				for (int i = 0; i < 4; i++)
-				{
-					await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetReReRe"));
-				}
+				return;
+			}
+			for (int i = 0; i < 4; i++)
+			{
+				await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetReReRe"));
 			}
 		});
 		AppClient.RegisterCommand("301", delegate
 		{
+			AddLog("Komut alındı: 301 (güncellemeleri kontrol et)");
 			Form1.Instance?.CheckForUpdates();
 		});
 		AppClient.RegisterCommand("401", async delegate
 		{
-			Settings settings = Settings.Instance;
-			if (settings != null && settings.ScreenCapture?.StartGenie?.IsActive == true)
+			if (!IsServiceEnabled("401 (Genie aç)", "EVOX Start Genie", Settings.Instance?.ScreenCapture?.StartGenie?.IsActive))
 			{
-				await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetStartGenie"));
+				return;
 			}
+			await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetStartGenie"));
 		});
 		AppClient.RegisterCommand("501", async delegate
 		{
-			Settings settings = Settings.Instance;
-			if (settings != null && settings.ScreenCapture?.WhellOfFun?.IsActive == true)
+			if (!IsServiceEnabled("501 (Çark çevir)", "EVOX Whell Of Fun", Settings.Instance?.ScreenCapture?.WhellOfFun?.IsActive))
 			{
-				await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetWhellOfFun"));
+				return;
 			}
+			await (Form1.Instance?._screenCaptureMainForm?.WorkflowEngine?.StartAsync("SnapNetWhellOfFun"));
 		});
+	}
+
+	/// <summary>
+	/// Logs an incoming remote command and whether the service it needs is switched on. Until
+	/// this existed, a command whose service was off was dropped in complete silence - from the
+	/// operator's side the command simply "did nothing", with no way to tell that apart from a
+	/// lost connection or a mis-drawn region.
+	/// </summary>
+	private bool IsServiceEnabled(string commandLabel, string serviceName, bool? isActive)
+	{
+		if (isActive == true)
+		{
+			AddLog($"Komut alındı: {commandLabel}");
+			return true;
+		}
+		AddLog($"Komut alındı: {commandLabel} - ATLANDI, '{serviceName}' servisi kapalı (Ekran Yakalama penceresinden etkinleştirin)");
+		return false;
 	}
 
 	private void BtnCancelPartyForm_Click(object sender, EventArgs e)

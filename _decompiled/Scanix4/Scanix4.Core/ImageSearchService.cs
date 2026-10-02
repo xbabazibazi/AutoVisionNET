@@ -24,6 +24,16 @@ public class ImageSearchService : IDisposable
 
 	private bool _hasWarnedInvalidSearchArea;
 
+	/// <summary>False when this step has no usable region or template and will never match, so a
+	/// workflow can say which step it is stuck on instead of just quietly finding nothing.</summary>
+	public bool IsUsable => _matcher != null && _capturer != null;
+
+	/// <summary>The template this step is looking for - used in diagnostics.</summary>
+	public string TemplatePath => _config.TemplatePath;
+
+	/// <summary>The screen region this step searches - used in diagnostics.</summary>
+	public Rectangle SearchArea => _config.SearchArea;
+
 	public ImageSearchService(SearchConfig config, Logger logger = null)
 	{
 		_config = config ?? throw new ArgumentNullException("config");

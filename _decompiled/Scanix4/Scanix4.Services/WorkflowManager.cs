@@ -104,6 +104,14 @@ public class WorkflowManager
 					Logger.Instance.LogInformation($"Mevcut görev: {current} | Mod: {task.Mode} | Eşleşme Modu: {task.Config.Mode}");
 				}
 				ImageSearchService service = _searchServices[current];
+				// A step with no usable region or template can never match, so the workflow just
+				// ends - which from the operator's side looks exactly like the command being
+				// ignored. Say which step and what it was missing.
+				if (!service.IsUsable && task.Mode != SearchMode.SnapNet)
+				{
+					Logger.Instance.LogWarning($"'{_workflowId}' iş akışı '{current}' adımında durdu: bu adımın tarama bölgesi çizilmemiş veya şablonu atanmamış (şablon: {service.TemplatePath}, bölge: {service.SearchArea}).");
+					break;
+				}
 				int delayMs;
 				if (task.Mode == SearchMode.SnapNet)
 				{
