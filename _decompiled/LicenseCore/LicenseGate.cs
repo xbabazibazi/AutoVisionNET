@@ -15,7 +15,23 @@ public static class LicenseGate
 
 	private static System.Threading.Timer _recheckTimer;
 
+	private static ActivationStore _activation;
+
 	public static LicenseInfo Current { get; private set; }
+
+	/// <summary>This machine's code, shown in the UI so a customer can read it out when asked.</summary>
+	public static string MachineCode => MachineId.Current;
+
+	/// <summary>Why the last check failed, for the activation dialog to explain.</summary>
+	public enum Problem
+	{
+		None,
+		Missing,
+		Malformed,
+		Expired,
+		WrongMachine,
+		Revoked
+	}
 
 	// The licence used to be stored next to the exe. That location is fragile:
 	//  * the install folder can be read-only (Program Files), and SaveLicense swallowed
@@ -158,7 +174,7 @@ public static class LicenseGate
 
 	public static bool IsCurrentlyValid()
 	{
-		return Current != null && !Current.IsExpired;
+		return Current != null && !Current.IsExpired && !RevocationList.IsRevoked(Current.LicenseId);
 	}
 
 	public static string GetStatusText()
@@ -171,6 +187,10 @@ public static class LicenseGate
 		if (Current == null || Current.IsExpired)
 		{
 			return "geçersiz";
+		}
+		if (RevocationList.IsRevoked(Current.LicenseId))
+		{
+			return "iptal edildi";
 		}
 		if (Current.ExpiresUtc == DateTime.MaxValue)
 		{
@@ -190,7 +210,7 @@ public static class LicenseGate
 
 	public static Color GetStatusColor()
 	{
-		if (Current == null || Current.IsExpired)
+		if (Current == null || Current.IsExpired || RevocationList.IsRevoked(Current.LicenseId))
 		{
 			return Color.FromArgb(220, 120, 120);
 		}
@@ -205,34 +225,155 @@ public static class LicenseGate
 		return Color.FromArgb(130, 200, 130);
 	}
 
+	/// <summary>
+	/// Loads the sealed activation state once per process and seeds everything that depends on
+	/// it: the no-rollback clock floor and the cached revocation list.
+	/// </summary>
+	private static ActivationStore Activation
+	{
+		get
+		{
+			if (_activation == null)
+			{
+				_activation = ActivationStore.Load();
+				LicenseClock.SetFloor(_activation.LastSeenUtc);
+				RevocationList.LoadFromCache(_activation);
+			}
+			return _activation;
+		}
+	}
+
+	/// <summary>Moves the clock floor forward and persists it when the reading is plausible.</summary>
+	private static void TouchClock()
+	{
+		if (LicenseClock.TryAdvance(out DateTime newFloor))
+		{
+			Activation.LastSeenUtc = newFloor;
+			Activation.Save();
+		}
+	}
+
+	private static Problem Evaluate(LicenseInfo info)
+	{
+		if (info == null)
+		{
+			return Problem.Malformed;
+		}
+		if (RevocationList.IsRevoked(info.LicenseId))
+		{
+			return Problem.Revoked;
+		}
+		if (info.IsExpired)
+		{
+			return Problem.Expired;
+		}
+		// Only licences that explicitly name their machines are refused here. Unbound keys - the
+		// kind issued today - are pinned by Claim() instead, via the sealed store.
+		if (!info.IsForThisMachine)
+		{
+			return Problem.WrongMachine;
+		}
+		return Problem.None;
+	}
+
+	/// <summary>
+	/// Records that this licence was activated on this machine. The record lives in the sealed
+	/// store, so an activated installation cannot be copied to another PC and used there.
+	/// </summary>
+	/// <remarks>
+	/// A recorded machine code that no longer matches is treated as a re-claim rather than a
+	/// refusal, deliberately. The seal is what enforces the binding - DPAPI will not even open
+	/// the file off-machine - so a mismatch here means the machine's own identity shifted under
+	/// us, and locking the customer out of a licence that still has time on it would be the wrong
+	/// trade. Whoever is running it already proved they are on the machine that sealed the file.
+	/// </remarks>
+	private static void Claim(LicenseInfo info)
+	{
+		if (info == null || string.IsNullOrEmpty(info.LicenseId))
+		{
+			return;
+		}
+		ActivationStore store = Activation;
+		bool isNewClaim = !ShortCode.Equal(store.LicenseId, info.LicenseId);
+		if (isNewClaim)
+		{
+			store.LicenseId = info.LicenseId;
+			store.ClaimedUtc = LicenseClock.UtcNow;
+		}
+		if (!ShortCode.Equal(store.MachineCode, MachineId.Current))
+		{
+			store.MachineCode = MachineId.Current;
+			isNewClaim = true;
+		}
+		if (isNewClaim)
+		{
+			store.Save();
+		}
+	}
+
 	public static bool EnsureLicensed(string appDisplayName)
 	{
-		TryLoadStoredLicense(out LicenseInfo storedInfo);
-		if (storedInfo != null && !storedInfo.IsExpired)
+		ActivationStore store = Activation;
+		TouchClock();
+		RevocationList.BeginRefresh(store);
+
+		LicenseInfo storedInfo = null;
+		Problem problem = Problem.Missing;
+		string storedText = ReadStoredLicenseText();
+		if (!string.IsNullOrWhiteSpace(storedText))
 		{
-			Current = storedInfo;
-			return true;
+			problem = LicenseValidator.TryValidate(storedText, out storedInfo) ? Evaluate(storedInfo) : Problem.Malformed;
+			if (problem == Problem.None)
+			{
+				EnsureStoredInAllLocations(storedText);
+				Claim(storedInfo);
+				Current = storedInfo;
+				return true;
+			}
 		}
 		while (true)
 		{
-			using LicenseActivationForm dialog = new LicenseActivationForm(appDisplayName, storedInfo);
+			using LicenseActivationForm dialog = new LicenseActivationForm(appDisplayName, storedInfo, problem, MachineCode);
 			if (dialog.ShowDialog() != DialogResult.OK)
 			{
 				return false;
 			}
-			if (LicenseValidator.TryValidate(dialog.EnteredLicense, out LicenseInfo newInfo))
+			if (!LicenseValidator.TryValidate(dialog.EnteredLicense, out LicenseInfo newInfo))
 			{
-				if (newInfo.IsExpired)
-				{
-					MessageBox.Show($"Bu lisans anahtarının süresi dolmuş ({newInfo.ExpiresUtc.ToLocalTime():dd.MM.yyyy}).", "Lisans Süresi Dolmuş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					storedInfo = newInfo;
-					continue;
-				}
-				SaveLicense(dialog.EnteredLicense);
-				Current = newInfo;
-				return true;
+				MessageBox.Show("Geçersiz lisans anahtarı. Lütfen anahtarı eksiksiz yapıştırdığınızdan emin olun.", "Geçersiz Anahtar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				problem = Problem.Malformed;
+				continue;
 			}
-			MessageBox.Show("Geçersiz lisans anahtarı. Lütfen anahtarı eksiksiz yapıştırdığınızdan emin olun.", "Geçersiz Anahtar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			problem = Evaluate(newInfo);
+			if (problem != Problem.None)
+			{
+				MessageBox.Show(DescribeProblem(problem, newInfo), "Lisans Kabul Edilmedi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				storedInfo = newInfo;
+				continue;
+			}
+			SaveLicense(dialog.EnteredLicense);
+			Claim(newInfo);
+			Current = newInfo;
+			return true;
+		}
+	}
+
+	public static string DescribeProblem(Problem problem, LicenseInfo info)
+	{
+		switch (problem)
+		{
+			case Problem.Expired:
+				return (info != null && info.ExpiresUtc != DateTime.MaxValue)
+					? $"Bu lisans anahtarının süresi dolmuş ({info.ExpiresUtc.ToLocalTime():dd.MM.yyyy})."
+					: "Bu lisans anahtarının süresi dolmuş.";
+			case Problem.WrongMachine:
+				return "Bu lisans anahtarı başka bir bilgisayar için üretilmiş.\n\nBu bilgisayarın makine kodu:\n" + MachineCode;
+			case Problem.Revoked:
+				return "Bu lisans anahtarı iptal edilmiş. Lütfen satıcınızla görüşün.";
+			case Problem.Malformed:
+				return "Geçersiz lisans anahtarı.";
+			default:
+				return string.Empty;
 		}
 	}
 
@@ -241,29 +382,12 @@ public static class LicenseGate
 		_recheckTimer?.Dispose();
 		_recheckTimer = new System.Threading.Timer(delegate
 		{
-			if (Current != null && Current.IsExpired)
+			TouchClock();
+			if (Current != null && (Current.IsExpired || RevocationList.IsRevoked(Current.LicenseId)))
 			{
 				onExpired?.Invoke();
 			}
 		}, null, 60000, 60000);
-	}
-
-	private static bool TryLoadStoredLicense(out LicenseInfo info)
-	{
-		info = null;
-		string licenseText = ReadStoredLicenseText();
-		if (string.IsNullOrWhiteSpace(licenseText))
-		{
-			return false;
-		}
-		if (!LicenseValidator.TryValidate(licenseText, out info))
-		{
-			return false;
-		}
-		// Migrate a licence that still lives in the old install-folder location (or that is
-		// only present in one of the stores) so later runs find it wherever they look.
-		EnsureStoredInAllLocations(licenseText);
-		return true;
 	}
 
 	private static void SaveLicense(string licenseText)

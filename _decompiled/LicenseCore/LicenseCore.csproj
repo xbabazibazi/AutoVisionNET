@@ -6,7 +6,13 @@
     <Nullable>disable</Nullable>
     <LangVersion>12.0</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- DPAPI for the sealed activation store; same package/version SettingsManager already uses. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Compile Include="..\PolyfillIsExternalInit.cs" Link="PolyfillIsExternalInit.cs" />
+    <!-- HttpClient for the revocation list; on net48 it is a framework assembly, not a package. -->
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>
