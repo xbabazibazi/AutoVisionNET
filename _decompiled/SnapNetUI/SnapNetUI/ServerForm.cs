@@ -239,7 +239,7 @@ public class ServerForm : Form
 			Location = new Point(5, 50),
 			Size = new Size(820, 20),
 			TextAlign = ContentAlignment.MiddleLeft,
-			Text = LicenseCore.LicenseGate.GetStatusText()
+			Text = BuildLicenseStatusText()
 		};
 		btnCheckForUpdate = new Button
 		{
@@ -261,9 +261,16 @@ public class ServerForm : Form
 		statusPanel.Controls.Add(lblVersion);
 	}
 
+	// The machine code rides along with the licence line: it is what support asks for, and the
+	// activation dialog that also shows it is only ever seen by someone who is NOT licensed yet.
+	private static string BuildLicenseStatusText()
+	{
+		return LicenseCore.LicenseGate.GetStatusText() + "     •     Makine Kodu: " + LicenseCore.LicenseGate.MachineCode;
+	}
+
 	private void UpdateLicenseStatusLabel()
 	{
-		lblLicenseStatus.Text = LicenseCore.LicenseGate.GetStatusText();
+		lblLicenseStatus.Text = BuildLicenseStatusText();
 		lblLicenseStatus.ForeColor = LicenseCore.LicenseGate.GetStatusColor();
 	}
 

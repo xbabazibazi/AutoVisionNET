@@ -166,6 +166,9 @@ public class StatusDashboardForm : Form
 		LicenseCore.LicenseInfo license = LicenseCore.LicenseGate.Current;
 		AddRow("Lisans Adı:", license?.CustomerName ?? "-", license == null ? Color.OrangeRed : (Color?)null);
 		AddRow("Kalan Süre:", LicenseCore.LicenseGate.GetRemainingText(), LicenseCore.LicenseGate.GetStatusColor());
+		// Support's first question is always "what is your machine code" - keep it one click away
+		// instead of only on the activation dialog, which a licensed user never sees again.
+		AddRow("Makine Kodu:", LicenseCore.LicenseGate.MachineCode, Color.FromArgb(170, 180, 200));
 		AddRow("", "");
 
 		Version version = Assembly.GetExecutingAssembly().GetName().Version;
