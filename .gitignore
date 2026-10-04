@@ -12,3 +12,7 @@ license.key
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# Çalışma zamanı çıktıları — makineye özel, sürümlenmez.
+logs/
+imgui.ini
