@@ -259,14 +259,6 @@ public static class LicenseGate
 		{
 			return Problem.Malformed;
 		}
-		// A licence cannot legitimately be in use before it was issued, so its own issue date is
-		// a floor the clock can never sit below. Without this, expiry does not hold on a freshly
-		// installed machine: there is no stored floor yet, so the first reading is accepted
-		// whatever it says, and a clock wound back before activation would stretch a short
-		// licence out indefinitely. The issue date rides along inside the signed payload, so it
-		// is not something the customer can move. Deliberately not persisted - it is re-derived
-		// from the licence on every launch, which is what makes it survive a wiped store.
-		LicenseClock.SetFloor(info.IssuedUtc);
 		if (RevocationList.IsRevoked(info.LicenseId))
 		{
 			return Problem.Revoked;

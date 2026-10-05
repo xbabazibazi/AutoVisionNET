@@ -30,9 +30,32 @@ public sealed class LicenseInfo
 	/// <summary>An unbound licence runs anywhere; a bound one only on a machine it names.</summary>
 	public bool IsForThisMachine => !IsMachineBound || MachineIds.Any(MachineId.Matches);
 
+	/// <summary>
+	/// The moment this licence is measured against: the no-rollback clock, but never earlier than
+	/// the licence's own issue date, because a licence cannot be in use before it was issued.
+	/// </summary>
+	/// <remarks>
+	/// This is what makes a term hold on a freshly installed machine, where no stored clock floor
+	/// exists yet and the first reading is therefore accepted whatever it says.
+	/// Kept per-licence rather than pushed into LicenseClock's shared floor deliberately: that
+	/// floor only ever moves forward, so one key carrying a wrong issue date would raise it for
+	/// the whole process and could push an otherwise fine key into expiry - including the very
+	/// next key the customer pastes into the activation dialog.
+	/// Nothing here is persisted; it is re-derived from the signed payload on every launch, so
+	/// wiping the activation store does not shake it off.
+	/// </remarks>
+	private DateTime EffectiveNow
+	{
+		get
+		{
+			DateTime now = LicenseClock.UtcNow;
+			return (now < IssuedUtc) ? IssuedUtc : now;
+		}
+	}
+
 	// Expiry is measured against LicenseClock, not DateTime.UtcNow, so winding the PC clock back
 	// does not hand out extra days.
-	public bool IsExpired => LicenseClock.UtcNow > ExpiresUtc;
+	public bool IsExpired => EffectiveNow > ExpiresUtc;
 
-	public TimeSpan TimeRemaining => ExpiresUtc - LicenseClock.UtcNow;
+	public TimeSpan TimeRemaining => ExpiresUtc - EffectiveNow;
 }
