@@ -36,6 +36,17 @@ internal static class Program
 				return;
 			}
 			ApplicationConfiguration.Initialize();
+			// These go up here, before anything that can put a window on screen.
+			// SetUnhandledExceptionMode throws the moment a Control exists on this thread, and
+			// both the update prompt and the licence dialog below create one. Leaving the call
+			// until after the gate meant it threw with no handler installed yet - which is what
+			// reached the user as Windows' "stopped working" box immediately after their key was
+			// accepted and written to disk. Installing them first also means a failure inside
+			// the update check or the licence gate now shows a readable error instead of
+			// killing the process without a word.
+			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
+			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));
 			ToolStripManager.Renderer = new ToolStripProfessionalRenderer(new AppToolStripColorTable());
 			// Updates are checked/applied BEFORE the license gate on purpose: a user
 			// whose license is about to expire (or has just expired) should still be
@@ -49,9 +60,6 @@ internal static class Program
 			{
 				return;
 			}
-			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-			Application.ThreadException += (s, e) => HandleFatalError(e.Exception);
-			AppDomain.CurrentDomain.UnhandledException += (s, e) => HandleFatalError(e.ExceptionObject as Exception ?? new Exception("Bilinmeyen hata: " + e.ExceptionObject));
 			RunApplication();
 		}
 	}
