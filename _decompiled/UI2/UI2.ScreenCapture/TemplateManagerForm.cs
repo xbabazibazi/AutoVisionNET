@@ -350,10 +350,18 @@ public class TemplateManagerForm : Form
 		foreach (TemplateGroup group in BuildGroups())
 		{
 			string current = TemplateResolver.Resolve(group.Slots[0].TaskId, group.DefaultPath);
-			if (!availableFiles.Contains(current))
+			// Both the current value AND the default have to be offerable by the combo. Only
+			// listing the current one is what broke "Varsayilana Don": the default is absent from
+			// the file list whenever its image is missing from disk, and once the user had
+			// overridden such a row the default was in neither list - so assigning it back raised
+			// the grid's own "value is not valid" dialog instead of resetting anything.
+			foreach (string path in new[] { current, group.DefaultPath })
 			{
-				availableFiles.Add(current);
-				dataGridViewComboBoxColumn.Items.Add(current);
+				if (!string.IsNullOrWhiteSpace(path) && !availableFiles.Contains(path))
+				{
+					availableFiles.Add(path);
+					dataGridViewComboBoxColumn.Items.Add(path);
+				}
 			}
 			// Rows go in without their thumbnail: reading and decoding 25+ JPEGs from disk right
 			// here is what froze the form for a second or two every single time it was opened.
@@ -447,6 +455,20 @@ public class TemplateManagerForm : Form
 		ApplyToRunningBot();
 	}
 
+	/// <summary>Makes sure the file combo can actually hold <paramref name="path"/>.</summary>
+	private void EnsureFileOption(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+		{
+			return;
+		}
+		DataGridViewComboBoxColumn fileColumn = (DataGridViewComboBoxColumn)_grid.Columns["File"];
+		if (!fileColumn.Items.Contains(path))
+		{
+			fileColumn.Items.Add(path);
+		}
+	}
+
 	private void Grid_CellClick(object sender, DataGridViewCellEventArgs e)
 	{
 		if (e.RowIndex < 0 || _grid.Columns[e.ColumnIndex].Name != "Reset")
@@ -461,6 +483,10 @@ public class TemplateManagerForm : Form
 		{
 			TemplateResolver.ClearOverride(slot.TaskId, group.DefaultPath);
 		}
+		// Assigning a combo cell a value the column does not offer throws, and the grid turns
+		// that into a modal error box. Belt to LoadRows' braces: the item list is rebuilt on
+		// upload and reload, so never assume this one is still in it.
+		EnsureFileOption(group.DefaultPath);
 		_grid.Rows[e.RowIndex].Cells["File"].Value = group.DefaultPath;
 		_grid.Rows[e.RowIndex].Cells["Preview"].Value = LoadThumbnail(group.DefaultPath);
 		ApplyToRunningBot();
