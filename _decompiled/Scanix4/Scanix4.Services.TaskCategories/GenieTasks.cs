@@ -28,7 +28,13 @@ public class GenieTasks : ITaskCategory
 	// than the rare false stop a brief icon occlusion might cause.
 	private const int RequiredMatchReadings = 2;
 
-	private const int RequiredMissReadings = 1;
+	// Was 1, while a match needed 2. That asymmetry meant a single bad read - one occluded
+	// frame, a tooltip over the icon, JPEG noise dipping under the 0.95 threshold - flipped the
+	// belief to "off" within one scan, and the start task clicked the toggle a second later.
+	// Coming back the other way took two readings, so the start task kept firing in between and
+	// the two never settled. Requiring the same confidence in both directions removes the
+	// oscillation; a genuine stop is still noticed, just one scan later.
+	private const int RequiredMissReadings = 2;
 
 	private int _consecutiveMatches;
 
