@@ -37,6 +37,30 @@ public class BuffLineTasks : ITaskCategory
 			},
 			Mode = SearchMode.Continuous
 		});
+		// Closes the IceResist -> start-Genie chain: it answers "is the Genie-active icon on
+		// screen right now" so the workflow can finish instead of looping back and clicking the
+		// Genie button again.
+		// A separate task id rather than reusing "GenieStatus" on purpose: that task's callbacks
+		// drive the debounce counters behind GenieStatusTracker, and letting a second workflow
+		// drive them too would corrupt that state machine. Hence no callbacks here - this step is
+		// a pure question, it changes nothing.
+		// The template is resolved through the SAME override key as the status task, so assigning
+		// the status image once in Templates covers both.
+		Tasks.Add(new SearchTask
+		{
+			TaskId = "GenieActiveCheck",
+			Config = new SearchConfig
+			{
+				TemplatePath = TemplateResolver.Resolve("GenieStatus", "Images/GenieStatusActive.jpg"),
+				SearchArea = Settings.Instance.ScreenCapture.RectanglesSettings.GenieStatus.GetRectangle(),
+				Threshold = 0.95,
+				UseColor = true,
+				IntervalMs = 1000,
+				OnMatchFound = null,
+				OnMatchNotFound = null
+			},
+			Mode = SearchMode.Continuous
+		});
 		Tasks.Add(new SearchTask
 		{
 			TaskId = "DeleteResistance",
