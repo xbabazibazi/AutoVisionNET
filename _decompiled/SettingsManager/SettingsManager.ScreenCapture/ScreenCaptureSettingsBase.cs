@@ -31,12 +31,23 @@ public abstract class ScreenCaptureSettingsBase
 	protected void LoadInitialSettings()
 	{
 		string[] keys = Keys;
+		int seeded = 0;
 		foreach (string key in keys)
 		{
-			_settingsCache[key] = _dbManager.GetSetting<object>(TableName, key) ?? GetDefaultValue(key);
-			_dbManager.SetSetting(TableName, key, _settingsCache[key]?.ToString() ?? string.Empty);
+			object stored = _dbManager.GetSetting<object>(TableName, key);
+			_settingsCache[key] = stored ?? GetDefaultValue(key);
+			// Only keys that are genuinely absent get written. The write used to be
+			// unconditional, so every launch rewrote every key with the value it already held -
+			// around fifty pointless writes across the settings groups before the window even
+			// appeared. It matters more than the milliseconds suggest when several VMs on one
+			// host all start up against the same disk.
+			if (stored == null)
+			{
+				_dbManager.SetSetting(TableName, key, _settingsCache[key]?.ToString() ?? string.Empty);
+				seeded++;
+			}
 		}
-		Console.WriteLine("İlk ayarlar yüklendi ve senkronize edildi.");
+		Console.WriteLine($"Ayarlar yüklendi ({keys.Length} anahtar, {seeded} tanesi ilk kez yazıldı).");
 	}
 
 	protected T GetSetting<T>(string key)
