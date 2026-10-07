@@ -196,7 +196,16 @@ public class WorkflowEngine
 			{
 				lock (_lock)
 				{
-					_running.Remove(workflowId);
+					// Only clear the slot if it still holds THIS task. A reload stops the old run
+					// and starts a new one for the same id, and this continuation can land after
+					// that - removing the entry the new run just put there. The engine then
+					// believed nothing was running while a workflow actually was, so the next
+					// reload neither awaited nor replaced it and a second instance could end up
+					// scanning and acting alongside the first.
+					if (_running.TryGetValue(workflowId, out Task tracked) && tracked == task)
+					{
+						_running.Remove(workflowId);
+					}
 				}
 			}, TaskScheduler.Default);
 		}
