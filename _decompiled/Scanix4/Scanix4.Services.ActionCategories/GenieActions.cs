@@ -40,19 +40,37 @@ public class GenieActions(Alarm alarm, Logger logger, InputUtils inputUtils) : B
 		}
 		// No reading at all is NOT the same as "Genie is off". The status scan drops into passive
 		// mode when its region was never drawn or its template file is missing, and IsActive then
-		// stays false forever - which read as a confident "off" and clicked the button once a
-		// second. Because the button toggles, that thrashed Genie on and off indefinitely. A
-		// customer hit exactly this: a template reset pointed the status slot at a stock image
-		// that does not match their client, the scan went quiet, and the bot clicked endlessly.
-		// Refusing to click blind leaves Genie to be started by hand, which is strictly better
-		// than fighting the user over it - and it is what GenieStatusTracker.HasReading exists for.
+		// stays false forever. Clicking on that basis once a second thrashed Genie on and off
+		// endlessly, because the button toggles.
+		// Refusing to click outright is not the answer either: it silently kills the workflows
+		// that depend on this step - the IceResist-after-TP chain starts the macro through here,
+		// so a blind refusal means the macro simply never starts.
+		// So: click while blind, but no more than once per interval. One stray toggle every
+		// fifteen seconds is something a player recovers from; sixty a minute is not. The warning
+		// points at the real fix, which is to assign a status template that matches this client.
 		if (!GenieStatusTracker.HasReading)
 		{
+			if (_blindClickTimer.IsRunning && _blindClickTimer.Elapsed < BlindClickInterval)
+			{
+				return;
+			}
+			_blindClickTimer.Restart();
 			WarnStatusUnreadableOnce();
+			MoveAndLeftClick(coordinates);
 			return;
 		}
 		MoveAndLeftClick(coordinates);
 	}
+
+	/// <summary>
+	/// How long to wait between clicks taken without a status reading. Deliberately long: every
+	/// such click is a coin flip that may switch Genie off, so it has to be rare enough to be
+	/// recoverable while still letting the start-Genie workflows make progress.
+	/// </summary>
+	private static readonly TimeSpan BlindClickInterval = TimeSpan.FromSeconds(15.0);
+
+	/// <summary>Measures the gap between blind clicks. A Stopwatch, so changing the PC clock cannot affect it.</summary>
+	private readonly System.Diagnostics.Stopwatch _blindClickTimer = new System.Diagnostics.Stopwatch();
 
 	private bool _warnedStatusUnreadable;
 
