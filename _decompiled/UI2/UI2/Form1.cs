@@ -493,8 +493,51 @@ public class Form1 : Form
 		{
 			SaveFormPosition();
 			_licenseStatusTimer?.Dispose();
+			// Everything that drives input or touches the database has to stop HERE, while the
+			// message loop is still alive and before Program's finally block disposes the
+			// DbManagers. Only the TpParty token used to be cancelled, so the attack loops and
+			// the screen-scan workflows carried on after the window was gone: still clicking with
+			// no UI left to stop them, and still reading settings out of databases that were
+			// being torn down underneath them - the likeliest reason the process sometimes never
+			// exited at all, which is what left the macro running.
+			_attackService?.StopAll();
+			StopWorkflowEngine();
 			_cancellationTokenSourceTpParty?.Cancel();
 			_formManager.CloseAllForms();
+			DisposeInputUtils();
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine("Kapanma hatası: " + ex.Message);
+		}
+	}
+
+	/// <summary>Stops the scan workflows, bounded so one stuck workflow cannot hang the close.</summary>
+	private void StopWorkflowEngine()
+	{
+		try
+		{
+			var engine = _screenCaptureMainForm?.WorkflowEngine;
+			if (engine != null)
+			{
+				// Off the UI thread on purpose: StopAllAsync may resume on the captured context,
+				// and waiting for that from the UI thread itself would deadlock.
+				Task.Run(() => engine.StopAllAsync()).Wait(TimeSpan.FromSeconds(3.0));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	/// <summary>
+	/// Releases the input driver hook. This was fire-and-forget, so the process could exit
+	/// mid-dispose and leave the interception filter behind.
+	/// </summary>
+	private void DisposeInputUtils()
+	{
+		try
+		{
 			Task.Run(delegate
 			{
 				try
@@ -504,11 +547,10 @@ public class Form1 : Form
 				catch
 				{
 				}
-			});
+			}).Wait(TimeSpan.FromSeconds(3.0));
 		}
-		catch (Exception ex)
+		catch
 		{
-			Debug.WriteLine("Kapanma hatası: " + ex.Message);
 		}
 	}
 

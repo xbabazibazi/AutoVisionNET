@@ -215,6 +215,30 @@ public class AttackService(InputUtils inputUtils, Logger logger) : IAttack
 		}
 	}
 
+	/// <summary>
+	/// Stops every attack loop. Called on shutdown: these tasks used to keep running after the
+	/// window closed, because only the TpParty token was ever cancelled. They went on driving
+	/// input with no UI left to stop them, and went on reading settings while Program's finally
+	/// block disposed the very DbManagers they were using.
+	/// </summary>
+	public void StopAll()
+	{
+		if (_cts != null && !_isCtsDisposed)
+		{
+			try
+			{
+				_cts.Cancel();
+				_cts.Dispose();
+				_isCtsDisposed = true;
+			}
+			catch (ObjectDisposedException)
+			{
+			}
+		}
+		IsAttackStarted = false;
+		IsGenieStarted = false;
+	}
+
 	public void ToggleGenieStarted(bool status)
 	{
 		try
