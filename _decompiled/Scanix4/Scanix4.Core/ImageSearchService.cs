@@ -34,6 +34,19 @@ public class ImageSearchService : IDisposable
 	/// <summary>The screen region this step searches - used in diagnostics.</summary>
 	public Rectangle SearchArea => _config.SearchArea;
 
+	/// <summary>The confidence a match has to reach - used in diagnostics.</summary>
+	public double Threshold => _config.Threshold;
+
+	/// <summary>
+	/// Confidence of the most recent search, and the best ever reached by this step. Together
+	/// they turn "it just does not work" into something readable: a best of ~0 means the region
+	/// is showing something else entirely, while a best just under the threshold means the
+	/// template is right and the bar is set too high.
+	/// </summary>
+	public double LastConfidence { get; private set; }
+
+	public double BestConfidence { get; private set; }
+
 	public ImageSearchService(SearchConfig config, Logger logger = null)
 	{
 		_config = config ?? throw new ArgumentNullException("config");
@@ -148,6 +161,11 @@ public class ImageSearchService : IDisposable
 	private System.Drawing.Point? SearchSingleMatch()
 	{
 		MatchResult matchResult = _matcher.TryMatch(_screenBuffer);
+		LastConfidence = matchResult.Confidence;
+		if (matchResult.Confidence > BestConfidence)
+		{
+			BestConfidence = matchResult.Confidence;
+		}
 		if (matchResult.IsMatch)
 		{
 			return matchResult.MatchPoint;
