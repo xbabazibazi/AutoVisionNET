@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -58,40 +57,6 @@ public class WorkflowManager
 				_searchServices[key] = new ImageSearchService(value.Config);
 			}
 		}
-	}
-
-	// Throttle for the per-step "no match" diagnostic. A step searches several times a second;
-	// logging every miss would bury everything else in the panel.
-	private readonly Stopwatch _diagClock = Stopwatch.StartNew();
-
-	private readonly Dictionary<string, long> _lastDiagMs = new Dictionary<string, long>();
-
-	private const int DiagIntervalMs = 10000;
-
-	/// <summary>
-	/// Says which step found nothing and how close it came. This line existed only at Debug level
-	/// inside TemplateMatcher, so in a default install the one fact that separates "wrong region"
-	/// from "threshold a hair too high" was invisible - and three separate "it just does not work"
-	/// reports had no evidence behind them.
-	/// Info, not Warning, deliberately: a step waiting for its icon to appear misses constantly and
-	/// legitimately, and warnings surface as on-screen toasts.
-	/// </summary>
-	private void ReportNoMatch(string stepId, ImageSearchService service)
-	{
-		if (string.IsNullOrEmpty(stepId) || service == null || !service.IsUsable)
-		{
-			return;
-		}
-		long now = _diagClock.ElapsedMilliseconds;
-		if (_lastDiagMs.TryGetValue(stepId, out long last) && now - last < DiagIntervalMs)
-		{
-			return;
-		}
-		_lastDiagMs[stepId] = now;
-		Logger.Instance.LogInformation(
-			$"'{_workflowId}' / '{stepId}': eşleşme yok. Güven {service.LastConfidence:F3} " +
-			$"(en iyi {service.BestConfidence:F3}, eşik {service.Threshold:F3}) | " +
-			$"şablon: {service.TemplatePath} | bölge: {service.SearchArea}");
 	}
 
 	public Task RunAsync()
@@ -191,7 +156,6 @@ public class WorkflowManager
 						else
 						{
 							task.Config.OnMatchNotFound?.Invoke();
-							ReportNoMatch(current, service);
 							current = transition.NextStepOnNotMatch;
 							delayMs = task.Config.IntervalMs;
 							if (_workflowId == "GenieStatussdfsdfsdf")
@@ -223,7 +187,6 @@ public class WorkflowManager
 								task.Config.OnFoundCount?.Invoke(0);
 							}
 							task.Config.OnMatchNotFound?.Invoke();
-							ReportNoMatch(current, service);
 							current = transition.NextStepOnNotMatch;
 							delayMs = task.Config.IntervalMs;
 							if (_workflowId == "GenieStatussdfsdfsdf")

@@ -111,11 +111,7 @@ public class TemplateMatcher : ITemplateMatcher, IDisposable
 			if (bestVal < _threshold)
 			{
 				_logger.LogDebug($"Eşleşme bulunamadı. Güven: {bestVal:F4} (eşik: {_threshold}), Şablon boyutu: {_template.Width}x{_template.Height}, Arama alanı: {_searchArea.Width}x{_searchArea.Height}");
-				// Carry the confidence we actually reached instead of MatchResult.NoMatch's 0.0.
-				// IsMatch is still false so every caller behaves the same, but a step that never
-				// matches can now report HOW close it got - the difference between "wrong region"
-				// and "threshold a hair too high".
-				return new MatchResult(isMatch: false, System.Drawing.Point.Empty, bestVal);
+				return MatchResult.NoMatch;
 			}
 			System.Drawing.Point point = new System.Drawing.Point(_searchArea.X + bestLoc.X + bestWidth / 2, _searchArea.Y + bestLoc.Y + bestHeight / 2);
 			if (bestScale != 1.0)
